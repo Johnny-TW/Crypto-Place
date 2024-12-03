@@ -1,0 +1,25 @@
+.dashboard-button {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+}
+
+.search-button {
+  padding-left: 20px;
+}
+
+.dashboard-select-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-button {
+  flex: 1;
+}
+
+.dashboard-title {
+  flex: 2;
+  text-align: center;
+  /* 使標題在中間 */
+}

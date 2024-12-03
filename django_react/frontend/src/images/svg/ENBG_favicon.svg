@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_圖層_1" data-name="圖層 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 29.65 29.84">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#_未命名漸層_3);
+      }
+
+      .cls-1, .cls-2 {
+        fill-rule: evenodd;
+      }
+
+      .cls-2 {
+        fill: url(#_未命名漸層_25);
+      }
+    </style>
+    <radialGradient id="_未命名漸層_3" data-name="未命名漸層 3" cx="25.76" cy="10.15" fx="25.76" fy="10.15" r="15.26" gradientUnits="userSpaceOnUse">
+      <stop offset=".09" stop-color="#2f94b8"/>
+      <stop offset="1" stop-color="#2f94b8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="_未命名漸層_25" data-name="未命名漸層 25" x1=".79" y1="13.51" x2="29.35" y2="13.51" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2f94b8"/>
+      <stop offset=".84" stop-color="#93e67f"/>
+    </linearGradient>
+  </defs>
+  <path class="cls-1" d="m16.9,26h5.83c2.37-2.34,3.84-5.59,3.84-9.18,0-2.33-.62-4.52-1.7-6.4l-2.08,2.99c.4,1.06.62,2.21.62,3.42,0,4.24-2.72,7.85-6.5,9.18Z"/>
+  <path class="cls-2" d="m28.1,1.02l-6.25,1.26.36,1.82,2.53-.5-1.8,2.6h0s-8.95,12.87-8.95,12.87l-1.62-10.16-8.03,10.53c-.23-.83-.36-1.71-.36-2.62,0-5.37,4.35-9.72,9.72-9.72,2.14,0,4.11.69,5.72,1.86l1.81-2.6c-2.12-1.53-4.72-2.43-7.53-2.43C6.56,3.93.79,9.7.79,16.82c0,2,.46,3.89,1.27,5.58.41.86.92,1.67,1.51,2.41l2.01-2.63,5.14-6.73,1.69,10.55,9.78-14.07h0s4.72-6.79,4.72-6.79l.5,2.49,1.96-.39-1.25-6.23Z"/>
+</svg>
