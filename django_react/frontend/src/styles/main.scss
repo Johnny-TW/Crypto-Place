@@ -1,0 +1,10 @@
+// views
+@import "./views/index.scss";
+@import "./views/dashboard.scss";
+@import "./views/footer.scss";
+@import "./views/home.scss";
+
+/* ./src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

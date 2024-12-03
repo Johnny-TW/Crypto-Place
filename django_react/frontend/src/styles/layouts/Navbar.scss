@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+.Navbar {
+  top: 0;
+  width: 100%;
+  z-index: 999;
+  box-shadow: 0 0.275rem 0.75rem -0.0625rem rgba(11, 15, 25, .06), 0 0.125rem 0.4rem -0.0625rem rgba(11, 15, 25, .03) !important;
+  background-color: #6C63FF !important;
+}
+
+.Header_title {
+  font-weight: var(--si-navbar-brand-font-weight);
+}
+
+.Sidebar_list_icon {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.Sign_button {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}

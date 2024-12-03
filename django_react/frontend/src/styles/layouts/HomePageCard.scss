@@ -1,0 +1,15 @@
+.imageCard {
+  color: #090909;
+  padding: 1em;
+  font-size: 18px;
+  border-radius: 0.5em;
+  background: #ECEDF8;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.3s;
+}
+
+.imageCard:hover {
+  box-shadow: inset 5px 5px 10px #e0e1ec,
+    inset -5px -5px 10px #f8f9ff;
+}
