@@ -25,7 +25,7 @@ const routes = [
     component: CryptoDetails,
   },
   {
-    path: "/NFT-details/:id",
+    path: "/NFT-details/:name",
     exact: true,
     layout: Default,
     component: NFTDetails,

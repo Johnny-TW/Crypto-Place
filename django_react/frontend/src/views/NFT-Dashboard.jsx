@@ -127,12 +127,12 @@ function StickyHeadTable() {
 
   return (
     <>
-      <div className="Dashboard-container">
+      <div className="mt-20 Dashboard-container">
         {error && <Alert severity="error">{error}</Alert>}
         <div className="dashboard-area">
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <Box sx={{ minWidth: 300 }}>
+            <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+              <Box sx={{ minWidth: 200 }}>
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label">Currency</InputLabel>
                   <Select
@@ -151,15 +151,15 @@ function StickyHeadTable() {
                 </FormControl>
               </Box>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={12} md={8} lg={8} xl={8}>
               <h2 className="text-3xl font-bold text-center">NFT Markets Overview</h2>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
               {/* 空的區域 */}
             </Grid>
           </Grid>
 
-          <Paper sx={{ height: '100%', width: '100%' }} elevation={0}>
+          <Paper sx={{ height: '100%', width: '100%' }} elevation={0} className="mt-5 mb-20">
             <DataGrid
               rows={cryptoData}
               columns={columns}
