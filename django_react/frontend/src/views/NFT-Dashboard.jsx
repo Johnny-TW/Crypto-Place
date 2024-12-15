@@ -107,7 +107,6 @@ function StickyHeadTable() {
     };
   }, [order]);
 
-
   console.log(cryptoData);
 
   const paginationModel = { page: 0, pageSize: 50 };
