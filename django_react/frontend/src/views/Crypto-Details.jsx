@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ArrowUp, ArrowDown, DollarSign, TrendingUp, Globe, Github } from 'lucide-react';
-// components
 import DescriptionSection from '../components/common/DescriptionSection';
 import ChartSection from '../components/common/ChartSection';
 import Dashboard from '../components/common/Dashboard';
@@ -167,30 +166,9 @@ const CryptoDetails = () => {
     fetchMarketListData();
   }, []);
 
-  useEffect(() => {
-    const fetchWalletHistory = async () => {
-      try {
-        const url = 'https://deep-index.moralis.io/api/v2.2/wallets/0xcB1C1FdE09f811B294172696404e88E658659905/history';
-
-        const response = await axios.get(url, {
-          params: {
-            chain: 'eth',
-            order: 'DESC'
-          },
-          headers: {
-            'accept': 'application/json',
-            'X-API-Key': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjYyYjYwNWE5LTg2NDQtNGI5ZC1hZDEwLTdhMGQ0MmRlOGZjYiIsIm9yZ0lkIjoiNDE5MzU1IiwidXNlcklkIjoiNDMxMjU3IiwidHlwZUlkIjoiMzdkYTQ0ZWMtYTIwMS00OWEzLWI1ODAtMDhjY2ZkOTYzZjI3IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3MzMzMTgyNDksImV4cCI6NDg4OTA3ODI0OX0.2NP_7wj88Dvvo84GhvfW522NvIMI_hoRQwyA7iTlVOM'
-          }
-        });
-
-        console.log(response.data);  // 成功回應的數據
-      } catch (error) {
-        console.error('Error fetching wallet history:', error);
-      }
-    };
-
-    fetchWalletHistory();
-  }, []);
+  console.log(data)
+  console.log(coinChartData)
+  console.log(marketListData)
 
   if (loading) {
     return (
