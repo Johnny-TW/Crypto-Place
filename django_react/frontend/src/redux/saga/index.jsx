@@ -3,6 +3,7 @@ import Cookies from 'js-cookie'
 import Swal from 'sweetalert2';
 // Sage API
 import CoinList from './cryptoDashboard'
+import CryptoNews from './cryptoNews'
 import { API_METHOD, APIKit } from '../api/apiService';
 
 export function* setLoading(loading, path, method) {
@@ -53,6 +54,7 @@ export function* fetchApi({
 function* rootSaga() {
   yield all([
     CoinList(),
+    CryptoNews(),
   ]);
 }
 
