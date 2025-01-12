@@ -41,7 +41,7 @@ const orderOptions = [
 
 function StickyHeadTable() {
   const [cryptoData, setCryptoData] = useState([]);
-  const [order, setOrder] = useState('h24_volume_usd_asc');
+  const [order, setOrder] = useState('market_cap_usd_desc');
   // Loading / Success / Error
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

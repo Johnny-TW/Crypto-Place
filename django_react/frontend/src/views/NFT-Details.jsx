@@ -1,57 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useHistory } from "react-router-dom";
-import { GlobeAltIcon, LockClosedIcon, ServerIcon, PaperClipIcon } from '@heroicons/react/20/solid'
-import parse from 'html-react-parser';
+import { GlobeAltIcon, LockClosedIcon, ServerIcon } from '@heroicons/react/20/solid'
 import axios from "axios";
-
-const convertRangeToDays = (range) => {
-  switch (range) {
-    case '24h':
-      return 1;
-    case '7d':
-      return 7;
-    case '30d':
-      return 30;
-    case '1y':
-      return 365;
-    default:
-      return 1;
-  }
-};
-
-const days = ['24h', '7d', '30d', '1y'];
-
-const features = [
-  {
-    name: 'Website',
-    description:
-      'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.',
-    icon: GlobeAltIcon,
-  },
-  {
-    name: 'Etherscan.',
-    description: 'Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.',
-    icon: LockClosedIcon,
-  },
-  {
-    name: 'Database backups.',
-    description: 'Ac tincidunt sapien vehicula erat auctor pellentesque rhoncus. Et magna sit morbi lobortis.',
-    icon: ServerIcon,
-  },
-]
+import LogoClouds from '../components/common/LogoClouds';
 
 const NFTDetails = () => {
   const { name } = useParams();
   const [nftData, setNftData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [timeRange, setTimeRange] = useState('24h');
-  const history = useHistory();
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchNFTData = async () => {
+      setLoading(true);
       try {
         const options = {
           method: "GET",
@@ -65,9 +28,9 @@ const NFTDetails = () => {
         const response = await axios.request(options);
         if (isMounted) {
           setNftData(response.data);
+          setError(null);
         }
       } catch (err) {
-        console.error(err);
         if (isMounted) {
           setError("Failed to fetch NFT data");
         }
@@ -128,12 +91,32 @@ const NFTDetails = () => {
 
   console.log(chartData)
 
+  const links = [
+    {
+      name: 'Website',
+      link: nftData.links.homepage,
+      icon: GlobeAltIcon,
+    },
+    {
+      name: 'Discord.',
+      link: nftData.links.discord,
+      icon: LockClosedIcon,
+    },
+    {
+      name: 'Twitter.',
+      link: nftData.links.twitter,
+      icon: ServerIcon,
+    },
+  ]
+
+  console.log(links)
+
   return (
     <>
       <div className="overflow-hidden py-24 sm:py-32">
-        <div className="mx-auto max-w-1xl px-6 lg:px-8">
+        <div className="mx-auto max-w-1xl lg:px-8">
           <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-            <div className="lg:pr-8 lg:pt-4">
+            <div className="">
               <div className="lg:max-w-lg">
                 <img
                   src={nftData.banner_image}
@@ -166,7 +149,7 @@ const NFTDetails = () => {
                     </p>
                   </div>
                 </div>
-
+                {/* Applicant Information */}
                 <div>
                   <div className="px-4 sm:px-0 mt-5">
                     <h3 className="text-base/7 font-semibold text-gray-900">Applicant Information</h3>
@@ -219,30 +202,25 @@ const NFTDetails = () => {
                     </dl>
                   </div>
                 </div>
-
+                {/* Info Information */}
                 <dl className="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none">
-                  {features.map((feature) => (
-                    <div key={feature.name} className="relative pl-9">
+                  {links.map((links) => (
+                    <div key={links.name} className="relative pl-9">
                       <dt className="inline font-semibold text-gray-900">
-                        <feature.icon aria-hidden="true" className="absolute left-1 top-1 h-5 w-5 text-indigo-600" />
-                        {feature.name}
+                        <links.icon aria-hidden="true" className="absolute left-1 top-1 h-5 w-5 text-indigo-600" />
+                        {links.name}
                       </dt>{''}
                       <br></br>
-                      <dd className="inline">{feature.description}</dd>
+                      <dd className="inline">{links.link}</dd>
                     </div>
                   ))}
                 </dl>
-                <div className="mt-6 text-lg/8 text-gray-600 text-base max-w-full">
-                  <p className="text-sm">
-                    {parse(nftData.description)}
-                  </p>
-                </div>
               </div>
             </div>
-
-            <div className="lg:pr-8 lg:pt-4">
+            {/* NFT Performance */}
+            <div className="">
               <div className="relative max-lg:row-start-1">
-                <div className="px-8 pt-8 sm:px-10 sm:pt-10 mb-5">
+                <div className="mb-5">
                   <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
                     NFT Performance
                   </p>
@@ -257,7 +235,7 @@ const NFTDetails = () => {
                         {chartData.map((item, index) => (
                           <th
                             key={index}
-                            className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                            className="px-2 py-2 whitespace-nowrap  text-center text-sm font-medium text-gray-900"
                           >
                             {item.timePeriod}
                           </th>
@@ -269,7 +247,7 @@ const NFTDetails = () => {
                         {chartData.map((item, index) => (
                           <td
                             key={index}
-                            className={`px-6 py-4 whitespace-nowrap text-sm ${item.percentage >= 0 ? 'text-green-600' : 'text-red-600'
+                            className={`px-2 py-2 whitespace-nowrap text-center text-sm ${item.percentage >= 0 ? 'text-green-600' : 'text-red-600'
                               }`}
                           >
                             {item.percentage.toFixed(2)}%
@@ -279,9 +257,17 @@ const NFTDetails = () => {
                     </tbody>
                   </table>
                 </div>
+                {/* NFT Description */}
+                <div className="mt-6 text-lg/8 text-gray-600 text-base max-w-full">
+                  <div className="mt-6 text-base text-gray-600 max-w-full">
+                    <h1 className="text-lg mb-2">About {nftData.name}</h1>
+                    <div className="text-sm" dangerouslySetInnerHTML={{ __html: nftData.description }} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          <LogoClouds />
         </div>
       </div>
     </>

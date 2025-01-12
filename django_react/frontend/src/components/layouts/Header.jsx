@@ -36,8 +36,8 @@ function ButtonAppBar() {
   // Sidebar list * main
   const Mianlist = [
     'Home',
-    'Application Form',
-    'Dashboard'
+    'NFT Dashboard',
+    'Crypto News',
   ]
 
   // Sidebar list * others
@@ -61,8 +61,8 @@ function ButtonAppBar() {
         {Mianlist.map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton
-              component={text === 'Home' || text === 'Application Form' || text === 'Dashboard' ? Link : 'div'}
-              to={text === 'Home' ? '/' : text === 'Application Form' ? '/application-form' : text === 'Dashboard' ? '/dashboard' : undefined}>
+              component={text === 'Home' || text === 'NFT Dashboard' || text === 'Crypto News' ? Link : 'div'}
+              to={text === 'Home' ? '/' : text === 'NFT Dashboard' ? '/NFTDashboard' : text === 'Crypto News' ? '/CryptoNews' : undefined}>
               <ListItemIcon className="Sidebar_list_icon">
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
@@ -157,4 +157,4 @@ function ButtonAppBar() {
   );
 }
 
-export default ButtonAppBar
+export default ButtonAppBar;
