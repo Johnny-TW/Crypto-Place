@@ -2,8 +2,9 @@ import { all, put } from 'redux-saga/effects';
 import Cookies from 'js-cookie'
 import Swal from 'sweetalert2';
 // Sage API
-import CoinList from './cryptoDashboard'
-import CryptoNews from './cryptoNews'
+import CoinList from './cryptoDashboard';
+import CryptoNews from './cryptoNews';
+import CryptoDetails from './cryptoDetails';
 import { API_METHOD, APIKit } from '../api/apiService';
 
 export function* setLoading(loading, path, method) {
@@ -55,7 +56,8 @@ function* rootSaga() {
   yield all([
     CoinList(),
     CryptoNews(),
+    CryptoDetails(),
   ]);
 }
 
-export default rootSaga;
+export default rootSaga;  
