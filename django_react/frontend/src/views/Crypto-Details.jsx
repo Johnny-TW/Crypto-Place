@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ArrowUp, ArrowDown, DollarSign, TrendingUp, Globe, Github } from 'lucide-react';
 import DescriptionSection from '../components/common/DescriptionSection';
 import ChartSection from '../components/common/ChartSection';
 import Dashboard from '../components/common/Dashboard';
 import PriceOverviewSection from '../components/common/PriceOverviewSection';
 import CryptoNews from '../components/common/CryptoNews';
 import BasicBreadcrumbs from '../components/common/Breadcrumbs';
+import { fetchCryptoDetails } from '../redux/saga/cryptoDetails';
 import axios from 'axios';
 
 const columns = [
@@ -74,8 +73,8 @@ const columns = [
 
 const CryptoDetails = () => {
   const dispatch = useDispatch();
-  const { coinId } = useParams(); // 從 URL 取得 coinId，Ex: ethereum 或 bitcoin
-  const [data, setData] = useState(null);
+  const { coinId } = useParams();
+  const { cryptoDetails } = useSelector(state => state.cryptoDetails);
   const [coinChartData, setcoinChartData] = useState(null);
   const [marketListData, setmarketListData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -83,28 +82,7 @@ const CryptoDetails = () => {
   const [timeRange, setTimeRange] = useState('24h');
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const options = {
-          method: 'GET',
-          url: `https://api.coingecko.com/api/v3/coins/${coinId}`,
-          headers: {
-            accept: 'application/json',
-            'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB'
-          }
-        };
-
-        const response = await axios.request(options);
-        setData(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch data');
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    dispatch(fetchCryptoDetails(coinId));
   }, [dispatch, coinId]);
 
   useEffect(() => {
@@ -166,7 +144,7 @@ const CryptoDetails = () => {
     fetchMarketListData();
   }, []);
 
-  console.log(data)
+  console.log(cryptoDetails)
   console.log(coinChartData)
   console.log(marketListData)
 
@@ -186,31 +164,27 @@ const CryptoDetails = () => {
     );
   }
 
-  if (!data || !data.image) {
-    return null;
-  }
-
   return (
     <div className="container mx-auto px-4 py-8 mt-20 max-w-7xl">
       <BasicBreadcrumbs />
       {/* Header Section */}
       <div className="flex items-center gap-4 mb-8 mt-5">
         <img
-          src={data.image.large}
-          alt={data.name}
+          src={cryptoDetails.image.large}
+          alt={cryptoDetails.name}
           className="w-16 h-16 rounded-full"
         />
         <div>
-          <h1 className="text-3xl font-bold">{data.name}</h1>
-          <p className="text-gray-500 uppercase">{data.symbol}</p>
+          <h1 className="text-3xl font-bold">{cryptoDetails.name}</h1>
+          <p className="text-gray-500 uppercase">{cryptoDetails.symbol}</p>
         </div>
       </div>
       {/* PriceOverview Section */}
-      <PriceOverviewSection data={data} />
+      <PriceOverviewSection data={cryptoDetails} />
       {/* Chart Section */}
       <ChartSection coinChartData={coinChartData} timeRange={timeRange} setTimeRange={setTimeRange} />
       {/* Description Section */}
-      <DescriptionSection name={data.name} description={data.description.en} href={data.links} />
+      <DescriptionSection name={cryptoDetails.name} description={cryptoDetails.description.en} href={cryptoDetails.links} />
       {/* Market Section */}
       <Dashboard columns={columns} marketListData={marketListData} />
       {/* News Section */}

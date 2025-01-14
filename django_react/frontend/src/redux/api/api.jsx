@@ -8,3 +8,7 @@ export const NFT_DATA_ID = 'https://api.coingecko.com/api/v3/nfts/pudgy-penguins
 export const COIN_MARKET_DATA = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart';
 // Market List API
 export const CRYPTO_NEWS = 'https://data-api.cryptocompare.com/news/v1/article/list';
+
+// Crypto Details API
+export const CRYPTO_DETAILS = 'https://api.coingecko.com/api/v3/coins';
+
