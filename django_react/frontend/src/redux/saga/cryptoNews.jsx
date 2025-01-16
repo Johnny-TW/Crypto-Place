@@ -5,7 +5,7 @@ import { CRYPTO_NEWS } from '../api/api';
 // 定義 fetchCryptoNews 動作創建器
 export const fetchCryptoNews = (excludeCategory) => ({
   type: 'FETCH_CRYPTO_NEWS',
-  payload: excludeCategory
+  payload: excludeCategory,
 });
 
 // 定義 fetchCryptoNews saga
@@ -14,17 +14,17 @@ export function* fetchCryptoNewsSaga(action) {
     const excludeCategory = action.payload;
 
     const options = {
-      method: "GET",
+      method: 'GET',
       url: CRYPTO_NEWS,
       headers: {
-        "Content-type": "application/json; charset=UTF-8"
+        'Content-type': 'application/json; charset=UTF-8',
       },
       params: {
-        "lang": "EN",
-        "limit": 10,
-        "exclude_categories": excludeCategory,
-        "api_key": "b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b"
-      }
+        lang: 'EN',
+        limit: 10,
+        exclude_categories: excludeCategory,
+        api_key: 'b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b',
+      },
     };
 
     console.log('API Request params:', options.params);

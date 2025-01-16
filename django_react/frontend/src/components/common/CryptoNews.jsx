@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { Paper, Grid } from '@mui/material';
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
@@ -47,13 +46,13 @@ function CryptoNews() {
   return (
     <>
       <div className="crypto-news-container z-0">
-        <div className="crypto-news-area pb-20">
-          <Grid className="mb-2" container spacing={2} alignItems="center">
+        <div className="crypto-news-area mb-20">
+          <Grid container spacing={2} alignItems="center">
             <Grid item xs={3}>
               {/* 空的區域 */}
             </Grid>
             <Grid item xs={6}>
-              <h2 className="text-3xl text-center font-bold">Crypto Latest News</h2>
+              <h2 className="text-3xl text-center font-bold mt-10">Crypto Latest News</h2>
             </Grid>
             <Grid item xs={3}>
               {/* 空的區域 */}
@@ -62,7 +61,7 @@ function CryptoNews() {
           <Slider {...settings}>
             {news.map((item, index) => (
               <div key={index}>
-                <Paper elevation={3} sx={{ padding: 4, margin: 2 }}>
+                <Paper elevation={3} sx={{ padding: 3, margin: 2 }}>
                   <Grid container spacing={2}>
                     <Grid className="justify-items-center" item xs={3}>
                       <img

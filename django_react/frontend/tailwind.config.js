@@ -1,5 +1,5 @@
 module.exports = {
-  content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
+  content: ['./index.html', './src/**/*.{ts,tsx,js,jsx}'],
   theme: {
     extend: {
       colors: {
@@ -27,11 +27,11 @@ module.exports = {
         },
       },
       spacing: {
-        '128': '32rem',
+        128: '32rem',
       },
       fontFamily: {
         sans: [
-          'Graphik', 'sans-serif'
+          'Graphik', 'sans-serif',
         ],
       },
     },

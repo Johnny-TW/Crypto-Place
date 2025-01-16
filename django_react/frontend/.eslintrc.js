@@ -18,7 +18,7 @@ module.exports = {
   },
   plugins: [
     'react',
-    'react-hooks'  // 添加 react-hooks 插件
+    'react-hooks', // 添加 react-hooks 插件
   ],
   rules: {
     'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['draft'] }],
@@ -27,16 +27,16 @@ module.exports = {
     'react/prop-types': 'off',
     'react-hooks/rules-of-hooks': 'error', // 添加 hooks 規則
     'react-hooks/exhaustive-deps': 'warn', // 添加 hooks 規則
-    'indent': ['error', 2, { SwitchCase: 1 }],
-    'react/jsx-filename-extension': [1, { 'extensions': ['.js', '.jsx'] }],
+    indent: ['error', 2, { SwitchCase: 1 }],
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'import/extensions': ['error', 'ignorePackages', {
-      'js': 'never',
-      'jsx': 'never'
-    }]
+      js: 'never',
+      jsx: 'never',
+    }],
   },
   settings: {
-    'react': {
-      'version': 'detect'
-    }
-  }
+    react: {
+      version: 'detect',
+    },
+  },
 };

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import HomePageCard from '../../components/layouts/HomePageCard.jsx';
+import HomePageCard from './HomePageCard.jsx';
 import { CORE_CONCEPTS } from '../../data/data.js';
 import '../../styles/layouts/HomePageCards.scss';
 
@@ -12,7 +12,7 @@ function HomePageCards() {
       <section id="core-concepts">
         <ul>
           {CORE_CONCEPTS.map((conceptItem) => (
-            <Link className="no-underline" to={conceptItem.link} key={conceptItem.title} >
+            <Link className="no-underline" to={conceptItem.link} key={conceptItem.title}>
               <HomePageCard key={conceptItem.title} {...conceptItem} />
             </Link>
           ))}
@@ -22,4 +22,4 @@ function HomePageCards() {
   );
 }
 
-export default HomePageCards
+export default HomePageCards;

@@ -28,7 +28,7 @@ function CardLists({ news }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default CardLists;

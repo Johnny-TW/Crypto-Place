@@ -30,7 +30,7 @@ const useWebSocket = () => {
       const message = JSON.parse(event.data);
       console.log('message===>', message);
 
-      onMessage(message, ws)
+      onMessage(message, ws);
     };
 
     // 當 WebSocket 發生錯誤時觸發
@@ -58,12 +58,10 @@ const useWebSocket = () => {
     webSocket,
     connectWebSocket,
     disconnectWebSocket,
-  }
+  };
 };
 
-const useWebSocketContext = () => {
-  return useContext(WebSocketContext);
-};
+const useWebSocketContext = () => useContext(WebSocketContext);
 
 export { WebSocketProvider, useWebSocketContext };
 export default useWebSocket;

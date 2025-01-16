@@ -5,7 +5,7 @@ import { CRYPTO_DETAILS } from '../api/api';
 // Action Creator
 export const fetchCryptoDetails = (coinId) => ({
   type: 'FETCH_CRYPTO_DETAILS',
-  payload: { coinId }
+  payload: { coinId },
 });
 
 // Saga
@@ -14,14 +14,14 @@ function* fetchCryptoDetailsSaga(action) {
     const options = {
       headers: {
         accept: 'application/json',
-        'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB'
-      }
+        'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB',
+      },
     };
 
     const response = yield call(
       axios.get,
       `${CRYPTO_DETAILS}/${action.payload.coinId}`,
-      options
+      options,
     );
     yield put({ type: 'FETCH_CRYPTO_DETAILS_SUCCESS', payload: response.data });
   } catch (error) {

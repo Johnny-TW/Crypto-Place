@@ -1,5 +1,7 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts';
 
 const convertRangeToDays = (range) => {
   switch (range) {
@@ -16,14 +18,24 @@ const convertRangeToDays = (range) => {
   }
 };
 
-const transformData = (coinChartData) => {
-  return coinChartData.prices.map(([time, price]) => ({
-    time: new Date(time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
-    price
-  }));
-};
+const transformData = (coinChartData) => coinChartData.prices.map(([time, price]) => ({
+  time: new Date(time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+  price,
+}));
 
-const ChartSection = ({ coinChartData, timeRange, setTimeRange }) => {
+function CustomTooltip({ active, payload }) {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-2 shadow-lg rounded border">
+        <p className="text-sm">{`Time: ${payload[0].payload.time}`}</p>
+        <p className="text-sm font-bold">{`Price: $${payload[0].value.toLocaleString()}`}</p>
+      </div>
+    );
+  }
+  return null;
+}
+
+function ChartSection({ coinChartData, timeRange, setTimeRange }) {
   if (!coinChartData || !coinChartData.prices) {
     return (
       <div className="bg-white rounded-lg shadow-md mb-8 p-6">
@@ -44,11 +56,11 @@ const ChartSection = ({ coinChartData, timeRange, setTimeRange }) => {
           {days.map((range) => (
             <button
               key={range}
+              type="button"
               onClick={() => setTimeRange(convertRangeToDays(range))}
-              className={`px-4 py-2 rounded-md transition-colors ${timeRange === convertRangeToDays(range)
+              className={`px-4 py-2 rounded-md transition-colors  ${timeRange === convertRangeToDays(range)
                 ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 hover:bg-gray-200'
-                }`}
+                : 'bg-gray-100 hover:bg-gray-200'}`}
             >
               {range.toUpperCase()}
             </button>
@@ -67,17 +79,8 @@ const ChartSection = ({ coinChartData, timeRange, setTimeRange }) => {
                   tickFormatter={(value) => `$${value.toLocaleString()}`}
                 />
                 <Tooltip
-                  content={({ active, payload }) => {
-                    if (active && payload && payload.length) {
-                      return (
-                        <div className="bg-white p-2 shadow-lg rounded border">
-                          <p className="text-sm">{`Time: ${payload[0].payload.time}`}</p>
-                          <p className="text-sm font-bold">{`Price: $${payload[0].value.toLocaleString()}`}</p>
-                        </div>
-                      );
-                    }
-                    return null;
-                  }}
+                  content={CustomTooltip}
+                  allowAsProps
                 />
                 <Area
                   type="monotone"
@@ -94,6 +97,6 @@ const ChartSection = ({ coinChartData, timeRange, setTimeRange }) => {
       </div>
     </div>
   );
-};
+}
 
 export default ChartSection;
