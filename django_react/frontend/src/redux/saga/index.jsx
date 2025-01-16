@@ -1,14 +1,16 @@
 import { all, put } from 'redux-saga/effects';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
 // Sage API
 import CoinList from './cryptoDashboard';
 import CryptoNews from './cryptoNews';
 import CryptoDetails from './cryptoDetails';
+import CryptoCoinChart from './cryptoCoinChart';
+
 import { API_METHOD, APIKit } from '../api/apiService';
 
 export function* setLoading(loading, path, method) {
-  yield put({ type: 'SET_LOADING', data: { loading, path, method } })
+  yield put({ type: 'SET_LOADING', data: { loading, path, method } });
 }
 
 export function* fetchApi({
@@ -24,7 +26,6 @@ export function* fetchApi({
   json = false,
   parameters = null,
 }) {
-
   try {
     const response = yield APIKit.request({
       method,
@@ -43,21 +44,21 @@ export function* fetchApi({
     }
 
     result = response.data;
-
   } catch (error) {
     Swal.fire('Error', error.message, 'error');
   }
 
   console.log(result);
   return result;
-};
+}
 
 function* rootSaga() {
   yield all([
     CoinList(),
     CryptoNews(),
     CryptoDetails(),
+    CryptoCoinChart(),
   ]);
 }
 
-export default rootSaga;  
+export default rootSaga;

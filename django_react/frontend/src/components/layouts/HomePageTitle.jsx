@@ -8,7 +8,7 @@ function HomePageTitle() {
       <h1 className="text-6xl font-bold mt-10">Crypto Coin</h1>
       <p className="text-gray-800 mt-5">
         Crypto Coin is the leading data platform for real-time cryptocurrency prices and market trends
-        <br></br>
+        <br />
         Empowering investors with accurate and up-to-date blockchain data.
       </p>
     </header>

@@ -5,7 +5,7 @@ import { useLocation, Link as RouterLink } from 'react-router-dom';
 function BasicBreadcrumbs() {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter((x) => x);
-  console.log(pathnames)
+  console.log(pathnames);
 
   return (
     <Breadcrumbs aria-label="breadcrumb">
@@ -28,6 +28,6 @@ function BasicBreadcrumbs() {
       })}
     </Breadcrumbs>
   );
-};
+}
 
 export default BasicBreadcrumbs;

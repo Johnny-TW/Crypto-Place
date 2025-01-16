@@ -6,7 +6,7 @@ import { COIN_LIST } from '../api/api';
 // 定義 fetchCoinList 動作創建器
 export const fetchCoinList = (currency) => ({
   type: 'FETCH_COIN_LIST',
-  payload: { currency }
+  payload: { currency },
 });
 
 // 定義 fetchCoinList saga
@@ -15,8 +15,8 @@ function* fetchCoinListSaga(action) {
     const options = {
       headers: {
         accept: 'application/json',
-        'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB'
-      }
+        'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB',
+      },
     };
 
     const response = yield call(axios.get, `${COIN_LIST}?vs_currency=${action.payload.currency}`, options);

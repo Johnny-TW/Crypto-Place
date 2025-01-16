@@ -16,7 +16,7 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText
+  ListItemText,
 } from '@mui/material';
 
 import InboxIcon from '@mui/icons-material/MoveToInbox';
@@ -38,21 +38,21 @@ function ButtonAppBar() {
     'Home',
     'NFT Dashboard',
     'Crypto News',
-  ]
+  ];
 
   // Sidebar list * others
   const MianlistInformation = [
     'Team Roster',
     'Project Information',
-    'User Guide'
-  ]
+    'User Guide',
+  ];
 
   // Name list
   const settings = [
     'Profile',
     'Account',
     '11003736',
-    'Logout'
+    'Logout',
   ];
 
   const DrawerList = (
@@ -62,7 +62,8 @@ function ButtonAppBar() {
           <ListItem key={text} disablePadding>
             <ListItemButton
               component={text === 'Home' || text === 'NFT Dashboard' || text === 'Crypto News' ? Link : 'div'}
-              to={text === 'Home' ? '/' : text === 'NFT Dashboard' ? '/NFTDashboard' : text === 'Crypto News' ? '/CryptoNews' : undefined}>
+              to={text === 'Home' ? '/' : text === 'NFT Dashboard' ? '/NFTDashboard' : text === 'Crypto News' ? '/CryptoNews' : undefined}
+            >
               <ListItemIcon className="Sidebar_list_icon">
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
@@ -85,7 +86,8 @@ function ButtonAppBar() {
             ) : (
               <ListItemButton
                 component={Link}
-                to={text === 'Project Information' ? '/project-information' : text === 'User Guide' ? '/user-guide' : '#'}>
+                to={text === 'Project Information' ? '/project-information' : text === 'User Guide' ? '/user-guide' : '#'}
+              >
                 <ListItemIcon className="Sidebar_list_icon">
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                 </ListItemIcon>
@@ -121,9 +123,7 @@ function ButtonAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography className="Header_title" variant="h6" component="div" sx={{ flexGrow: 1 }}>
-
-          </Typography>
+          <Typography className="Header_title" variant="h6" component="div" sx={{ flexGrow: 1 }} />
           <Drawer open={open} onClose={toggleDrawer(false)}>
             {DrawerList}
           </Drawer>

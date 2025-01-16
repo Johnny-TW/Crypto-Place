@@ -16,14 +16,24 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-import '../styles/views/nft-dashboard.scss'
+import '../styles/views/nft-dashboard.scss';
 
 const columns = [
-  { field: 'id', headerName: 'ID', minWidth: 200, align: 'left', },
-  { field: 'symbol', headerName: 'Symbol', minWidth: 200, align: 'left', },
-  { field: 'name', headerName: 'Name', minWidth: 300, align: 'left', },
-  { field: 'asset_platform_id', headerName: 'Asset Platform ID', minWidth: 200, align: 'left', },
-  { field: 'contract_address', headerName: 'Name', minWidth: 400, align: 'left' },
+  {
+    field: 'id', headerName: 'ID', minWidth: 200, align: 'left',
+  },
+  {
+    field: 'symbol', headerName: 'Symbol', minWidth: 200, align: 'left',
+  },
+  {
+    field: 'name', headerName: 'Name', minWidth: 300, align: 'left',
+  },
+  {
+    field: 'asset_platform_id', headerName: 'Asset Platform ID', minWidth: 200, align: 'left',
+  },
+  {
+    field: 'contract_address', headerName: 'Name', minWidth: 400, align: 'left',
+  },
 ];
 
 const orderOptions = [
@@ -51,7 +61,7 @@ function StickyHeadTable() {
 
   const handleChange = (event) => {
     setOrder(event.target.value);
-    console.log(order)
+    console.log(order);
   };
 
   const handleRowClick = (params) => {
@@ -75,7 +85,7 @@ function StickyHeadTable() {
           method: 'GET',
           url: 'https://api.coingecko.com/api/v3/nfts/list',
           params: {
-            order: order,
+            order,
           },
           headers: {
             accept: 'application/json',
@@ -116,7 +126,7 @@ function StickyHeadTable() {
       <>
         {isAlertVisible && (
           <Alert variant="outlined" severity={error ? 'error' : 'success'}>
-            {error ? error : alertMessage}
+            {error || alertMessage}
           </Alert>
         )}
         <CircularProgress />
@@ -125,53 +135,51 @@ function StickyHeadTable() {
   }
 
   return (
-    <>
-      <div className="mt-20 Dashboard-container">
-        {error && <Alert severity="error">{error}</Alert>}
-        <div className="dashboard-area">
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-              <Box sx={{ minWidth: 200 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Currency</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={order}
-                    label="Order"
-                    onChange={handleChange}
-                  >
-                    {orderOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Box>
-            </Grid>
-            <Grid item xs={12} sm={12} md={8} lg={8} xl={8}>
-              <h2 className="text-3xl font-bold text-center">NFT Markets Overview</h2>
-            </Grid>
-            <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-              {/* 空的區域 */}
-            </Grid>
+    <div className="mt-20 Dashboard-container">
+      {error && <Alert severity="error">{error}</Alert>}
+      <div className="dashboard-area">
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+            <Box sx={{ minWidth: 200 }}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Currency</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={order}
+                  label="Order"
+                  onChange={handleChange}
+                >
+                  {orderOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
           </Grid>
+          <Grid item xs={12} sm={12} md={8} lg={8} xl={8}>
+            <h2 className="text-3xl font-bold text-center">NFT Markets Overview</h2>
+          </Grid>
+          <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+            {/* 空的區域 */}
+          </Grid>
+        </Grid>
 
-          <Paper sx={{ height: '100%', width: '100%' }} elevation={0} className="mt-5 mb-20">
-            <DataGrid
-              rows={cryptoData}
-              columns={columns}
-              initialState={{ pagination: { paginationModel } }}
-              pageSizeOptions={[20, 30, 40]}
-              sx={{ border: 0, cursor: 'pointer' }}
-              onRowClick={handleRowClick}
-            />
-          </Paper>
-        </div>
+        <Paper sx={{ height: '100%', width: '100%' }} elevation={0} className="mt-5 mb-20">
+          <DataGrid
+            rows={cryptoData}
+            columns={columns}
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[20, 30, 40]}
+            sx={{ border: 0, cursor: 'pointer' }}
+            onRowClick={handleRowClick}
+          />
+        </Paper>
       </div>
-    </>
+    </div>
   );
 }
 
-export default StickyHeadTable
+export default StickyHeadTable;

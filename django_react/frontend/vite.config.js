@@ -1,10 +1,10 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [
-    react()
+    react(),
     // viteCommonjs(),
     // html-webpack-plugin -> vite-plugin-html
     // 在 CRA 中使用 html-webpack-plugin 調整 HTML 文件，
@@ -37,7 +37,7 @@ export default defineConfig({
   // webpack.DefinePlugin -> define
   // 有時候會透過 webpack.DefinePlugin 去設定一些全域的 replacement，vite 也可以設定。
   server: {
-    host: "0.0.0.0",
+    host: '0.0.0.0',
     https: false,
     port: process.env.VITE_FE_PORT,
     // http-proxy-middleware -> proxy
@@ -54,8 +54,8 @@ export default defineConfig({
     '/api': {
       target: 'https://api.coingecko.com',
       changeOrigin: true,
-      rewrite: (path) => path.replace(/^\/api/, '')
-    }
+      rewrite: (path) => path.replace(/^\/api/, ''),
+    },
   },
   define: {
     __PAGE_TITLE__: JSON.stringify('METIS'),
@@ -76,8 +76,8 @@ export default defineConfig({
     },
     rollupOptions: {
       output: {
-        entryFileNames: `staticFrontend/js/[name].[hash].js`,
+        entryFileNames: 'staticFrontend/js/[name].[hash].js',
       },
     },
   },
-})
+});

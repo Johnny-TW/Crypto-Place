@@ -1,0 +1,73 @@
+import * as React from 'react';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'; // 添加 Redux hooks
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { fetchCryptoNews } from '@redux/saga/cryptoNews'; // 導入 action
+
+function AutoPlay() {
+  const dispatch = useDispatch();
+  const news = useSelector((state) => state.cryptoNews.news); // 從 Redux 獲取 news
+  const isLoading = useSelector((state) => state.cryptoNews.loading);
+
+  useEffect(() => {
+    dispatch(fetchCryptoNews('BTC')); // 初始加載新聞
+  }, [dispatch]);
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    autoplay: true,
+    speed: 2000,
+    autoplaySpeed: 2000,
+    cssEase: 'linear',
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
+  if (!news || news.length === 0) {
+    return <div>No news available</div>;
+  }
+
+  return (
+    <div className="slider-container">
+      <Slider {...settings}>
+        {news.map((item, index) => (
+          <div key={index} className="p-4">
+            <div className="bg-white rounded-lg shadow-lg p-6">
+              <img
+                src={item.IMAGE_URL}
+                alt={item.TITLE}
+                className="w-full h-48 object-cover rounded-t-lg"
+                onError={(e) => { e.target.onerror = null; e.target.src = 'default-image-url'; }}
+              />
+              <h3 className="text-xl font-bold mt-4 mb-2 text-blue-600">{item.TITLE}</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                {item.BODY.length > 150 ? `${item.BODY.substring(0, 150)}...` : item.BODY}
+              </p>
+              <a
+                href={item.URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:text-blue-700"
+              >
+                Read More
+              </a>
+            </div>
+          </div>
+        ))}
+      </Slider>
+    </div>
+  );
+}
+
+export default AutoPlay;
