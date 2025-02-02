@@ -13,4 +13,4 @@ export const CRYPTO_DETAILS = 'https://api.coingecko.com/api/v3/coins';
 // Crypto Details Chart API
 export const CRYPTO_DETAILS_CHART = 'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart';
 // Market List API
-// export const CRYPTO_MARKET_LIST = 'https://api.coingecko.com/api/v3/exchanges';
+export const CRYPTO_MARKET_LIST = 'https://api.coingecko.com/api/v3/exchanges';

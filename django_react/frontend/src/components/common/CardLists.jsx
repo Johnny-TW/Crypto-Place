@@ -1,3 +1,5 @@
+import React from 'react';
+
 function CardLists({ news }) {
   return (
     <div className="CardLists_Area">

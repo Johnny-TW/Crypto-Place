@@ -1,3 +1,4 @@
+import React from 'react';
 import '../../styles/layouts/HomePageCard.scss';
 
 function HomePageCard({ image, title, description }) {

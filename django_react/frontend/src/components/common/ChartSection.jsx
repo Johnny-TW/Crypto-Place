@@ -47,7 +47,7 @@ function ChartSection({ coinChartData, timeRange, setTimeRange }) {
   const data = transformData(coinChartData);
   const days = ['24h', '7d', '30d', '1y'];
 
-  console.log(timeRange);
+  // console.log(timeRange);
 
   return (
     <div className="bg-white rounded-lg shadow-md mb-8">

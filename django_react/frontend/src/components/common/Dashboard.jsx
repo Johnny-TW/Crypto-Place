@@ -6,7 +6,7 @@ function Dashboard({ columns, marketListData }) {
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (
-    <div className="dashboard-container z-0">
+    <div className="dashboard-container z-0 mb-10 rounded-lg shadow-md">
       <div className="dashboard-area">
         <Grid className="mb-3" container spacing={2} alignItems="center">
           <Grid item xs={12} sm={1} md={1} lg={1} xl={1}>

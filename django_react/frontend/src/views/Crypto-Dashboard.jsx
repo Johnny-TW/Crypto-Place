@@ -63,12 +63,11 @@ function StickyHeadTable() {
   const dispatch = useDispatch();
   const coinList = useSelector((state) => state.coinList.coinList);
   const [currency, setCurrency] = useState('usd');
-  const [loading, setLoading] = useState(true);
   const history = useHistory();
 
   const handleChange = (event) => {
     setCurrency(event.target.value);
-    console.log(currency);
+    // console.log(currency);
   };
 
   const handleRowClick = (params) => {
@@ -77,7 +76,6 @@ function StickyHeadTable() {
 
   useEffect(() => {
     dispatch(fetchCoinList(currency));
-    setLoading(false);
   }, [dispatch, currency]);
 
   const paginationModel = { page: 0, pageSize: 20 };

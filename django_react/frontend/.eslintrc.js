@@ -21,18 +21,19 @@ module.exports = {
     'react-hooks', // 添加 react-hooks 插件
   ],
   rules: {
-    'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['draft'] }],
-    'linebreak-style': 0,
-    'import/no-unresolved': 'off',
-    'react/prop-types': 'off',
+    'react/jsx-props-no-spreading': 'off', // 關閉 props 展開規則
+    'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['draft'] }], // 關閉對 draft 的規則
+    'linebreak-style': 0, // 關閉換行符規則
+    'import/no-unresolved': 'off', // 關閉 import 無法解析規則
+    'react/prop-types': 'off', // 關閉 prop-types 規則
     'react-hooks/rules-of-hooks': 'error', // 添加 hooks 規則
     'react-hooks/exhaustive-deps': 'warn', // 添加 hooks 規則
-    indent: ['error', 2, { SwitchCase: 1 }],
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
+    indent: ['error', 2, { SwitchCase: 1 }], // 設置縮進為 2 個空格
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }], // 允許使用 .js 和 .jsx 文件
     'import/extensions': ['error', 'ignorePackages', {
       js: 'never',
       jsx: 'never',
-    }],
+    }], // 允許 import 不帶副檔名
   },
   settings: {
     react: {
