@@ -1,6 +1,7 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import HomePageCard from './HomePageCard.jsx';
-import { CORE_CONCEPTS } from '../../data/data.js';
+import HomePageCard from './HomePageCard';
+import CORE_CONCEPTS from '../../data/data';
 import '../../styles/layouts/HomePageCards.scss';
 
 function HomePageCards() {

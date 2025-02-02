@@ -39,26 +39,28 @@ function AutoPlay() {
   }
 
   return (
-    <div className="slider-container">
+    <div className="slider-container mb-20">
       <Slider {...settings}>
-        {news.map((item, index) => (
-          <div key={index} className="p-4">
-            <div className="bg-white rounded-lg shadow-lg p-6">
+        {news.map((item) => (
+          <div key={item.ID} className="p-2">
+            <div className="bg-white rounded-lg shadow-md p-4 h-120 flex flex-col justify-between">
               <img
                 src={item.IMAGE_URL}
                 alt={item.TITLE}
-                className="w-full h-48 object-cover rounded-t-lg"
+                className="w-full h-32 object-cover rounded-t-lg"
                 onError={(e) => { e.target.onerror = null; e.target.src = 'default-image-url'; }}
               />
-              <h3 className="text-xl font-bold mt-4 mb-2 text-blue-600">{item.TITLE}</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                {item.BODY.length > 150 ? `${item.BODY.substring(0, 150)}...` : item.BODY}
-              </p>
+              <div className="flex-grow">
+                <h3 className="text-lg font-bold mt-2 mb-1 text-blue-600">{item.TITLE}</h3>
+                <p className="text-gray-600 text-xs mb-2">
+                  {item.BODY.length > 100 ? `${item.BODY.substring(0, 100)}...` : item.BODY}
+                </p>
+              </div>
               <a
                 href={item.URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:text-blue-700"
+                className="text-blue-500 hover:text-blue-700 text-sm"
               >
                 Read More
               </a>

@@ -30,8 +30,8 @@ function* fetchCryptoDetailsSaga(action) {
 }
 
 // Root Saga
-function* cryptoDetailsSaga() {
+function* mySaga() {
   yield takeLatest('FETCH_CRYPTO_DETAILS', fetchCryptoDetailsSaga);
 }
 
-export default cryptoDetailsSaga;
+export default mySaga;

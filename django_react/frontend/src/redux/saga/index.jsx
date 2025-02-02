@@ -1,11 +1,13 @@
 import { all, put } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
+
 // Sage API
 import CoinList from './cryptoDashboard';
 import CryptoNews from './cryptoNews';
 import CryptoDetails from './cryptoDetails';
 import CryptoCoinChart from './cryptoCoinChart';
+import cryptoMarketList from './cryptoMarketList';
 
 import { API_METHOD, APIKit } from '../api/apiService';
 
@@ -58,6 +60,7 @@ function* rootSaga() {
     CryptoNews(),
     CryptoDetails(),
     CryptoCoinChart(),
+    cryptoMarketList(),
   ]);
 }
 

@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { Paper, Grid } from '@mui/material';
-import Button from '@mui/material/Button';
 import Slider from 'react-slick';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 function CryptoNews() {
   const [news, setNews] = useState([]);
@@ -12,17 +10,17 @@ function CryptoNews() {
   useEffect(() => {
     const baseUrl = 'https://data-api.cryptocompare.com/news/v1/article/list';
     const params = {
-      "lang": "EN",
-      "limit": 10,
-      "exclude_categories": "ETH",
-      "api_key": "b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b"
+      lang: 'EN',
+      limit: 10,
+      exclude_categories: 'ETH',
+      api_key: 'b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b',
     };
     const url = new URL(baseUrl);
     url.search = new URLSearchParams(params).toString();
 
     const options = {
       method: 'GET',
-      headers: { "Content-type": "application/json; charset=UTF-8" },
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
     };
 
     fetch(url, options)
@@ -41,58 +39,50 @@ function CryptoNews() {
     autoplaySpeed: 3000,
   };
 
-  console.log(news)
+  // console.log(news);
 
   return (
-    <>
-      <div className="crypto-news-container z-0">
-        <div className="crypto-news-area mb-20">
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              {/* 空的區域 */}
-            </Grid>
-            <Grid item xs={6}>
-              <h2 className="text-3xl text-center font-bold mt-10">Crypto Latest News</h2>
-            </Grid>
-            <Grid item xs={3}>
-              {/* 空的區域 */}
-            </Grid>
-          </Grid>
-          <Slider {...settings}>
-            {news.map((item, index) => (
-              <div key={index}>
-                <Paper elevation={3} sx={{ padding: 3, margin: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid className="justify-items-center" item xs={3}>
-                      <img
-                        src={item.IMAGE_URL}
-                        alt={item.TITLE}
-                        style={{ width: '200px', height: 'auto' }}
-                        onError={(e) => { e.target.onerror = null; e.target.src = 'default-image-url'; }}
-                      />
-                    </Grid>
-                    <Grid className="justify-items-center" item xs={9}>
-                      <h2 className='text-blue-600 font-bold text-xl font-sans'>{item.TITLE}</h2>
-                      <p className='text-gray-700 text-justify text-sm mt-3 '>
-                        {item.BODY.length > 250 ? `${item.BODY.substring(0, 250)}...` : item.BODY}
-                      </p>
-                      <div style={{ marginTop: '20px' }}>
-                        <Button
-                          className="mt-10"
-                          variant="outlined"
-                          href={item.URL}
-                          target="_blank">Read More News
-                        </Button>
-                      </div>
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </div>
-            ))}
-          </Slider>
+    <div className="crypto-news-container z-0">
+      <div className="crypto-news-area mb-20">
+        <div className="flex justify-center">
+          <h2 className="text-3xl font-bold">Crypto Latest News</h2>
         </div>
+        <Slider {...settings}>
+          {news.map((item, index) => (
+            <div key={index} className="p-4">
+              <div className="bg-white shadow-lg rounded-lg p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <img
+                      src={item.IMAGE_URL}
+                      alt={item.TITLE}
+                      className="w-48 h-auto rounded-lg"
+                      onError={(e) => { e.target.onerror = null; e.target.src = 'default-image-url'; }}
+                    />
+                  </div>
+                  <div className="ml-4 flex-1">
+                    <h2 className="text-blue-600 font-bold text-xl">{item.TITLE}</h2>
+                    <p className="text-gray-700 text-justify text-sm mt-3">
+                      {item.BODY.length > 250 ? `${item.BODY.substring(0, 250)}...` : item.BODY}
+                    </p>
+                    <div className="mt-4">
+                      <a
+                        href={item.URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-2 px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-600 hover:text-white transition"
+                      >
+                        Read More News
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Slider>
       </div>
-    </>
+    </div>
   );
 }
 

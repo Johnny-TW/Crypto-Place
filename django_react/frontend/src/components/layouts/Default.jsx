@@ -1,8 +1,6 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
 import Box from '@mui/system/Box';
 import Grid from '@mui/system/Grid';
-import styled from '@mui/system/styled';
 import Header from './Header';
 import Footer from './Footer';
 

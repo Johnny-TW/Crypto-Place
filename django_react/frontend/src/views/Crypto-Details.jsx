@@ -1,8 +1,9 @@
-// react hook
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useCallback,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-// components
+
 import DescriptionSection from '@components/common/DescriptionSection';
 import ChartSection from '@components/common/ChartSection';
 import Dashboard from '@components/common/Dashboard';
@@ -10,11 +11,10 @@ import PriceOverviewSection from '@components/common/PriceOverviewSection';
 import CryptoNews from '@components/common/CryptoNews';
 import BasicBreadcrumbs from '@components/common/Breadcrumbs';
 import AutoPlay from '@components/common/AutoPlay';
-// redux
+
 import { fetchCryptoDetails } from '@redux/saga/cryptoDetails';
 import { fetchCryptoChart } from '@redux/saga/cryptoCoinChart';
-// axios
-import axios from 'axios';
+import { fetchCryptoMarketList } from '@redux/saga/cryptoMarketList';
 
 const columns = [
   {
@@ -26,11 +26,7 @@ const columns = [
     minWidth: 100,
     align: 'left',
     renderCell: (params) => (
-      <img
-        src={params.value}
-        alt={`${params.row.name} logo`}
-        style={{ width: '30px', height: '30px', margin: '10px' }}
-      />
+      <img src={params.value} alt={`${params.row.name} logo`} style={{ width: '30px', height: '30px', margin: '10px' }} />
     ),
   },
   {
@@ -46,7 +42,9 @@ const columns = [
     minWidth: 250,
     align: 'left',
     renderCell: (params) => (
-      <a href={params.value} target="_blank" rel="noopener noreferrer">{params.value}</a>
+      <a href={params.value} target="_blank" rel="noopener noreferrer">
+        {params.value}
+      </a>
     ),
   },
   {
@@ -54,87 +52,52 @@ const columns = [
     headerName: 'Trading incentive',
     minWidth: 200,
     align: 'left',
-    renderCell: (params) => {
-      const { value } = params;
-      return (
-        <span>
-          {value ? (true) : (<span style={{ color: 'red' }}>⬤</span>)}
-        </span>
-      );
-    },
+    renderCell: (params) => <span>{params.value ? '✅' : <span style={{ color: 'red' }}>⬤</span>}</span>,
   },
   {
-    field: 'trust_score',
-    headerName: 'Trust score',
-    minWidth: 100,
-    align: 'left',
+    field: 'trust_score', headerName: 'Trust score', minWidth: 100, align: 'left',
   },
   {
     field: 'trade_volume_24h_btc',
-    headerName: 'Trade volume 24h btc',
+    headerName: 'Trade volume 24h BTC',
     minWidth: 200,
     align: 'left',
-    renderCell: (params) => {
-      const value = parseFloat(params.value).toFixed(2);
-      return <span>{value}</span>;
-    },
+    renderCell: (params) => <span>{parseFloat(params.value).toFixed(2)}</span>,
   },
   {
-    field: 'trade_volume_24h_btc_normalized',
-    headerName: 'Trade volume 24h btc normalized',
-    minWidth: 300,
-    align: 'left',
+    field: 'trade_volume_24h_btc_normalized', headerName: 'Trade volume 24h BTC normalized', minWidth: 300, align: 'left',
   },
 ];
 
 function CryptoDetails() {
   const dispatch = useDispatch();
   const { coinId } = useParams();
-  const { cryptoDetails, loading: detailsLoading } = useSelector((state) => state.cryptoDetails);
-  const { chartData, loading: chartLoading } = useSelector((state) => state.cryptoDetailsChart);
-  const [marketListData, setMarketListData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [timeRange, setTimeRange] = useState('24h');
 
-  // Fetch crypto details
-  useEffect(() => {
-    dispatch(fetchCryptoDetails(coinId));
-  }, [dispatch, coinId]);
+  const { cryptoDetails, loading: detailsLoading } = useSelector((state) => state.cryptoDetails);
+  const { chartData, loading: chartLoading } = useSelector((state) => state.cryptoDetailsChart);
+  const {
+    marketListData, loading: marketListLoading,
+  } = useSelector((state) => state.cryptoMarketList);
 
-  // Fetch crypto chart data
-  useEffect(() => {
+  const isLoading = detailsLoading
+    || chartLoading
+    || marketListLoading
+    || !cryptoDetails
+    || !chartData
+    || !marketListData;
+
+  const fetchData = useCallback(() => {
+    dispatch(fetchCryptoDetails(coinId));
     dispatch(fetchCryptoChart(coinId, timeRange));
+    dispatch(fetchCryptoMarketList());
   }, [dispatch, coinId, timeRange]);
 
-  // Fetch market list data
   useEffect(() => {
-    const fetchMarketListData = async () => {
-      try {
-        const options = {
-          method: 'GET',
-          url: 'https://api.coingecko.com/api/v3/exchanges',
-          params: { per_page: '250' },
-          headers: {
-            accept: 'application/json',
-            'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB',
-          },
-        };
+    fetchData();
+  }, [fetchData]);
 
-        const response = await axios.request(options);
-        setMarketListData(response.data);
-      } catch (err) {
-        setError('Failed to fetch market data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMarketListData();
-  }, []);
-
-  // Loading state
-  if (loading || detailsLoading || !cryptoDetails || chartLoading || !chartData) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
@@ -142,51 +105,27 @@ function CryptoDetails() {
     );
   }
 
-  // Error state
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="bg-red-100 text-red-700 p-4 rounded-lg">{error}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="container mx-auto px-4 py-8 mt-20 max-w-7xl">
       <BasicBreadcrumbs />
-      {/* Header Section */}
       {cryptoDetails?.image && (
         <div className="flex items-center gap-4 mb-8 mt-5">
-          <img
-            src={cryptoDetails.image.large}
-            alt={cryptoDetails.name}
-            className="w-16 h-16 rounded-full"
-          />
+          <img src={cryptoDetails.image.large} alt={cryptoDetails.name} className="w-16 h-16 rounded-full" />
           <div>
             <h1 className="text-3xl font-bold">{cryptoDetails.name}</h1>
             <p className="text-gray-500 uppercase">{cryptoDetails.symbol}</p>
           </div>
         </div>
       )}
-      {/* PriceOverview Section */}
       <PriceOverviewSection data={cryptoDetails} />
-      {/* Chart Section */}
-      <ChartSection
-        coinChartData={chartData}
-        timeRange={timeRange}
-        setTimeRange={setTimeRange}
-      />
-      {/* Description Section */}
+      <ChartSection coinChartData={chartData} timeRange={timeRange} setTimeRange={setTimeRange} />
       <DescriptionSection
         name={cryptoDetails.name}
         description={cryptoDetails.description.en}
         href={cryptoDetails.links}
       />
-      {/* Market Section */}
       <Dashboard columns={columns} marketListData={marketListData} />
-      {/* News Section */}
       <CryptoNews />
-      {/* News Auto Section */}
       <AutoPlay />
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { GlobeAltIcon, LockClosedIcon, ServerIcon } from '@heroicons/react/20/solid';
 import axios from 'axios';
 import LogoClouds from '../components/common/LogoClouds';
@@ -279,6 +279,7 @@ function NFTDetails() {
                 <div className="mt-6 text-base text-gray-600 max-w-full">
                   <h1 className="text-lg mb-2">
                     About
+                    {' '}
                     {nftData.name}
                   </h1>
                   <div className="text-sm" dangerouslySetInnerHTML={{ __html: nftData.description }} />

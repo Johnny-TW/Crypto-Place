@@ -1,10 +1,10 @@
-import Default from './components/layouts/Default.jsx';
+import Default from './components/layouts/Default';
 import Home from './views/Home';
-import CryptoDetails from './views/Crypto-Details.jsx'
-import NFTDashboard from './views/NFT-Dashboard.jsx';
+import CryptoDetails from './views/Crypto-Details';
+import NFTDashboard from './views/NFT-Dashboard';
 import CryptoNews from './views/Crypto-News';
-import NFTDetails from './views/NFT-Details.jsx';
-import NotFound from './views/NotFound.jsx';
+import NFTDetails from './views/NFT-Details';
+import NotFound from './views/NotFound';
 
 const routes = [
   {
@@ -14,35 +14,35 @@ const routes = [
     component: Home,
   },
   {
-    path: "/Crypto-details/:coinId",
+    path: '/Crypto-details/:coinId',
     exact: true,
     layout: Default,
     component: CryptoDetails,
   },
   {
-    path: "/NFTDashboard",
+    path: '/NFTDashboard',
     exact: true,
     layout: Default,
     component: NFTDashboard,
   },
   {
-    path: "/NFT-details/:name",
+    path: '/NFT-details/:name',
     exact: true,
     layout: Default,
     component: NFTDetails,
   },
   {
-    path: "/CryptoNews",
+    path: '/CryptoNews',
     exact: true,
     layout: Default,
     component: CryptoNews,
   },
   {
-    path: "/NotFound",
+    path: '/NotFound',
     exact: true,
     layout: Default,
     component: NotFound,
   },
-]
+];
 
 export default routes;
