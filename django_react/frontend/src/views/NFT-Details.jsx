@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { GlobeAltIcon, LockClosedIcon, ServerIcon } from '@heroicons/react/20/solid';
 import axios from 'axios';
-import LogoClouds from '../components/common/LogoClouds';
+import LogoClouds from '@components/common/LogoClouds';
+import MediaCard from '@components/common/MediaCard';
 
 function NFTDetails() {
   const { name } = useParams();
   const [nftData, setNftData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newsData, setNewsData] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchNFTData = async () => {
-      setLoading(true);
       try {
         const options = {
           method: 'GET',
@@ -28,9 +29,9 @@ function NFTDetails() {
         const response = await axios.request(options);
         if (isMounted) {
           setNftData(response.data);
-          setError(null);
         }
       } catch (err) {
+        // console.error(err);
         if (isMounted) {
           setError('Failed to fetch NFT data');
         }
@@ -47,6 +48,37 @@ function NFTDetails() {
       isMounted = false;
     };
   }, [name]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const baseUrl = 'https://data-api.cryptocompare.com/news/v1/article/list';
+    const params = {
+      lang: 'EN',
+      limit: 4,
+      exclude_categories: 'ETH',
+      api_key: 'b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b',
+    };
+    const url = new URL(baseUrl);
+    url.search = new URLSearchParams(params).toString();
+
+    const options = {
+      method: 'GET',
+      headers: { 'Content-type': 'application/json; charset=UTF-8' },
+    };
+
+    fetch(url, options)
+      .then((response) => response.json())
+      .then((json) => {
+        if (isMounted) {
+          setNewsData(json.Data);
+        }
+      })
+      .catch((err) => console.log(err));
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -80,46 +112,50 @@ function NFTDetails() {
     );
   }
 
+  // Safely access nested properties with optional chaining
   const chartData = [
-    { timePeriod: '24h', percentage: nftData.floor_price_24h_percentage_change.native_currency },
-    { timePeriod: '7d', percentage: nftData.floor_price_7d_percentage_change.native_currency },
-    { timePeriod: '14d', percentage: nftData.floor_price_14d_percentage_change.native_currency },
-    { timePeriod: '30d', percentage: nftData.floor_price_30d_percentage_change.native_currency },
-    { timePeriod: '60d', percentage: nftData.floor_price_60d_percentage_change.native_currency },
-    { timePeriod: '1y', percentage: nftData.floor_price_1y_percentage_change.native_currency },
+    { timePeriod: '24h', percentage: nftData?.floor_price_24h_percentage_change?.native_currency || 0 },
+    { timePeriod: '7d', percentage: nftData?.floor_price_7d_percentage_change?.native_currency || 0 },
+    { timePeriod: '14d', percentage: nftData?.floor_price_14d_percentage_change?.native_currency || 0 },
+    { timePeriod: '30d', percentage: nftData?.floor_price_30d_percentage_change?.native_currency || 0 },
+    { timePeriod: '60d', percentage: nftData?.floor_price_60d_percentage_change?.native_currency || 0 },
+    { timePeriod: '1y', percentage: nftData?.floor_price_1y_percentage_change?.native_currency || 0 },
   ];
-
-  console.log(chartData);
 
   const links = [
     {
       name: 'Website',
-      link: nftData.links.homepage,
+      link: nftData?.links?.homepage || '#',
       icon: GlobeAltIcon,
     },
     {
-      name: 'Discord.',
-      link: nftData.links.discord,
+      name: 'Discord',
+      link: nftData?.links?.discord || '#',
       icon: LockClosedIcon,
     },
     {
-      name: 'Twitter.',
-      link: nftData.links.twitter,
+      name: 'Twitter',
+      link: nftData?.links?.twitter || '#',
       icon: ServerIcon,
     },
   ];
 
-  console.log(links);
+  console.log(nftData);
+  console.log(newsData);
+
+  const percentageChange = nftData?.market_cap_24h_percentage_change?.native_currency || 0;
+  const percentageChangeClass = percentageChange >= 0 ? 'text-green-600' : 'text-red-600';
 
   return (
     <div className="overflow-hidden py-24 sm:py-32">
       <div className="mx-auto max-w-1xl lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+          {/* NFT Performance */}
           <div className="">
             <div className="lg:max-w-lg">
               <img
-                src={nftData.banner_image}
-                alt={nftData.banner_image}
+                src={nftData?.banner_image}
+                alt={nftData?.name}
                 className="max-w-none rounded-xl ring-1 ring-gray-400/10 sm:w-full md:w-full lg:w-[25rem] xl:w-full  xxl:w-full md:-ml-4 lg:-ml-0 shadow-md"
               />
             </div>
@@ -128,26 +164,23 @@ function NFTDetails() {
               <div className="flex items-center space-x-4 mt-5">
                 <img
                   className="w-20 h-20 rounded-2xl shadow-lg object-cover border-4 border-white"
-                  src={nftData.image?.small_2x}
-                  alt={nftData.name}
+                  src={nftData?.image?.small_2x}
+                  alt={nftData?.name}
                 />
                 <div className="text-left flex-col items-center space-y-2">
                   <p className="text-pretty text-2xl font-semibold tracking-tight text-gray-900 sm:text-1xl">
-                    {nftData.name}
+                    {nftData?.name}
                   </p>
                   <p className="text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-                    {nftData.floor_price.native_currency}
+                    {nftData?.floor_price?.native_currency}
                     {' '}
-                    {nftData.native_currency_symbol}
+                    {nftData?.native_currency_symbol}
                   </p>
                 </div>
                 <div className="text-left flex-col items-center space-y-2 px-5">
-                  <p className={`text-3xl font-bold ${nftData.market_cap_24h_percentage_change.native_currency >= 0
-                    ? 'text-green-600'
-                    : 'text-red-600'
-                    }`}
-                  >
-                    {nftData.market_cap_24h_percentage_change.native_currency.toFixed(2)}
+                  <p className={`text-3xl font-bold ${percentageChangeClass}`}>
+                    {percentageChange.toFixed(2)}
+                    {' '}
                     %
                   </p>
                 </div>
@@ -163,51 +196,51 @@ function NFTDetails() {
                     <div className="px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt className="text-sm/6 font-semibold text-gray-900">Market Cap</dt>
                       <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-                        {nftData.market_cap.native_currency}
+                        {nftData?.market_cap?.native_currency}
                         {' '}
-                        {nftData.native_currency_symbol}
+                        {nftData?.native_currency_symbol}
                       </dd>
                     </div>
                     <div className="px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt className="text-sm/6 font-semibold text-gray-900">24h Volume</dt>
                       <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-                        {nftData.volume_24h.native_currency}
+                        {nftData?.volume_24h?.native_currency}
                         {' '}
-                        {nftData.native_currency_symbol}
+                        {nftData?.native_currency_symbol}
                       </dd>
                     </div>
                     <div className="px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt className="text-sm/6 font-semibold text-gray-900">24h Sales</dt>
                       <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-                        {nftData.one_day_sales}
+                        {nftData?.one_day_sales}
                         {' '}
-                        {nftData.native_currency_symbol}
+                        {nftData?.native_currency_symbol}
                       </dd>
                     </div>
                     <div className="px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt className="text-sm/6 font-semibold text-gray-900">24h Average Sale Price</dt>
                       <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-                        {nftData.one_day_average_sale_price}
+                        {nftData?.one_day_average_sale_price}
                       </dd>
                     </div>
                     <div className="px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt className="text-sm/6 font-semibold text-gray-900">Unique Owners</dt>
                       <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-                        {nftData.number_of_unique_addresses}
+                        {nftData?.number_of_unique_addresses}
                       </dd>
                     </div>
                     <div className="px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt className="text-sm/6 font-semibold text-gray-900">Total Assets</dt>
                       <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-                        {nftData.total_supply}
+                        {nftData?.total_supply}
                       </dd>
                     </div>
                     <div className="px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                       <dt className="text-sm/6 font-semibold text-gray-900">All-Time High</dt>
                       <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-                        {nftData.ath.native_currency}
+                        {nftData?.ath?.native_currency}
                         {' '}
-                        {nftData.native_currency_symbol}
+                        {nftData?.native_currency_symbol}
                       </dd>
                     </div>
                   </dl>
@@ -215,21 +248,21 @@ function NFTDetails() {
               </div>
               {/* Info Information */}
               <dl className="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none">
-                {links.map((links) => (
-                  <div key={links.name} className="relative pl-9">
+                {links.map((link) => (
+                  <div key={link.name} className="relative pl-9">
                     <dt className="inline font-semibold text-gray-900">
-                      <links.icon aria-hidden="true" className="absolute left-1 top-1 h-5 w-5 text-indigo-600" />
-                      {links.name}
+                      <link.icon aria-hidden="true" className="absolute left-1 top-1 h-5 w-5 text-indigo-600" />
+                      {link.name}
                     </dt>
-
                     <br />
-                    <dd className="inline">{links.link}</dd>
+                    <a className="inline" href={link.link} aria-label={link.name}>
+                      {link.link}
+                    </a>
                   </div>
                 ))}
               </dl>
             </div>
           </div>
-          {/* NFT Performance */}
           <div className="">
             <div className="relative max-lg:row-start-1">
               <div className="mb-5">
@@ -239,7 +272,7 @@ function NFTDetails() {
                 <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
                   Performance metrics for
                   {' '}
-                  {nftData.name}
+                  {nftData?.name}
                   {' '}
                   across different time ranges
                 </p>
@@ -251,7 +284,7 @@ function NFTDetails() {
                       {chartData.map((item, index) => (
                         <th
                           key={index}
-                          className="px-2 py-2 whitespace-nowrap  text-center text-sm font-medium text-gray-900"
+                          className="px-2 py-2 whitespace-nowrap text-center text-sm font-medium text-gray-900"
                         >
                           {item.timePeriod}
                         </th>
@@ -263,8 +296,7 @@ function NFTDetails() {
                       {chartData.map((item, index) => (
                         <td
                           key={index}
-                          className={`px-2 py-2 whitespace-nowrap text-center text-sm ${item.percentage >= 0 ? 'text-green-600' : 'text-red-600'
-                            }`}
+                          className={`px-2 py-2 whitespace-nowrap text-center text-sm ${item.percentage >= 0 ? 'text-green-600' : 'text-red-600'}`}
                         >
                           {item.percentage.toFixed(2)}
                           %
@@ -277,17 +309,21 @@ function NFTDetails() {
               {/* NFT Description */}
               <div className="mt-6 text-lg/8 text-gray-600 text-base max-w-full">
                 <div className="mt-6 text-base text-gray-600 max-w-full">
-                  <h1 className="text-lg mb-2">
+                  <h1 className="font-bold text-black text-lg mb-2">
                     About
                     {' '}
-                    {nftData.name}
+                    {nftData?.name}
                   </h1>
-                  <div className="text-sm" dangerouslySetInnerHTML={{ __html: nftData.description }} />
+                  <div
+                    className="text-sm"
+                    dangerouslySetInnerHTML={{ __html: nftData?.description }}
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
+        <MediaCard newsData={newsData} />
         <LogoClouds />
       </div>
     </div>

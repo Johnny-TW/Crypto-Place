@@ -7,6 +7,7 @@ function DescriptionSection({ name, description, href }) {
       <div className="p-6 border-b">
         <h2 className="text-xl font-bold">
           About
+          {' '}
           {name}
         </h2>
       </div>
