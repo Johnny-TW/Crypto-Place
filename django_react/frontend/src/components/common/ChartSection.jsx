@@ -3,24 +3,8 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
-const convertRangeToDays = (range) => {
-  switch (range) {
-    case '24h':
-      return 1;
-    case '7d':
-      return 7;
-    case '30d':
-      return 30;
-    case '1y':
-      return 365;
-    default:
-      return 1;
-  }
-};
-
 const transformData = (coinChartData) => coinChartData.prices.map(([time, price]) => ({
-  time: new Date(time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
-  price,
+  time: new Date(time).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }), price,
 }));
 
 function CustomTooltip({ active, payload }) {
@@ -47,8 +31,6 @@ function ChartSection({ coinChartData, timeRange, setTimeRange }) {
   const data = transformData(coinChartData);
   const days = ['24h', '7d', '30d', '1y'];
 
-  // console.log(timeRange);
-
   return (
     <div className="bg-white rounded-lg shadow-md mb-8">
       <div className="p-4 border-b">
@@ -57,10 +39,10 @@ function ChartSection({ coinChartData, timeRange, setTimeRange }) {
             <button
               key={range}
               type="button"
-              onClick={() => setTimeRange(convertRangeToDays(range))}
-              className={`px-4 py-2 rounded-md transition-colors  ${timeRange === convertRangeToDays(range)
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 hover:bg-gray-200'}`}
+              onClick={() => setTimeRange(range)}
+              className={`px-4 py-2 rounded-md transition-colors 
+                ${timeRange === range ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'}
+              `}
             >
               {range.toUpperCase()}
             </button>
@@ -70,28 +52,26 @@ function ChartSection({ coinChartData, timeRange, setTimeRange }) {
       <div className="p-6">
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis
-                  domain={['auto', 'auto']}
-                  tickFormatter={(value) => `$${value.toLocaleString()}`}
-                />
-                <Tooltip
-                  content={CustomTooltip}
-                  allowAsProps
-                />
-                <Area
-                  type="monotone"
-                  dataKey="price"
-                  stroke="#2563eb"
-                  fill="#2563eb"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <AreaChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis
+                domain={['auto', 'auto']}
+                tickFormatter={(value) => `$${value.toLocaleString()}`}
+              />
+              <Tooltip
+                content={CustomTooltip}
+                allowAsProps
+              />
+              <Area
+                type="monotone"
+                dataKey="price"
+                stroke="#2563eb"
+                fill="#2563eb"
+                strokeWidth={2}
+                dot={false}
+              />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>

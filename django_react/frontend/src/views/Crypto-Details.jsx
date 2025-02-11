@@ -1,6 +1,4 @@
-import React, {
-  useState, useEffect, useCallback,
-} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -33,9 +31,9 @@ const columns = [
     field: 'id', headerName: 'ID', minWidth: 150, align: 'left',
   },
   {
-    field: 'year_established', headerName: 'Symbol', minWidth: 100, align: 'left',
+    field: 'year_established', headerName: 'Year Established', minWidth: 150, align: 'left',
   },
-  { field: 'country', headerName: 'Name', minWidth: 250 },
+  { field: 'country', headerName: 'Country', minWidth: 250 },
   {
     field: 'url',
     headerName: 'URL',
@@ -52,7 +50,7 @@ const columns = [
     headerName: 'Trading incentive',
     minWidth: 200,
     align: 'left',
-    renderCell: (params) => <span>{params.value ? '✅' : <span style={{ color: 'red' }}>⬤</span>}</span>,
+    renderCell: (params) => <span>{params.value ? <span style={{ color: 'green' }}>⬤</span> : <span style={{ color: 'red' }}>⬤</span>}</span>,
   },
   {
     field: 'trust_score', headerName: 'Trust score', minWidth: 100, align: 'left',
@@ -69,6 +67,16 @@ const columns = [
   },
 ];
 
+const convertRangeToDays = (range) => {
+  switch (range) {
+    case '24h': return 1;
+    case '7d': return 7;
+    case '30d': return 30;
+    case '1y': return 365;
+    default: return 1;
+  }
+};
+
 function CryptoDetails() {
   const dispatch = useDispatch();
   const { coinId } = useParams();
@@ -80,22 +88,23 @@ function CryptoDetails() {
     marketListData, loading: marketListLoading,
   } = useSelector((state) => state.cryptoMarketList);
 
+  useEffect(() => {
+    dispatch(fetchCryptoDetails(coinId));
+    dispatch(fetchCryptoMarketList());
+    dispatch(fetchCryptoChart(coinId, convertRangeToDays(timeRange)));
+  }, [dispatch, coinId]); // Remove timeRange dependency
+
+  // Separate effect for chart updates
+  useEffect(() => {
+    dispatch(fetchCryptoChart(coinId, convertRangeToDays(timeRange)));
+  }, [dispatch, coinId, timeRange]);
+
   const isLoading = detailsLoading
     || chartLoading
     || marketListLoading
     || !cryptoDetails
     || !chartData
     || !marketListData;
-
-  const fetchData = useCallback(() => {
-    dispatch(fetchCryptoDetails(coinId));
-    dispatch(fetchCryptoChart(coinId, timeRange));
-    dispatch(fetchCryptoMarketList());
-  }, [dispatch, coinId, timeRange]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   if (isLoading) {
     return (
@@ -118,13 +127,20 @@ function CryptoDetails() {
         </div>
       )}
       <PriceOverviewSection data={cryptoDetails} />
-      <ChartSection coinChartData={chartData} timeRange={timeRange} setTimeRange={setTimeRange} />
+      <ChartSection
+        coinChartData={chartData}
+        timeRange={timeRange}
+        setTimeRange={setTimeRange}
+      />
       <DescriptionSection
         name={cryptoDetails.name}
         description={cryptoDetails.description.en}
         href={cryptoDetails.links}
       />
-      <Dashboard columns={columns} marketListData={marketListData} />
+      <Dashboard
+        columns={columns}
+        marketListData={marketListData}
+      />
       <CryptoNews />
       <AutoPlay />
     </div>

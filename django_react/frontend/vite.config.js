@@ -32,6 +32,7 @@ export default defineConfig({
       { find: '@styleViews', replacement: resolve(__dirname, 'src/styles/views') },
       { find: '@redux', replacement: resolve(__dirname, 'src/redux') },
       { find: '@utils', replacement: resolve(__dirname, 'src/utils') },
+      { find: '@views', replacement: resolve(__dirname, 'src/styles/views') },
     ],
   },
   // webpack.DefinePlugin -> define

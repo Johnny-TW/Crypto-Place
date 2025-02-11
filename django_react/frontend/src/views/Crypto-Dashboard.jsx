@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  Paper, Box, FormControl, InputLabel, MenuItem, Select, Grid,
+  Paper, Box, FormControl, MenuItem, Select, Grid,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';

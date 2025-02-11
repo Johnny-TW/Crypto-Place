@@ -17,7 +17,10 @@ function SignAccount() {
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form action="#" method="POST" className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
+            <label
+              htmlFor="email"
+              className="block text-sm/6 font-medium text-gray-900"
+            >
               Email address
             </label>
             <div className="mt-2">
@@ -34,11 +37,17 @@ function SignAccount() {
 
           <div>
             <div className="flex items-center justify-between">
-              <label htmlFor="password" className="block text-sm/6 font-medium text-gray-900">
+              <label
+                htmlFor="password"
+                className="block text-sm/6 font-medium text-gray-900"
+              >
                 Password
               </label>
               <div className="text-sm">
-                <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                <a
+                  href="#"
+                  className="font-semibold text-indigo-600 hover:text-indigo-500"
+                >
                   Forgot password?
                 </a>
               </div>

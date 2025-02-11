@@ -48,7 +48,10 @@ function AutoPlay() {
                 src={item.IMAGE_URL}
                 alt={item.TITLE}
                 className="w-full h-32 object-cover rounded-t-lg"
-                onError={(e) => { e.target.onerror = null; e.target.src = 'default-image-url'; }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'default-image-url';
+                }}
               />
               <div className="flex-grow">
                 <h3 className="text-lg font-bold mt-2 mb-1 text-blue-600">{item.TITLE}</h3>
