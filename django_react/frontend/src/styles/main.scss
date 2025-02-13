@@ -1,8 +1,8 @@
 // views
-@import "./views/index.scss";
-@import "./views/dashboard.scss";
-@import "./views/footer.scss";
-@import "./views/home.scss";
+@use "./views/index.scss";
+@use "./views/dashboard.scss";
+@use "./views/footer.scss";
+@use "./views/home.scss";
 
 /* ./src/index.css */
 @tailwind base;

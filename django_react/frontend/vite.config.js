@@ -19,8 +19,13 @@ export default defineConfig({
     //     },
     // }),
   ],
-  //  webpack.alias -> resolve.alias
-  // CRA 中 alias 在 webpack 下，vite 在 resolve 下
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ['legacy-js-api'],
+      },
+    },
+  },
   resolve: {
     alias: [
       { find: '@', replacement: resolve(__dirname, 'src') },
