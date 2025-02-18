@@ -42,7 +42,7 @@ function CryptoNews() {
           </div>
           <div className="w-full">
             <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-              <h1 className="text-4xl font-bold mt-32	text-center">Latest Crypto News</h1>
+              <h1 className="text-4xl font-bold mt-32 text-center">Latest Crypto News</h1>
             </div>
             <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
               <h2 className="text-2xl font-bold mt-20">Last Crypto News</h2>
