@@ -1,70 +1,257 @@
-# Getting Started with Create React App
+[简体中文](https://pnpm.io/zh/) |
+[日本語](https://pnpm.io/ja/) |
+[한국어](https://pnpm.io/ko/) |
+[Italiano](https://pnpm.io/it/) |
+[Português Brasileiro](https://pnpm.io/pt/)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="https://i.imgur.com/qlW1eEG.png">
+  <source media="(prefers-color-scheme: dark)"  srcset="https://i.imgur.com/qlW1eEG.png">
+  <img src="https://i.imgur.com/qlW1eEG.png" alt="pnpm">
+</picture>
 
-## Available Scripts
+Fast, disk space efficient package manager:
 
-In the project directory, you can run:
+* **Fast.** Up to 2x faster than the alternatives (see [benchmark](#benchmark)).
+* **Efficient.** Files inside `node_modules` are linked from a single content-addressable storage.
+* **[Great for monorepos](https://pnpm.io/workspaces).**
+* **Strict.** A package can access only dependencies that are specified in its `package.json`.
+* **Deterministic.** Has a lockfile called `pnpm-lock.yaml`.
+* **Works as a Node.js version manager.** See [pnpm env use](https://pnpm.io/cli/env).
+* **Works everywhere.** Supports Windows, Linux, and macOS.
+* **Battle-tested.** Used in production by teams of [all sizes](https://pnpm.io/users) since 2016.
+* [See the full feature comparison with npm and Yarn](https://pnpm.io/feature-comparison).
 
-### `npm start`
+To quote the [Rush](https://rushjs.io/) team:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+> Microsoft uses pnpm in Rush repos with hundreds of projects and hundreds of PRs per day, and we’ve found it to be very fast and reliable.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+[![npm version](https://img.shields.io/npm/v/pnpm.svg?label=latest)](https://github.com/pnpm/pnpm/releases/latest)
+[![Join the chat at Discord](https://img.shields.io/discord/731599538665553971.svg)](https://r.pnpm.io/chat)
+[![OpenCollective](https://opencollective.com/pnpm/backers/badge.svg)](https://opencollective.com/pnpm)
+[![OpenCollective](https://opencollective.com/pnpm/sponsors/badge.svg)](https://opencollective.com/pnpm)
+[![X Follow](https://img.shields.io/twitter/follow/pnpmjs.svg?style=social&label=Follow)](https://x.com/intent/follow?screen_name=pnpmjs&region=follow_link)
+[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
 
-### `npm test`
+## Platinum Sponsors
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://bit.dev/?utm_source=pnpm&utm_medium=readme" target="_blank"><img src="https://pnpm.io/img/users/bit.svg" width="80" alt="Bit"></a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://sanity.io/?utm_source=pnpm&utm_medium=readme" target="_blank"><img src="https://pnpm.io/img/users/sanity.svg" width="180" alt="Bit"></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-### `npm run build`
+## Gold Sponsors
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://discord.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/discord.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/discord_light.svg" />
+            <img src="https://pnpm.io/img/users/discord.svg" width="220" alt="Discord" />
+          </picture>
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://uscreen.de/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/uscreen.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/uscreen_light.svg" />
+            <img src="https://pnpm.io/img/users/uscreen.svg" width="180" alt="u|screen" />
+          </picture>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://www.jetbrains.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/jetbrains.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/jetbrains.svg" />
+            <img src="https://pnpm.io/img/users/jetbrains.svg" width="180" alt="JetBrains" />
+          </picture>
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://nx.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/nx.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/nx_light.svg" />
+            <img src="https://pnpm.io/img/users/nx.svg" width="120" alt="Nx" />
+          </picture>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://coderabbit.ai/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/coderabbit.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/coderabbit_light.svg" />
+            <img src="https://pnpm.io/img/users/coderabbit.svg" width="220" alt="CodeRabbit" />
+          </picture>
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://route4me.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <img src="https://pnpm.io/img/users/route4me.svg" width="220" alt="Route4Me" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://workleap.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/workleap.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/workleap_light.svg" />
+            <img src="https://pnpm.io/img/users/workleap.svg" width="190" alt="Workleap" />
+          </picture>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Silver Sponsors
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://leniolabs.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <img src="https://pnpm.io/img/users/leniolabs.jpg" width="40" alt="Leniolabs_">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://vercel.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/vercel.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/vercel_light.svg" />
+            <img src="https://pnpm.io/img/users/vercel.svg" width="90" alt="Vercel" />
+          </picture>
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://depot.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/depot.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/depot_light.svg" />
+            <img src="https://pnpm.io/img/users/depot.svg" width="100" alt="Depot" />
+          </picture>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://moonrepo.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/moonrepo.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/moonrepo_light.svg" />
+            <img src="https://pnpm.io/img/users/moonrepo.svg" width="100" alt="moonrepo" />
+          </picture>
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://devowl.io/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/devowlio.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/devowlio.svg" />
+            <img src="https://pnpm.io/img/users/devowlio.svg" width="100" alt="devowl.io" />
+          </picture>
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://cerbos.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/cerbos.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/cerbos_light.svg" />
+            <img src="https://pnpm.io/img/users/cerbos.svg" width="90" alt="Cerbos" />
+          </picture>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://vlt.sh/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/vlt.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/vlt_light.svg" />
+            <img src="https://pnpm.io/img/users/vlt.svg" width="70" alt="vlt" />
+          </picture>
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://vite.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <img src="https://pnpm.io/img/users/vitejs.svg" width="32" alt="Vite">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://macpaw.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/macpaw.svg" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/macpaw_light.svg" />
+            <img src="https://pnpm.io/img/users/macpaw.svg" width="100" />
+          </picture>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://opensource.mercedes-benz.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
+          <img src="https://pnpm.io/img/users/mercedes.svg" width="32" alt="Vite">
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
-### `npm run eject`
+Support this project by [becoming a sponsor](https://opencollective.com/pnpm#sponsor).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Background
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+pnpm uses a content-addressable filesystem to store all files from all module directories on a disk.
+When using npm, if you have 100 projects using lodash, you will have 100 copies of lodash on disk.
+With pnpm, lodash will be stored in a content-addressable storage, so:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. If you depend on different versions of lodash, only the files that differ are added to the store.
+  If lodash has 100 files, and a new version has a change only in one of those files,
+  `pnpm update` will only add 1 new file to the storage.
+1. All the files are saved in a single place on the disk. When packages are installed, their files are linked
+  from that single place consuming no additional disk space. Linking is performed using either hard-links or reflinks (copy-on-write).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+As a result, you save gigabytes of space on your disk and you have a lot faster installations!
+If you'd like more details about the unique `node_modules` structure that pnpm creates and
+why it works fine with the Node.js ecosystem, read this small article: [Flat node_modules is not the only way](https://pnpm.io/blog/2020/05/27/flat-node-modules-is-not-the-only-way).
 
-## Learn More
+💖 Like this project? Let people know with a [tweet](https://r.pnpm.io/tweet)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Getting Started
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- [Installation](https://pnpm.io/installation)
+- [Usage](https://pnpm.io/pnpm-cli)
+- [Frequently Asked Questions](https://pnpm.io/faq)
+- [Chat](https://r.pnpm.io/chat)
+- [X](https://x.com/pnpmjs)
+- [Bluesky](https://bsky.app/profile/pnpm.io)
 
-### Code Splitting
+## Benchmark
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+pnpm is up to 2x faster than npm and Yarn classic. See all benchmarks [here](https://r.pnpm.io/benchmarks).
 
-### Analyzing the Bundle Size
+Benchmarks on an app with lots of dependencies:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+![](https://pnpm.io/img/benchmarks/alotta-files.svg)
 
-### Making a Progressive Web App
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[MIT](https://github.com/pnpm/pnpm/blob/main/LICENSE)

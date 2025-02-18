@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState, useEffect, useMemo, useCallback,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -14,70 +16,60 @@ import { fetchCryptoDetails } from '@redux/saga/cryptoDetails';
 import { fetchCryptoChart } from '@redux/saga/cryptoCoinChart';
 import { fetchCryptoMarketList } from '@redux/saga/cryptoMarketList';
 
-const columns = [
-  {
-    field: 'trust_score_rank', headerName: '#', minWidth: 100, align: 'left',
-  },
-  {
-    field: 'image',
-    headerName: 'Exchange',
-    minWidth: 100,
-    align: 'left',
-    renderCell: (params) => (
-      <img src={params.value} alt={`${params.row.name} logo`} style={{ width: '30px', height: '30px', margin: '10px' }} />
-    ),
-  },
-  {
-    field: 'id', headerName: 'ID', minWidth: 150, align: 'left',
-  },
-  {
-    field: 'year_established', headerName: 'Year Established', minWidth: 150, align: 'left',
-  },
-  { field: 'country', headerName: 'Country', minWidth: 250 },
-  {
-    field: 'url',
-    headerName: 'URL',
-    minWidth: 250,
-    align: 'left',
-    renderCell: (params) => (
-      <a href={params.value} target="_blank" rel="noopener noreferrer">
-        {params.value}
-      </a>
-    ),
-  },
-  {
-    field: 'has_trading_incentive',
-    headerName: 'Trading incentive',
-    minWidth: 200,
-    align: 'left',
-    renderCell: (params) => <span>{params.value ? <span style={{ color: 'green' }}>⬤</span> : <span style={{ color: 'red' }}>⬤</span>}</span>,
-  },
-  {
-    field: 'trust_score', headerName: 'Trust score', minWidth: 100, align: 'left',
-  },
-  {
-    field: 'trade_volume_24h_btc',
-    headerName: 'Trade volume 24h BTC',
-    minWidth: 200,
-    align: 'left',
-    renderCell: (params) => <span>{parseFloat(params.value).toFixed(2)}</span>,
-  },
-  {
-    field: 'trade_volume_24h_btc_normalized', headerName: 'Trade volume 24h BTC normalized', minWidth: 300, align: 'left',
-  },
-];
-
-const convertRangeToDays = (range) => {
-  switch (range) {
-    case '24h': return 1;
-    case '7d': return 7;
-    case '30d': return 30;
-    case '1y': return 365;
-    default: return 1;
-  }
-};
-
 function CryptoDetails() {
+  const columns = useMemo(() => [
+    {
+      field: 'trust_score_rank', headerName: '#', minWidth: 100, align: 'left',
+    },
+    {
+      field: 'image',
+      headerName: 'Exchange',
+      minWidth: 100,
+      align: 'left',
+      renderCell: (params) => (
+        <img src={params.value} alt={`${params.row.name} logo`} style={{ width: '30px', height: '30px', margin: '10px' }} />
+      ),
+    },
+    {
+      field: 'id', headerName: 'ID', minWidth: 150, align: 'left',
+    },
+    {
+      field: 'year_established', headerName: 'Symbol', minWidth: 100, align: 'left',
+    },
+    { field: 'country', headerName: 'Name', minWidth: 250 },
+    {
+      field: 'url',
+      headerName: 'URL',
+      minWidth: 250,
+      align: 'left',
+      renderCell: (params) => (
+        <a href={params.value} target="_blank" rel="noopener noreferrer">
+          {params.value}
+        </a>
+      ),
+    },
+    {
+      field: 'has_trading_incentive',
+      headerName: 'Trading incentive',
+      minWidth: 200,
+      align: 'left',
+      renderCell: (params) => <span>{params.value ? '✅' : <span style={{ color: 'red' }}>⬤</span>}</span>,
+    },
+    {
+      field: 'trust_score', headerName: 'Trust score', minWidth: 100, align: 'left',
+    },
+    {
+      field: 'trade_volume_24h_btc',
+      headerName: 'Trade volume 24h BTC',
+      minWidth: 200,
+      align: 'left',
+      renderCell: (params) => <span>{parseFloat(params.value).toFixed(2)}</span>,
+    },
+    {
+      field: 'trade_volume_24h_btc_normalized', headerName: 'Trade volume 24h BTC normalized', minWidth: 300, align: 'left',
+    },
+  ], []);
+
   const dispatch = useDispatch();
   const { coinId } = useParams();
   const [timeRange, setTimeRange] = useState('24h');
@@ -88,23 +80,17 @@ function CryptoDetails() {
     marketListData, loading: marketListLoading,
   } = useSelector((state) => state.cryptoMarketList);
 
-  useEffect(() => {
-    dispatch(fetchCryptoDetails(coinId));
-    dispatch(fetchCryptoMarketList());
-    dispatch(fetchCryptoChart(coinId, convertRangeToDays(timeRange)));
-  }, [dispatch, coinId]); // Remove timeRange dependency
+  const isLoading = detailsLoading || chartLoading || marketListLoading || !cryptoDetails || !chartData || !marketListData;
 
-  // Separate effect for chart updates
-  useEffect(() => {
-    dispatch(fetchCryptoChart(coinId, convertRangeToDays(timeRange)));
+  const fetchData = useCallback(() => {
+    dispatch(fetchCryptoDetails(coinId));
+    dispatch(fetchCryptoChart(coinId, timeRange));
+    dispatch(fetchCryptoMarketList());
   }, [dispatch, coinId, timeRange]);
 
-  const isLoading = detailsLoading
-    || chartLoading
-    || marketListLoading
-    || !cryptoDetails
-    || !chartData
-    || !marketListData;
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   if (isLoading) {
     return (
@@ -127,20 +113,13 @@ function CryptoDetails() {
         </div>
       )}
       <PriceOverviewSection data={cryptoDetails} />
-      <ChartSection
-        coinChartData={chartData}
-        timeRange={timeRange}
-        setTimeRange={setTimeRange}
-      />
+      <ChartSection coinChartData={chartData} timeRange={timeRange} setTimeRange={setTimeRange} />
       <DescriptionSection
         name={cryptoDetails.name}
         description={cryptoDetails.description.en}
         href={cryptoDetails.links}
       />
-      <Dashboard
-        columns={columns}
-        marketListData={marketListData}
-      />
+      <Dashboard columns={columns} marketListData={marketListData} />
       <CryptoNews />
       <AutoPlay />
     </div>

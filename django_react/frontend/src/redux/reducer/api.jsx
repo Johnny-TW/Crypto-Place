@@ -3,13 +3,15 @@ import _ from 'lodash';
 const initialState = {
   loading: 0,
   loadingStack: [],
-  errorMessage: null,
-  successMessage: null,
+  error: null,
+  success: null,
+  deleted: null,
+  percentage: 0,
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_LOADING':
+    case 'SET_LOADING': {
       const { loading, path } = action.data;
       let { loadingStack } = state;
 
@@ -25,25 +27,37 @@ const reducer = (state = initialState, action) => {
         loadingStack,
         loading: loadingStack.length,
       };
-    case 'SET_ERROR_MESSAGE':
+    }
+    case 'SET_API_ERROR':
+      console.log(action.data);
       return {
         ...state,
-        errorMessage: action.data,
+        error: action.data,
       };
-    case 'CLEAR_ERROR_MESSAGE':
+    case 'CLEAR_API_ERROR':
       return {
         ...state,
-        errorMessage: null,
+        error: null,
       };
-    case 'SET_SUCCESS_MESSAGE':
+    case 'SET_API_SUCCESS':
       return {
         ...state,
-        successMessage: action.data,
+        success: action.data,
       };
-    case 'CLEAR_SUCCESS_MESSAGE':
+    case 'CLEAR_API_SUCCESS':
       return {
         ...state,
-        successMessage: null,
+        success: null,
+      };
+    case 'SET_API_DELETE':
+      return {
+        ...state,
+        deleted: action.data,
+      };
+    case 'CLEAR_API_DELETE':
+      return {
+        ...state,
+        deleted: null,
       };
     default:
       return state;

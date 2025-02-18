@@ -5,51 +5,43 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import {
-  Grid,
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Paper,
-  Alert,
-  CircularProgress,
+  FormControl, InputLabel, MenuItem, Select,
 } from '@mui/material';
 
 import '../styles/views/nft-dashboard.scss';
 
-const columns = [
-  {
-    field: 'id', headerName: 'ID', minWidth: 200, align: 'left',
-  },
-  {
-    field: 'symbol', headerName: 'Symbol', minWidth: 200, align: 'left',
-  },
-  {
-    field: 'name', headerName: 'Name', minWidth: 300, align: 'left',
-  },
-  {
-    field: 'asset_platform_id', headerName: 'Asset Platform ID', minWidth: 200, align: 'left',
-  },
-  {
-    field: 'contract_address', headerName: 'Name', minWidth: 400, align: 'left',
-  },
-];
-
-const orderOptions = [
-  { value: 'h24_volume_usd_asc', label: 'H24 Volume USD Asc' },
-  { value: 'h24_volume_usd_desc', label: 'H24 Volume USD Desc' },
-  { value: 'h24_volume_native_asc', label: 'H24 Native USD Asc' },
-  { value: 'h24_volume_native_desc', label: 'H24 Native USD Desc' },
-  { value: 'floor_price_native_asc', label: 'Floor Price USD Asc' },
-  { value: 'floor_price_native_desc', label: 'Floor Price USD Desc' },
-  { value: 'market_cap_native_asc', label: 'Market Cap Native Asc' },
-  { value: 'market_cap_native_desc', label: 'Market Cap Native Desc' },
-  { value: 'market_cap_usd_asc', label: 'Market Cap USD Asc' },
-  { value: 'market_cap_usd_desc', label: 'Market Cap USD Desc' },
-];
-
 function StickyHeadTable() {
+  const orderOptions = [
+    { value: 'h24_volume_usd_asc', label: 'H24 Volume USD Asc' },
+    { value: 'h24_volume_usd_desc', label: 'H24 Volume USD Desc' },
+    { value: 'h24_volume_native_asc', label: 'H24 Native USD Asc' },
+    { value: 'h24_volume_native_desc', label: 'H24 Native USD Desc' },
+    { value: 'floor_price_native_asc', label: 'Floor Price USD Asc' },
+    { value: 'floor_price_native_desc', label: 'Floor Price USD Desc' },
+    { value: 'market_cap_native_asc', label: 'Market Cap Native Asc' },
+    { value: 'market_cap_native_desc', label: 'Market Cap Native Desc' },
+    { value: 'market_cap_usd_asc', label: 'Market Cap USD Asc' },
+    { value: 'market_cap_usd_desc', label: 'Market Cap USD Desc' },
+  ];
+
+  const columns = [
+    {
+      field: 'id', headerName: 'ID', minWidth: 300, align: 'left',
+    },
+    {
+      field: 'symbol', headerName: 'Symbol', minWidth: 300, align: 'left',
+    },
+    {
+      field: 'name', headerName: 'Name', minWidth: 300, align: 'left',
+    },
+    {
+      field: 'asset_platform_id', headerName: 'Asset Platform ID', minWidth: 200, align: 'left',
+    },
+    {
+      field: 'contract_address', headerName: 'Contract Address', minWidth: 600, align: 'left',
+    },
+  ];
+
   const [cryptoData, setCryptoData] = useState([]);
   const [order, setOrder] = useState('market_cap_usd_desc');
   // Loading / Success / Error
@@ -61,7 +53,6 @@ function StickyHeadTable() {
 
   const handleChange = (event) => {
     setOrder(event.target.value);
-    console.log(order);
   };
 
   const handleRowClick = (params) => {
@@ -119,64 +110,73 @@ function StickyHeadTable() {
 
   console.log(cryptoData);
 
-  const paginationModel = { page: 0, pageSize: 50 };
+  const paginationModel = { page: 0, pageSize: 20 };
 
   if (loading) {
     return (
       <>
         {isAlertVisible && (
-          <Alert variant="outlined" severity={error ? 'error' : 'success'}>
+          <div className={`alert ${error ? 'alert-error' : 'alert-success'}`}>
             {error || alertMessage}
-          </Alert>
+          </div>
         )}
-        <CircularProgress />
+        <div className="flex justify-center items-center">
+          <div className="loader" />
+        </div>
       </>
     );
   }
 
   return (
-    <div className="mt-20 Dashboard-container">
-      {error && <Alert severity="error">{error}</Alert>}
+    <div className="mt-40 container mx-auto">
       <div className="dashboard-area">
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-            <Box sx={{ minWidth: 200 }}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Currency</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={order}
-                  label="Order"
-                  onChange={handleChange}
-                >
-                  {orderOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          </Grid>
-          <Grid item xs={12} sm={12} md={8} lg={8} xl={8}>
-            <h2 className="text-3xl font-bold text-center">NFT Markets Overview</h2>
-          </Grid>
-          <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div className="col-span-12 md:col-span-2">
+            <div className="min-w-full">
+              <div className="w-full">
+                <FormControl fullWidth>
+                  <InputLabel id="demo-simple-select-label">Currency</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    value={order}
+                    label="Order"
+                    onChange={handleChange}
+                  >
+                    {orderOptions.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+            </div>
+          </div>
+          <div className="col-span-12 md:col-span-8">
+            <h2 className="text-3xl font-bold text-center">NFT </h2>
+          </div>
+          <div className="col-span-12 md:col-span-2">
             {/* 空的區域 */}
-          </Grid>
-        </Grid>
+          </div>
+        </div>
 
-        <Paper sx={{ height: '100%', width: '100%' }} elevation={0} className="mt-5 mb-20">
-          <DataGrid
-            rows={cryptoData}
-            columns={columns}
-            initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[20, 30, 40]}
-            sx={{ border: 0, cursor: 'pointer' }}
-            onRowClick={handleRowClick}
-          />
-        </Paper>
+        <div className="mt-5 mb-20">
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full">
+              <div className="overflow-hidden shadow-md sm:rounded-lg bg-white">
+                <DataGrid
+                  rows={cryptoData}
+                  columns={columns}
+                  initialState={{ pagination: { paginationModel } }}
+                  pageSizeOptions={[20, 30, 40, 50]}
+                  sx={{ border: 0, cursor: 'pointer' }}
+                  onRowClick={handleRowClick}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
