@@ -2,10 +2,6 @@ header {
   text-align: center;
 }
 
-.filter-red {
-  filter: hue-rotate(180deg) saturate(200%);
-}
-
 header h1 {
   margin: 0;
   font-family: "Quicksand", sans-serif;
@@ -16,7 +12,6 @@ header h1 {
 
 header p {
   margin-top: 20px;
-  font-size: 1.1rem;
   font-weight: bold;
   color: #ebe7ef;
   font-family: "Quicksand", sans-serif;

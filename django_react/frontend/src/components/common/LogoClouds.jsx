@@ -4,7 +4,7 @@ export default function Example() {
   return (
     <div className="py-20 sm:py-30">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <h2 className="text-center text-lg/8 font-semibold leading-8 text-gray-900">
+        <h2 className="font-bold text-gray-900 dark:text-moon-50 text-xl leading-7">
           CoinGecko NFT Data API
         </h2>
         <p className="text-center">

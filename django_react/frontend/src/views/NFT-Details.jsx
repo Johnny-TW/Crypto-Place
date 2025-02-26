@@ -147,7 +147,7 @@ function NFTDetails() {
   const percentageChangeClass = percentageChange >= 0 ? 'text-green-600' : 'text-red-600';
 
   return (
-    <div className="overflow-hidden py-24 sm:py-32">
+    <div className="overflow-hidden">
       <div className="mx-auto max-w-1xl lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
           {/* NFT Performance */}
@@ -159,8 +159,10 @@ function NFTDetails() {
                 className="max-w-none rounded-xl ring-1 ring-gray-400/10 sm:w-full md:w-full lg:w-[25rem] xl:w-full  xxl:w-full md:-ml-4 lg:-ml-0 shadow-md"
               />
             </div>
-            <div className="w-full max-w-full">
-              <h2 className="text-base/7 font-semibold text-indigo-600 mt-3">Deploy faster</h2>
+            <div className="w-full max-w-full mt-5">
+              <p className="text-pretty text-2xl font-semibold tracking-tight text-gray-900 sm:text-1xl">
+                {nftData?.name}
+              </p>
               <div className="flex items-center space-x-4 mt-5">
                 <img
                   className="w-20 h-20 rounded-2xl shadow-lg object-cover border-4 border-white"
@@ -168,9 +170,6 @@ function NFTDetails() {
                   alt={nftData?.name}
                 />
                 <div className="text-left flex-col items-center space-y-2">
-                  <p className="text-pretty text-2xl font-semibold tracking-tight text-gray-900 sm:text-1xl">
-                    {nftData?.name}
-                  </p>
                   <p className="text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                     {nftData?.floor_price?.native_currency}
                     {' '}

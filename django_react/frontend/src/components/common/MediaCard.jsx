@@ -10,7 +10,7 @@ export default function MediaCard({ newsData = [] }) {
   return (
     <>
       <div className="col-span-12 sm:col-span-10 md:col-span-10 lg:col-span-10 xl:col-span-10 mt-10">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 text-center">Markets Overview</h2>
+        <h2 className="font-bold text-gray-900 dark:text-moon-50 text-xl leading-7">Markets Overview</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-12 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 mx-auto max-w-7xl mt-6">
         {newsData.map((news) => (

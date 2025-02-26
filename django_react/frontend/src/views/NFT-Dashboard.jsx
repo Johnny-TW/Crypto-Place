@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import {
-  FormControl, InputLabel, MenuItem, Select,
+  FormControl, InputLabel, MenuItem, Select, Paper,
 } from '@mui/material';
 
 import '../styles/views/nft-dashboard.scss';
@@ -128,7 +128,7 @@ function StickyHeadTable() {
   }
 
   return (
-    <div className="mt-40 container mx-auto">
+    <div className="mt-10 container mx-auto">
       <div className="dashboard-area">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           <div className="col-span-12 md:col-span-2">
@@ -154,29 +154,26 @@ function StickyHeadTable() {
             </div>
           </div>
           <div className="col-span-12 md:col-span-8">
-            <h2 className="text-3xl font-bold text-center">NFT </h2>
+            <h2 className="text-3xl font-bold text-center">NFT Dashboard</h2>
           </div>
           <div className="col-span-12 md:col-span-2">
             {/* 空的區域 */}
           </div>
         </div>
 
-        <div className="mt-5 mb-20">
-          <div className="overflow-x-auto">
-            <div className="inline-block min-w-full">
-              <div className="overflow-hidden shadow-md sm:rounded-lg bg-white">
-                <DataGrid
-                  rows={cryptoData}
-                  columns={columns}
-                  initialState={{ pagination: { paginationModel } }}
-                  pageSizeOptions={[20, 30, 40, 50]}
-                  sx={{ border: 0, cursor: 'pointer' }}
-                  onRowClick={handleRowClick}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <Paper className="mt-5 mb-20" sx={{ height: '100%', width: '100%' }} elevation={0}>
+          <DataGrid
+            rows={cryptoData}
+            columns={columns}
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[20, 30, 40, 50]}
+            sx={{
+              cursor: 'pointer',
+              backgroundColor: '#FFFFFF',
+            }}
+            onRowClick={handleRowClick}
+          />
+        </Paper>
       </div>
     </div>
   );
