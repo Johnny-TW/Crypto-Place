@@ -10,7 +10,7 @@ function CardLists({ news }) {
               <img
                 alt={data.TITLE}
                 src={data.IMAGE_URL}
-                className="aspect-square w-full rounded-md bg-gray-200 object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
+                className="aspect-square w-full rounded-md border  object-cover group-hover:opacity-75 lg:aspect-auto lg:h-80"
               />
               <div className="mt-4 flex justify-between">
                 <div>

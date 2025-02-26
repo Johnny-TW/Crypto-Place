@@ -1,5 +1,5 @@
-import Default from './components/layouts/Default';
 import Home from './views/Home';
+import Default from './components/layouts/Default';
 import CryptoDetails from './views/Crypto-Details';
 import NFTDashboard from './views/NFT-Dashboard';
 import CryptoNews from './views/Crypto-News';

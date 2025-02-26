@@ -108,23 +108,15 @@ function StickyHeadTable() {
             {/* 空的區域 */}
           </Grid>
         </Grid>
-        <Paper className="mt-5 mb-20" sx={{ height: '100%', width: '100%' }} elevation={1}>
+        <Paper className="mt-5 mb-20" sx={{ height: '100%', width: '100%' }} elevation={0}>
           <DataGrid
             rows={coinList}
             columns={columns}
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[20, 30, 40, 50]}
             sx={{
-              border: '1px solid #ccc',
-              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
               cursor: 'pointer',
-              backgroundColor: '#f5f5f5',
-              paddingBottom: '50px',
-              '& .MuiDataGrid-root': {
-                '@media (max-width: 600px)': {
-                  fontSize: '0.8rem',
-                },
-              },
+              backgroundColor: '#FFFFFF',
             }}
             onRowClick={handleRowClick}
           />

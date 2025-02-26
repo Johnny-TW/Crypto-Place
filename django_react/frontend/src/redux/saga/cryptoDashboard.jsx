@@ -3,13 +3,11 @@ import { takeLatest, call, put } from 'redux-saga/effects';
 import axios from 'axios';
 import { COIN_LIST } from '../api/api';
 
-// 定義 fetchCoinList 動作創建器
 export const fetchCoinList = (currency) => ({
   type: 'FETCH_COIN_LIST',
   payload: { currency },
 });
 
-// 定義 fetchCoinList saga
 function* fetchCoinListSaga(action) {
   try {
     const options = {
@@ -26,7 +24,6 @@ function* fetchCoinListSaga(action) {
   }
 }
 
-// 定義根 saga
 function* mySaga() {
   yield takeLatest('FETCH_COIN_LIST', fetchCoinListSaga);
 }

@@ -15,7 +15,7 @@ const formatNumber = (num) => {
 function PriceOverviewSection({ data }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg border border-gray-300 p-6">
         <div className="flex justify-between items-center">
           <FontAwesomeIcon icon={faDollarSign} className="h-5 w-5 text-gray-500" />
           <div className="text-right">
@@ -28,7 +28,7 @@ function PriceOverviewSection({ data }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg border border-gray-300 p-6">
         <div className="flex justify-between items-center">
           <FontAwesomeIcon icon={faChartLine} className="h-5 w-5 text-gray-500" />
           <div className="text-right">
@@ -44,7 +44,7 @@ function PriceOverviewSection({ data }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg border border-gray-300 p-6">
         <div className="flex justify-between items-center">
           <FontAwesomeIcon icon={faStore} className="h-5 w-5 text-gray-500" />
           <div className="text-right">
@@ -56,7 +56,7 @@ function PriceOverviewSection({ data }) {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white rounded-lg border border-gray-300 p-6">
         <div className="flex justify-between items-center">
           <FontAwesomeIcon icon={faCoins} className="h-5 w-5 text-gray-500" />
           <div className="text-right">

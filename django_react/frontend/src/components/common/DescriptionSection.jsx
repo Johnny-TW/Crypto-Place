@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Globe, Github } from 'lucide-react';
 
 function DescriptionSection({ name, description, href }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleDescription = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
-    <div className="mb-10 bg-white rounded-lg shadow-md">
+    <div className="mb-10 bg-white rounded-lg border border-gray-300">
       <div className="p-6 border-b">
-        <h2 className="text-xl font-bold">
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 text-center">
           About
           {' '}
           {name}
@@ -13,9 +19,16 @@ function DescriptionSection({ name, description, href }) {
       </div>
       <div className="p-6">
         <p
-          className="text-gray-700 leading-relaxed"
+          className={`text-gray-700 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}
           dangerouslySetInnerHTML={{ __html: description }}
         />
+        <button
+          type="button"
+          onClick={toggleDescription}
+          className="mt-2 text-blue-600 hover:text-blue-800"
+        >
+          {isExpanded ? 'Show Less' : 'Show More'}
+        </button>
         <div className="mt-4 flex gap-4">
           {href && href.homepage[0] && (
             <a
