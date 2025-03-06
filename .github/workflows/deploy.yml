@@ -1,11 +1,9 @@
 name: CI/CD Pipeline
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,13 +21,19 @@ jobs:
         version: 8 # 或者您使用的 pnpm 版本
         
     - name: Install dependencies
-      run: pnpm install
+      run: |
+        cd frontend
+        pnpm install
       
     - name: Run tests
-      run: pnpm test
+      run: |
+        cd frontend
+        pnpm test
       
     - name: Build
-      run: pnpm build
+      run: |
+        cd frontend
+        pnpm build
       
     - name: Deploy
       if: github.ref == 'refs/heads/main'
