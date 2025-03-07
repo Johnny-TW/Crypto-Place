@@ -38,8 +38,8 @@ function* fetchCryptoChartSaga(action) {
   }
 }
 
-function* mySaga() {
+function* cryptoChartSaga() {
   yield takeLatest('FETCH_CRYPTO_CHART_REQUEST', fetchCryptoChartSaga);
 }
 
-export default mySaga;
+export default cryptoChartSaga;

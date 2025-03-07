@@ -1,13 +1,15 @@
-import { all, put } from 'redux-saga/effects';
+import { all, put, call } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
-import { API_METHOD, APIKit } from '../api/apiService';
 
 import CoinList from './cryptoDashboard';
 import CryptoNews from './cryptoNews';
 import CryptoDetails from './cryptoDetails';
 import CryptoCoinChart from './cryptoCoinChart';
-import cryptoMarketList from './cryptoMarketList';
+import CryptoMarketList from './cryptoMarketList';
+import exchangeDetailsSaga from './cryptoExchangesDetails';
+
+import { API_METHOD, APIKit } from '../api/apiService';
 
 export function* setLoading(loading, path, method) {
   yield put({ type: 'SET_LOADING', data: { loading, path, method } });
@@ -27,14 +29,16 @@ export function* fetchApi({
   parameters = null,
 }) {
   try {
-    const response = yield APIKit.request({
+    const response = yield call(APIKit.request, {
       method,
-      url,
+      url: path, // 使用 path 作為 url
       params,
-      headers,
+      headers: {
+        'Content-Type': json ? 'application/json' : 'application/x-www-form-urlencoded',
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+      data,
     });
-
-    yield put({ type: reducer, data: response.data });
 
     if (reducer) {
       yield put({ type: reducer, data: response.data });
@@ -43,13 +47,18 @@ export function* fetchApi({
       Swal.fire('Success', successMessage, 'success');
     }
 
-    result = response.data;
-  } catch (error) {
-    Swal.fire('Error', error.message, 'error');
-  }
+    if (successAction) {
+      yield put(successAction(response.data));
+    }
 
-  console.log(result);
-  return result;
+    return response.data;
+  } catch (error) {
+    if (errorAction) {
+      yield put(errorAction(error));
+    }
+    Swal.fire('Error', error.message, 'error');
+    return failValue;
+  }
 }
 
 function* rootSaga() {
@@ -58,7 +67,8 @@ function* rootSaga() {
     CryptoNews(),
     CryptoDetails(),
     CryptoCoinChart(),
-    cryptoMarketList(),
+    CryptoMarketList(),
+    exchangeDetailsSaga(),
   ]);
 }
 
