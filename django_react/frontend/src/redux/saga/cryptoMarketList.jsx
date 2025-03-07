@@ -2,12 +2,10 @@ import { takeLatest, call, put } from 'redux-saga/effects';
 import axios from 'axios';
 import { CRYPTO_MARKET_LIST } from '../api/api';
 
-// Action Creator
 export const fetchCryptoMarketList = () => ({
   type: 'FETCH_MARKET_LIST_REQUEST',
 });
 
-// Saga
 function* fetchMarketListSaga() {
   try {
     const options = {
@@ -23,15 +21,14 @@ function* fetchMarketListSaga() {
     };
 
     const response = yield call(axios.request, options);
-    console.log('Market data response:', response.data); // 日誌響應數據
+    console.log('Market data response:', response.data);
     yield put({ type: 'FETCH_MARKET_LIST_SUCCESS', payload: response.data });
   } catch (error) {
-    console.error('Error fetching market data:', error); // 日誌錯誤
+    console.error('Error fetching market data:', error);
     yield put({ type: 'FETCH_MARKET_LIST_FAILURE', error: error.message });
   }
 }
 
-// Root Saga
 function* marketListSaga() {
   yield takeLatest('FETCH_MARKET_LIST_REQUEST', fetchMarketListSaga);
 }

@@ -1,12 +1,7 @@
-// 假設這是你的 saga 文件
+import _ from 'lodash';
 import { takeLatest, call, put } from 'redux-saga/effects';
 import axios from 'axios';
 import { COIN_LIST } from '../api/api';
-
-export const fetchCoinList = (currency) => ({
-  type: 'FETCH_COIN_LIST',
-  payload: { currency },
-});
 
 function* fetchCoinListSaga(action) {
   try {
