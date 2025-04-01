@@ -9,17 +9,13 @@ import {
   PopoverButton,
   PopoverGroup,
   PopoverPanel,
+  DisclosurePanel,
 } from '@headlessui/react';
 
 import {
   Bars3Icon,
   XMarkIcon,
   ArrowLeftOnRectangleIcon,
-  IdentificationIcon,
-  PhotoIcon,
-  CurrencyDollarIcon,
-  UsersIcon,
-  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 
 import {
@@ -27,36 +23,27 @@ import {
 } from '@heroicons/react/20/solid';
 
 const Cryptocurrencies = [
-  {
-    name: 'Crypto Coins', href: '/', icon: CurrencyDollarIcon,
-  },
+  { name: 'Crypto Coins', href: '/' },
 ];
 
 const Exchanges = [
-  {
-    name: 'Crypto Exchanges', href: '#', icon: CurrencyDollarIcon,
-  },
+  { name: 'Crypto Exchanges', href: '/exchanges' },
 ];
 
 const NFT = [
-  {
-    name: 'NFT Dashboard', href: '/NFTDashboard', icon: PhotoIcon,
-  },
+  { name: 'NFT Dashboard', href: '/NFTDashboard' },
+];
+
+const Learn = [
+  { name: 'Crypto News', href: '/CryptoNews' },
+  { name: 'API', href: '/api' },
 ];
 
 const employee = [
-  {
-    name: 'Name', description: 'Johnny Yeh', icon: UsersIcon,
-  },
-  {
-    name: 'Employee ID', description: '11003736', icon: IdentificationIcon,
-  },
-  {
-    name: 'Department', description: 'EXS0600', icon: IdentificationIcon,
-  },
-  {
-    name: 'E-mail', description: 'johnny43697@gmail.com', icon: EnvelopeIcon,
-  },
+  { name: 'Name', description: 'Johnny Yeh' },
+  { name: 'Employee ID', description: '11003736' },
+  { name: 'Department', description: 'EXS0600' },
+  { name: 'E-mail', description: 'johnny43697@gmail.com' },
 ];
 
 const LogOut = [
@@ -70,12 +57,12 @@ export default function Example() {
     <header className="justify-between">
       <nav aria-label="Global" className="mx-auto flex items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
+          <a href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
             <img
               alt=""
-              src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-              className="h-8 w-auto"
+              src="/src/images/svg/ENBG_logo.svg"
+              className="h-10 w-auto"
             />
           </a>
         </div>
@@ -188,7 +175,7 @@ export default function Example() {
               className="absolute top-full left-1/2 transform -translate-x-1/2 z-10 mt-3 w-screen max-w-xs overflow-hidden rounded-2xl bg-white ring-1 shadow-lg ring-gray-900/5 transition data-closed:translate-y-1 data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-150 data-leave:ease-in"
             >
               <div className="p-2">
-                {Cryptocurrencies.map((item) => (
+                {Learn.map((item) => (
                   <div
                     key={item.name}
                     className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50"
@@ -239,6 +226,15 @@ export default function Example() {
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <Popover className="relative">
             <PopoverButton className="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900">
+              <div className="relative">
+                <span className="absolute -inset-1.5" />
+                <span className="sr-only">Open user menu</span>
+                <img
+                  className="size-8 rounded-full bg-gray-50"
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                  alt="User profile"
+                />
+              </div>
               Johnny Yeh
               <ChevronDownIcon aria-hidden="true" className="size-5 flex-none text-gray-400" />
             </PopoverButton>
@@ -251,7 +247,7 @@ export default function Example() {
                 {employee.map((item) => (
                   <div
                     key={item.name}
-                    className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm/6 hover:bg-gray-50"
+                    className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50"
                   >
                     <div className="flex-auto">
                       <a href={item.href} className="block font-semibold text-gray-900">
@@ -288,8 +284,8 @@ export default function Example() {
               <span className="sr-only">Your Company</span>
               <img
                 alt=""
-                src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                className="h-8 w-auto"
+                src="/src/images/svg/ENBG_logo.svg"
+                className="h-10 w-auto"
               />
             </a>
             <button
@@ -304,37 +300,168 @@ export default function Example() {
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-500/10">
               <div className="space-y-2 py-6">
+
                 <Disclosure as="div" className="-mx-3">
-                  <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
-                    Product
-                    <ChevronDownIcon aria-hidden="true" className="size-5 flex-none group-data-open:rotate-180" />
-                  </DisclosureButton>
+                  {({ open }) => (
+                    <>
+                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                        Cryptocurrencies
+                        <ChevronDownIcon
+                          aria-hidden="true"
+                          className={`size-5 flex-none transform ${open ? 'rotate-180' : ''}`}
+                        />
+                      </DisclosureButton>
+
+                      <DisclosurePanel className="px-4 py-2">
+                        {Cryptocurrencies.map((item) => (
+                          <div
+                            key={item.name}
+                            className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50"
+                          >
+                            <div className="flex-auto">
+                              <a href={item.href} className="block font-semibold text-gray-900">
+                                {item.name}
+                                <span className="absolute inset-0" />
+                              </a>
+                              <p className="mt-1 text-gray-600">{item.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </DisclosurePanel>
+                    </>
+                  )}
                 </Disclosure>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Features
-                </a>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Marketplace
-                </a>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Company
-                </a>
+
+                <Disclosure as="div" className="-mx-3">
+                  {({ open }) => (
+                    <>
+                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                        Exchanges
+                        <ChevronDownIcon
+                          aria-hidden="true"
+                          className={`size-5 flex-none transform ${open ? 'rotate-180' : ''}`}
+                        />
+                      </DisclosureButton>
+
+                      <DisclosurePanel className="px-4 py-2">
+                        {Exchanges.map((item) => (
+                          <div
+                            key={item.name}
+                            className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50"
+                          >
+                            <div className="flex-auto">
+                              <a href={item.href} className="block font-semibold text-gray-900">
+                                {item.name}
+                                <span className="absolute inset-0" />
+                              </a>
+                              <p className="mt-1 text-gray-600">{item.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </DisclosurePanel>
+                    </>
+                  )}
+                </Disclosure>
+
+                <Disclosure as="div" className="-mx-3">
+                  {({ open }) => (
+                    <>
+                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                        NFT
+                        <ChevronDownIcon
+                          aria-hidden="true"
+                          className={`size-5 flex-none transform ${open ? 'rotate-180' : ''}`}
+                        />
+                      </DisclosureButton>
+
+                      <DisclosurePanel className="px-4 py-2">
+                        {NFT.map((item) => (
+                          <div
+                            key={item.name}
+                            className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50"
+                          >
+                            <div className="flex-auto">
+                              <a href={item.href} className="block font-semibold text-gray-900">
+                                {item.name}
+                                <span className="absolute inset-0" />
+                              </a>
+                              <p className="mt-1 text-gray-600">{item.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </DisclosurePanel>
+                    </>
+                  )}
+                </Disclosure>
+
+                <Disclosure as="div" className="-mx-3">
+                  {({ open }) => (
+                    <>
+                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                        Learn
+                        <ChevronDownIcon
+                          aria-hidden="true"
+                          className={`size-5 flex-none transform ${open ? 'rotate-180' : ''}`}
+                        />
+                      </DisclosureButton>
+
+                      <DisclosurePanel className="px-4 py-2">
+                        {Learn.map((item) => (
+                          <div
+                            key={item.name}
+                            className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50"
+                          >
+                            <div className="flex-auto">
+                              <a href={item.href} className="block font-semibold text-gray-900">
+                                {item.name}
+                                <span className="absolute inset-0" />
+                              </a>
+                              <p className="mt-1 text-gray-600">{item.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </DisclosurePanel>
+                    </>
+                  )}
+                </Disclosure>
+
+                <Disclosure as="div" className="-mx-3">
+                  {({ open }) => (
+                    <>
+                      <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pr-3.5 pl-3 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">
+                        API
+                        <ChevronDownIcon
+                          aria-hidden="true"
+                          className={`size-5 flex-none transform ${open ? 'rotate-180' : ''}`}
+                        />
+                      </DisclosureButton>
+
+                      <DisclosurePanel className="px-4 py-2">
+                        {Cryptocurrencies.map((item) => (
+                          <div
+                            key={item.name}
+                            className="group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50"
+                          >
+                            <div className="flex-auto">
+                              <a href={item.href} className="block font-semibold text-gray-900">
+                                {item.name}
+                                <span className="absolute inset-0" />
+                              </a>
+                              <p className="mt-1 text-gray-600">{item.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </DisclosurePanel>
+                    </>
+                  )}
+                </Disclosure>
               </div>
               <div className="py-6">
                 <a
                   href="#"
                   className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                 >
-                  Log in
+                  Log Out
                 </a>
               </div>
             </div>

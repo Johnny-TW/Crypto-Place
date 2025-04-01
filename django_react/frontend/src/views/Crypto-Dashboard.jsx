@@ -5,7 +5,6 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
-import { fetchCoinList } from '@redux/saga/cryptoDashboard';
 import '@styleViews/dashboard.scss';
 
 function StickyHeadTable() {
@@ -62,7 +61,6 @@ function StickyHeadTable() {
   const dispatch = useDispatch();
   const coinList = useSelector((state) => state.coinList.coinList);
   const [currency, setCurrency] = useState('usd');
-  const [loading, setLoading] = useState(true);
   const history = useHistory();
 
   const handleChange = (event) => {
@@ -74,8 +72,7 @@ function StickyHeadTable() {
   };
 
   useEffect(() => {
-    dispatch(fetchCoinList(currency));
-    setLoading(false);
+    dispatch({ type: 'FETCH_COIN_LIST', payload: { currency } });
   }, [dispatch, currency]);
 
   const paginationModel = { page: 0, pageSize: 20 };
@@ -102,18 +99,20 @@ function StickyHeadTable() {
             </Box>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 text-center" />
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 text-center">
+              The Main Function
+            </h2>
           </Grid>
           <Grid item xs={12} sm={3}>
             {/* 空的區域 */}
           </Grid>
         </Grid>
-        <Paper className="mt-5 mb-20" sx={{ height: '100%', width: '100%' }} elevation={0}>
+        <Paper className="mt-5 mb-20" sx={{ height: '100%', width: '100%' }} elevation={1}>
           <DataGrid
             rows={coinList}
             columns={columns}
             initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[20, 30, 40, 50]}
+            pageSizeOptions={[10, 20, 30, 40, 50]}
             sx={{
               cursor: 'pointer',
               backgroundColor: '#FFFFFF',

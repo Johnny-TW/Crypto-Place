@@ -9,6 +9,8 @@ import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
+import InboxIcon from '@mui/icons-material/MoveToInbox';
+import MailIcon from '@mui/icons-material/Mail';
 import MenuItem from '@mui/material/MenuItem';
 
 import {
@@ -19,8 +21,6 @@ import {
   ListItemText,
 } from '@mui/material';
 
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import { Link } from 'react-router-dom';
 
 import '../../styles/layouts/Navbar.scss';
@@ -28,8 +28,8 @@ import '../../styles/layouts/Navbar.scss';
 function ButtonAppBar() {
   const [open, setOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const toggleDrawer = (newOpen) => (e) => {
-    console.log(newOpen);
+  const toggleDrawer = (newOpen) => () => {
+    // console.log(newOpen);
     setOpen(newOpen);
   };
 
@@ -47,7 +47,6 @@ function ButtonAppBar() {
     'User Guide',
   ];
 
-  // Name list
   const settings = [
     'Profile',
     'Account',
@@ -55,14 +54,27 @@ function ButtonAppBar() {
     'Logout',
   ];
 
+  // sidebar link
+  const linkMap = {
+    'Project Information': '/project-information',
+    'User Guide': '/user-guide',
+    'Team Roster': 'https://enbgworkplace.wistron.com/',
+  };
+
+  const MainLinkMap = {
+    Home: '/',
+    'NFT Dashboard': '/NFTDashboard',
+    'Crypto News': '/CryptoNews',
+  };
+
   const DrawerList = (
     <Box className="Sidebar" sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
-      <List className="Sidebar_list">
+      <List>
         {Mianlist.map((text, index) => (
           <ListItem key={text} disablePadding>
             <ListItemButton
-              component={text === 'Home' || text === 'NFT Dashboard' || text === 'Crypto News' ? Link : 'div'}
-              to={text === 'Home' ? '/' : text === 'NFT Dashboard' ? '/NFTDashboard' : text === 'Crypto News' ? '/CryptoNews' : undefined}
+              component={MainLinkMap[text] ? Link : 'div'}
+              to={MainLinkMap[text] || undefined}
             >
               <ListItemIcon className="Sidebar_list_icon">
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -76,24 +88,17 @@ function ButtonAppBar() {
       <List>
         {MianlistInformation.map((text, index) => (
           <ListItem key={text} disablePadding>
-            {text === 'Team Roster' ? (
-              <ListItemButton component="a" href="https://enbgworkplace.wistron.com/" rel="noopener noreferrer">
-                <ListItemIcon className="Sidebar_list_icon">
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            ) : (
-              <ListItemButton
-                component={Link}
-                to={text === 'Project Information' ? '/project-information' : text === 'User Guide' ? '/user-guide' : '#'}
-              >
-                <ListItemIcon className="Sidebar_list_icon">
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            )}
+            <ListItemButton
+              component={text === 'Team Roster' ? 'a' : Link}
+              href={text === 'Team Roster' ? linkMap[text] : undefined}
+              to={text !== 'Team Roster' ? linkMap[text] || '#' : undefined}
+              rel={text === 'Team Roster' ? 'noopener noreferrer' : undefined}
+            >
+              <ListItemIcon className="Sidebar_list_icon">
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItemButton>
           </ListItem>
         ))}
       </List>
