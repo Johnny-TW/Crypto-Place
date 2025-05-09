@@ -83,7 +83,7 @@ function Home() {
     fetchData();
   }, [fetchData]);
 
-  console.log(marketListData);
+  // console.log(marketListData);
 
   const isLoading = marketListLoading || !marketListData;
 
