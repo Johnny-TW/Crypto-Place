@@ -24,6 +24,7 @@ jobs:
       run: |
         cd django_react/frontend
         pnpm install
+        pnpm add lodash  # 添加 lodash 依賴
       
     # 移除測試步驟，因為沒有定義測試腳本
     # - name: Run tests

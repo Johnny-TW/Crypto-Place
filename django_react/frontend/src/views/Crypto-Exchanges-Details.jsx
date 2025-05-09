@@ -234,7 +234,7 @@ function CryptoExchangesDetails() {
                 <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
                   Performance metrics for
                   {' '}
-                  TEST
+                  test
                   {' '}
                   across different time ranges
                 </p>
@@ -246,17 +246,18 @@ function CryptoExchangesDetails() {
                 </table>
               </div>
               {/* NFT Description */}
-              <div className="mt-6 text-lg/8 text-gray-600 text-base max-w-full">
+              <div className="mt-6 text-lg/8 text-gray-600 max-w-full">
                 <div className="mt-6 text-base text-gray-950 max-w-full">
                   <h1 className="font-bold text-lg mb-2">
                     About
                     {' '}
                     {exchangeDetails?.name}
                   </h1>
-                  <div
-                    className="text-sm"
-                    dangerouslySetInnerHTML={{ __html: exchangeDetails?.description }}
-                  />
+                  <div className="text-sm">
+                    {exchangeDetails?.description ? (
+                      <p>{exchangeDetails.description.replace(/<[^>]*>/g, '')}</p>
+                    ) : null}
+                  </div>
                 </div>
               </div>
               <dl className="mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none">

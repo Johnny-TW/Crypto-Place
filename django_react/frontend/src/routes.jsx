@@ -6,6 +6,7 @@ import CryptoNews from './views/Crypto-News';
 import NFTDetails from './views/NFT-Details';
 import CryptoExchanges from './views/Crypto-Exchanges';
 import CryptoExchangesDetails from './views/Crypto-Exchanges-Details';
+import CryptoAPI from './views/Crypto-api';
 import NotFound from './views/NotFound';
 
 const routes = [
@@ -55,7 +56,7 @@ const routes = [
     path: '/api',
     exact: true,
     layout: Default,
-    component: CryptoExchangesDetails,
+    component: CryptoAPI,
   },
   {
     path: '/NotFound',
