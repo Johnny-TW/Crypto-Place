@@ -253,5 +253,7 @@ Benchmarks on an app with lots of dependencies:
 ![](https://pnpm.io/img/benchmarks/alotta-files.svg)
 
 ## License
-
-[MIT](https://github.com/pnpm/pnpm/blob/main/LICENSE)
+## 🔄 最新更新 (2025/05/28)
+**🚀 新增**：CoinGecko API 金鑰整合  
+**🐛 修復**：CORS 和 404 連線問題  
+**⚡ 優化**：錯誤處理和 API 文檔
