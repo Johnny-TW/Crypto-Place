@@ -1,0 +1,8 @@
+@use "./views/index.scss";
+@use "./views/dashboard.scss";
+@use "./views/footer.scss";
+@use "./views/home.scss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
