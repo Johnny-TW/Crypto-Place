@@ -5,10 +5,9 @@ function* fetchExchangeDetailsSaga(action) {
   try {
     const options = {
       method: 'GET',
-      url: `https://api.coingecko.com/api/v3/exchanges/${action.payload}`,
+      url: `http://localhost:5001/api/exchanges/${action.payload}`,
       headers: {
         accept: 'application/json',
-        // 'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB',
       },
     };
 

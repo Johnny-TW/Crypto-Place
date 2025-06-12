@@ -74,13 +74,12 @@ function StickyHeadTable() {
       try {
         const options = {
           method: 'GET',
-          url: 'https://api.coingecko.com/api/v3/nfts/list',
+          url: 'http://localhost:5001/api/nfts/list',
           params: {
             order,
           },
           headers: {
             accept: 'application/json',
-            // 'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB',
           },
         };
 

@@ -1,10 +1,8 @@
-// views
 @use "./views/index.scss";
 @use "./views/dashboard.scss";
 @use "./views/footer.scss";
 @use "./views/home.scss";
 
-/* ./src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

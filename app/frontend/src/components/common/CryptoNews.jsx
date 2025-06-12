@@ -7,27 +7,27 @@ import 'slick-carousel/slick/slick-theme.css';
 function CryptoNews() {
   const [news, setNews] = useState([]);
 
-  useEffect(() => {
-    const baseUrl = 'https://data-api.cryptocompare.com/news/v1/article/list';
-    const params = {
-      lang: 'EN',
-      limit: 10,
-      exclude_categories: 'ETH',
-      api_key: 'b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b',
-    };
-    const url = new URL(baseUrl);
-    url.search = new URLSearchParams(params).toString();
+  // useEffect(() => {
+  //   const baseUrl = 'https://data-api.cryptocompare.com/news/v1/article/list';
+  //   const params = {
+  //     lang: 'EN',
+  //     limit: 10,
+  //     exclude_categories: 'ETH',
+  //     api_key: 'b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b',
+  //   };
+  //   const url = new URL(baseUrl);
+  //   url.search = new URLSearchParams(params).toString();
 
-    const options = {
-      method: 'GET',
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
-    };
+  //   const options = {
+  //     method: 'GET',
+  //     headers: { 'Content-type': 'application/json; charset=UTF-8' },
+  //   };
 
-    fetch(url, options)
-      .then((response) => response.json())
-      .then((json) => setNews(json.Data))
-      .catch((err) => console.log(err));
-  }, []);
+  //   fetch(url, options)
+  //     .then((response) => response.json())
+  //     .then((json) => setNews(json.Data))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   const settings = {
     dots: true,
@@ -43,11 +43,11 @@ function CryptoNews() {
 
   return (
     <div className="crypto-news-container z-0">
-      <div className="crypto-news-area mb-20">
+      <div className="crypto-news-area mb-5">
         <div className="flex justify-center">
           <h2 className="text-3xl font-bold">Crypto Latest News</h2>
         </div>
-        <Slider {...settings}>
+        {/* <Slider {...settings}>
           {news.map((item, index) => (
             <div key={index} className="p-4">
               <div className="bg-white border border-gray-300 rounded-lg p-4">
@@ -80,7 +80,7 @@ function CryptoNews() {
               </div>
             </div>
           ))}
-        </Slider>
+        </Slider> */}
       </div>
     </div>
   );

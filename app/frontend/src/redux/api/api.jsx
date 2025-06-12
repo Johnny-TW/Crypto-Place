@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.33.29.200:5001';
+const API_BASE_URL = 'http://localhost:5001';
 
 // Coin List API
 // export const COIN_LIST = 'https://api.coingecko.com/api/v3/coins/markets/';
@@ -33,3 +33,5 @@ export const CRYPTO_DETAILS = `${API_BASE_URL}/api/coins`;
 export const CRYPTO_DETAILS_CHART = `${API_BASE_URL}/api/crypto-details/chart/bitcoin`;
 // Market List API
 export const CRYPTO_MARKET_LIST = `${API_BASE_URL}/api/crypto-market-list`;
+// Exchange Details List API
+export const EXCHANGE_DETAILS = `${API_BASE_URL}/api/exchanges`;

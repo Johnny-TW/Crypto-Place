@@ -8,7 +8,8 @@ import {
   getCryptoNews,
   getCryptoDetails,
   getCryptoDetailsChart,
-  getCryptoMarketList
+  getCryptoMarketList,
+  getExchangeInfo
 } from '../controllers/api.controller.js';
 
 const router = express.Router();
@@ -22,5 +23,6 @@ router.get('/news', getCryptoNews);
 router.get('/crypto-details/chart/:id', getCryptoDetailsChart);
 router.get('/crypto-market-list', getCryptoMarketList);
 router.get('/crypto-details/:id', getCryptoDetails);
+router.get('/exchanges-details/:id?', getExchangeInfo);
 
 export default router;

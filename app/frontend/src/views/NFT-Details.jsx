@@ -19,10 +19,9 @@ function NFTDetails() {
       try {
         const options = {
           method: 'GET',
-          url: `https://api.coingecko.com/api/v3/nfts/${name}`,
+          url: `http://localhost:5001/api/nfts/${name}`,
           headers: {
             accept: 'application/json',
-            // 'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB',
           },
         };
 
@@ -51,29 +50,30 @@ function NFTDetails() {
 
   useEffect(() => {
     let isMounted = true;
-    const baseUrl = 'https://data-api.cryptocompare.com/news/v1/article/list';
-    const params = {
-      lang: 'EN',
-      limit: 4,
-      exclude_categories: 'ETH',
-      api_key: 'b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b',
-    };
-    const url = new URL(baseUrl);
-    url.search = new URLSearchParams(params).toString();
+    
+    const fetchNewsData = async () => {
+      try {
+        const params = new URLSearchParams({
+          lang: 'EN',
+          limit: '4',
+          exclude_categories: 'ETH',
+        });
 
-    const options = {
-      method: 'GET',
-      headers: { 'Content-type': 'application/json; charset=UTF-8' },
-    };
-
-    fetch(url, options)
-      .then((response) => response.json())
-      .then((json) => {
+        const response = await fetch(`http://localhost:5001/api/news?${params}`, {
+          method: 'GET',
+          headers: { 'Content-type': 'application/json; charset=UTF-8' },
+        });
+        
+        const json = await response.json();
         if (isMounted) {
           setNewsData(json.Data);
         }
-      })
-      .catch((err) => console.log(err));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchNewsData();
 
     return () => {
       isMounted = false;
@@ -306,7 +306,7 @@ function NFTDetails() {
                 </table>
               </div>
               {/* NFT Description */}
-              <div className="mt-6 text-lg/8 text-gray-600 text-base max-w-full">
+              <div className="mt-6 text-base text-gray-600 max-w-full">
                 <div className="mt-6 text-base text-gray-600 max-w-full">
                   <h1 className="font-bold text-black text-lg mb-2">
                     About

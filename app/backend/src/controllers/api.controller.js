@@ -3,6 +3,7 @@ import axios from 'axios';
 const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3';
 const CRYPTOCOMPARE_API_URL = 'https://data-api.cryptocompare.com';
 
+// NOTE: Home page: Crypto data
 export const getCoins = async (req, res) => {
 	try {
 		const response = await axios.get(`${COINGECKO_API_URL}/coins/markets`, {
@@ -23,9 +24,15 @@ export const getCoins = async (req, res) => {
 	}
 };
 
+// NOTE: Home page: Crypto coins details data
 export const getCoinById = async (req, res) => {
 	try {
-		const response = await axios.get(`${COINGECKO_API_URL}/coins/${req.params.id}`);
+		const response = await axios.get(`${COINGECKO_API_URL}/coins/${req.params.id}`, {
+			headers: {
+				'accept': 'application/json',
+				'x-cg-demo-api-key': process.env.API_KEY
+			}
+		});
 		res.json(response.data);
 	} catch (error) {
 		console.error(`Error fetching coin ${req.params.id}:`, error.message);
@@ -62,6 +69,7 @@ export const getNftById = async (req, res) => {
 	}
 };
 
+// NOTE: Crppto news page: 
 export const getMarketData = async (req, res) => {
 	try {
 		const response = await axios.get(`${COINGECKO_API_URL}/coins/${req.params.id}/market_chart`, {
@@ -80,6 +88,7 @@ export const getMarketData = async (req, res) => {
 	}
 };
 
+// NOTE: Crppto news page:
 export const getCryptoNews = async (req, res) => {
 	try {
 		const response = await axios.get(`${CRYPTOCOMPARE_API_URL}/news/v1/article/list`, {
@@ -99,6 +108,7 @@ export const getCryptoNews = async (req, res) => {
 	}
 };
 
+// NOTE: Crppto details page: Details
 export const getCryptoDetails = async (req, res) => {
 	try {
 		const coinId = req.params.id;
@@ -120,6 +130,7 @@ export const getCryptoDetails = async (req, res) => {
 	}
 };
 
+// NOTE: Crppto details page: Charts
 export const getCryptoDetailsChart = async (req, res) => {
 	try {
 		const response = await axios.get(`${COINGECKO_API_URL}/coins/${req.params.id}/market_chart`, {
@@ -138,6 +149,7 @@ export const getCryptoDetailsChart = async (req, res) => {
 	}
 };
 
+// NOTE: Exchange page: Crypto market list
 export const getCryptoMarketList = async (req, res) => {
 	try {
 		const response = await axios.get(`${COINGECKO_API_URL}/exchanges`, {
@@ -149,6 +161,28 @@ export const getCryptoMarketList = async (req, res) => {
 		res.json(response.data);
 	} catch (error) {
 		console.error('Error fetching crypto market list:', error.message);
+		res.status(error.response?.status || 500).json({
+			error: error.message,
+			details: error.response?.data
+		});
+	}
+};
+
+// NOTE: Exchange page
+export const getExchangeInfo = async (req, res) => {
+	try {
+		const exchangeId = req.params.id || 'binance';
+		console.log(`Fetching exchange info for: ${exchangeId}`);
+
+		const response = await axios.get(`${COINGECKO_API_URL}/exchanges/${exchangeId}`, {
+			headers: {
+				'accept': 'application/json',
+				'x-cg-demo-api-key': process.env.API_KEY
+			}
+		});
+		res.json(response.data);
+	} catch (error) {
+		console.error(`Error fetching exchange info for ${req.params.id || 'binance'}:`, error.message);
 		res.status(error.response?.status || 500).json({
 			error: error.message,
 			details: error.response?.data

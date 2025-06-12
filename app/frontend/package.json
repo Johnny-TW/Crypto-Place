@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "pnpm dev",
-    "dev": "vite",
+    "pnv": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx}\"",
@@ -46,7 +46,7 @@
     "js-cookie": "^3.0.5",
     "json-server": "1.0.0-beta.3",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.460.0",
+    "lucide-react": "^0.513.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^18.2.0",
@@ -63,11 +63,12 @@
     "sass": "^1.84.0",
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.15",
-    "typescript": "~4.5.5",
     "vite": "^4.2.0"
   },
   "devDependencies": {
+    "@types/node": "^22.15.30",
     "autoprefixer": "^9.8.8",
+    "depcheck": "^1.4.7",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-prettier": "^5.2.3",
@@ -75,6 +76,7 @@
     "prettier": "^3.5.0",
     "sweetalert2": "^11.4.26",
     "tailwindcss": "^3.4.17",
+    "typescript": "~4.5.5",
     "vite-plugin-html": "^3.2.2"
   }
 }
