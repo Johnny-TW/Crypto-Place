@@ -1,29 +1,26 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux'; // 添加 Redux hooks
+import { useSelector, useDispatch } from 'react-redux';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { fetchCryptoNews } from '@redux/saga/cryptoNews'; // 導入 action
+import { fetchCryptoNews } from '@redux/saga/cryptoNews';
 
 function AutoPlay() {
   const dispatch = useDispatch();
-  const news = useSelector((state) => state.cryptoNews.news); // 從 Redux 獲取 news
+  const news = useSelector((state) => state.cryptoNews.news);
   const isLoading = useSelector((state) => state.cryptoNews.loading);
 
   useEffect(() => {
-    dispatch(fetchCryptoNews('BTC')); // 初始加載新聞
+    dispatch(fetchCryptoNews('BTC'));
   }, [dispatch]);
 
   const settings = {
     dots: true,
     infinite: true,
+    speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
-    autoplay: true,
-    speed: 2000,
-    autoplaySpeed: 2000,
-    cssEase: 'linear',
   };
 
   if (isLoading) {
