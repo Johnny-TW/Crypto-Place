@@ -5,9 +5,13 @@
   "type": "commonjs",
   "scripts": {
     "start": "pnpm dev",
-    "pnv": "vite",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
     "lint": "eslint \"src/**/*.{js,jsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx}\" --fix",
     "scan": "react-scan",
@@ -66,17 +70,23 @@
     "vite": "^4.2.0"
   },
   "devDependencies": {
+    "@reduxjs/toolkit": "^2.8.2",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.15.30",
     "autoprefixer": "^9.8.8",
     "depcheck": "^1.4.7",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.7.0",
     "eslint-plugin-prettier": "^5.2.3",
+    "jsdom": "^26.1.0",
     "postcss": "^8.5.2",
     "prettier": "^3.5.0",
     "sweetalert2": "^11.4.26",
     "tailwindcss": "^3.4.17",
     "typescript": "~4.5.5",
-    "vite-plugin-html": "^3.2.2"
+    "vite-plugin-html": "^3.2.2",
+    "vitest": "^3.2.3"
   }
 }
