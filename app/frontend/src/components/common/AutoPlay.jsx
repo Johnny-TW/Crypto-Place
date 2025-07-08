@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Slider from 'react-slick';
@@ -8,8 +7,8 @@ import { fetchCryptoNews } from '@redux/saga/cryptoNews';
 
 function AutoPlay() {
   const dispatch = useDispatch();
-  const news = useSelector((state) => state.cryptoNews.news);
-  const isLoading = useSelector((state) => state.cryptoNews.loading);
+  const news = useSelector(state => state.cryptoNews.news);
+  const isLoading = useSelector(state => state.cryptoNews.loading);
 
   useEffect(() => {
     dispatch(fetchCryptoNews('BTC'));
@@ -25,8 +24,8 @@ function AutoPlay() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+      <div className='flex items-center justify-center h-screen'>
+        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500' />
       </div>
     );
   }
@@ -36,28 +35,36 @@ function AutoPlay() {
   }
 
   return (
-    <div className="slider-container mb-20">
+    <div className='slider-container mb-20'>
       <Slider {...settings}>
-        {news.map((item) => (
-          <div key={item.ID} className="p-2">
-            <div className="bg-white border border-gray-300 rounded-lg p-4 h-120 flex flex-col justify-between">
+        {news.map(item => (
+          <div key={item.ID} className='p-2'>
+            <div className='bg-white border border-gray-300 rounded-lg p-4 h-120 flex flex-col justify-between'>
               <img
                 src={item.IMAGE_URL}
                 alt={item.TITLE}
-                className="w-full h-32 object-cover rounded-t-lg"
-                onError={(e) => { e.target.onerror = null; e.target.src = 'default-image-url'; }}
+                className='w-full h-32 object-cover rounded-t-lg'
+                onError={e => {
+                  const { target } = e;
+                  target.onerror = null;
+                  target.src = 'default-image-url';
+                }}
               />
-              <div className="flex-grow">
-                <h3 className="text-lg font-bold mt-2 mb-1 text-gray-700">{item.TITLE}</h3>
-                <p className="text-gray-600 text-xs mb-2">
-                  {item.BODY.length > 100 ? `${item.BODY.substring(0, 100)}...` : item.BODY}
+              <div className='flex-grow'>
+                <h3 className='text-lg font-bold mt-2 mb-1 text-gray-700'>
+                  {item.TITLE}
+                </h3>
+                <p className='text-gray-600 text-xs mb-2'>
+                  {item.BODY.length > 100
+                    ? `${item.BODY.substring(0, 100)}...`
+                    : item.BODY}
                 </p>
               </div>
               <a
                 href={item.URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-500 hover:text-gray-700 text-sm"
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-gray-500 hover:text-gray-700 text-sm'
               >
                 Read More
               </a>

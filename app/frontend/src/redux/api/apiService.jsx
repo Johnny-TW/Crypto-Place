@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const APIKit = axios.create({
-  baseURL: import.meta.env.VITE_FE_HOST,
+  baseURL: import.meta.env.VITE_JSON_SERVER_URL || 'http://localhost:3002',
   timeout: 60000,
 });
 

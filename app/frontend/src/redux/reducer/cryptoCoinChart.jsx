@@ -4,7 +4,7 @@ const initialState = {
   error: null,
 };
 
-const cryptoCoinChartReducer = (state = initialState, action) => {
+const cryptoCoinChartReducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case 'FETCH_CRYPTO_CHART_REQUEST':
       return {

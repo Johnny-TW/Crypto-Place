@@ -6,15 +6,13 @@ const CORE_CONCEPTS = [
     image: DashBoardDetail,
     title: 'NFT Dashboard',
     link: '/NFTDashboard',
-    description:
-      'Create New simulation request.',
+    description: 'Create New simulation request.',
   },
   {
     image: AllDataDashboard,
     title: 'Crypto News',
     link: '/CryptoNews',
-    description:
-      'Crypto New provides the latest cryptocurrency news.',
+    description: 'Crypto New provides the latest cryptocurrency news.',
   },
 ];
 

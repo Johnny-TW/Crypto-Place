@@ -28,17 +28,13 @@ import '../../styles/layouts/Navbar.scss';
 function ButtonAppBar() {
   const [open, setOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const toggleDrawer = (newOpen) => () => {
+  const toggleDrawer = newOpen => () => {
     // console.log(newOpen);
     setOpen(newOpen);
   };
 
   // Sidebar list * main
-  const Mianlist = [
-    'Home',
-    'NFT Dashboard',
-    'Crypto News',
-  ];
+  const Mianlist = ['Home', 'NFT Dashboard', 'Crypto News'];
 
   // Sidebar list * others
   const MianlistInformation = [
@@ -47,12 +43,7 @@ function ButtonAppBar() {
     'User Guide',
   ];
 
-  const settings = [
-    'Profile',
-    'Account',
-    '11003736',
-    'Logout',
-  ];
+  const settings = ['Profile', 'Account', '11003736', 'Logout'];
 
   // sidebar link
   const linkMap = {
@@ -68,7 +59,12 @@ function ButtonAppBar() {
   };
 
   const DrawerList = (
-    <Box className="Sidebar" sx={{ width: 250 }} role="presentation" onClick={toggleDrawer(false)}>
+    <Box
+      className='Sidebar'
+      sx={{ width: 250 }}
+      role='presentation'
+      onClick={toggleDrawer(false)}
+    >
       <List>
         {Mianlist.map((text, index) => (
           <ListItem key={text} disablePadding>
@@ -76,7 +72,7 @@ function ButtonAppBar() {
               component={MainLinkMap[text] ? Link : 'div'}
               to={MainLinkMap[text] || undefined}
             >
-              <ListItemIcon className="Sidebar_list_icon">
+              <ListItemIcon className='Sidebar_list_icon'>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
@@ -94,7 +90,7 @@ function ButtonAppBar() {
               to={text !== 'Team Roster' ? linkMap[text] || '#' : undefined}
               rel={text === 'Team Roster' ? 'noopener noreferrer' : undefined}
             >
-              <ListItemIcon className="Sidebar_list_icon">
+              <ListItemIcon className='Sidebar_list_icon'>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
@@ -109,34 +105,45 @@ function ButtonAppBar() {
     setAnchorElUser(null);
   };
 
-  const handleOpenUserMenu = (event) => {
+  const handleOpenUserMenu = event => {
     setAnchorElUser(event.currentTarget);
   };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar className="Navbar" style={{ margin: 0 }} position="fixed">
+      <AppBar className='Navbar' style={{ margin: 0 }} position='fixed'>
         <Toolbar>
           <IconButton
-            className="Sidebar_list_icon"
+            className='Sidebar_list_icon'
             onClick={toggleDrawer(true)}
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
+            size='large'
+            edge='start'
+            color='inherit'
+            aria-label='menu'
             sx={{ mr: 2 }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography className="Header_title" variant="h6" component="div" sx={{ flexGrow: 1 }} />
+          <Typography
+            className='Header_title'
+            variant='h6'
+            component='div'
+            sx={{ flexGrow: 1 }}
+          />
           <Drawer open={open} onClose={toggleDrawer(false)}>
             {DrawerList}
           </Drawer>
-          <Button className="Sign_button" color="inherit" onClick={handleOpenUserMenu}>Johnny Yeh</Button>
+          <Button
+            className='Sign_button'
+            color='inherit'
+            onClick={handleOpenUserMenu}
+          >
+            Johnny Yeh
+          </Button>
 
           <Menu
             sx={{ mt: '45px' }}
-            id="menu-appbar"
+            id='menu-appbar'
             anchorEl={anchorElUser}
             anchorOrigin={{
               vertical: 'top',
@@ -150,7 +157,7 @@ function ButtonAppBar() {
             open={Boolean(anchorElUser)}
             onClose={handleCloseUserMenu}
           >
-            {settings.map((setting) => (
+            {settings.map(setting => (
               <MenuItem key={setting} onClick={handleCloseUserMenu}>
                 <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
               </MenuItem>

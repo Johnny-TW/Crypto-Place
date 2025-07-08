@@ -7,7 +7,7 @@ import NativeSelect from '@mui/material/NativeSelect';
 function DropdownSelect({ onExcludeChange }) {
   const [selected, setSelected] = React.useState('BTC');
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     const newValue = event.target.value;
     setSelected(newValue);
     // console.log('Dropdown selected:', newValue);
@@ -15,10 +15,10 @@ function DropdownSelect({ onExcludeChange }) {
   };
 
   return (
-    <div className="flex items-center">
+    <div className='flex items-center'>
       <Box sx={{ minWidth: 120 }}>
         <FormControl fullWidth>
-          <InputLabel variant="standard" htmlFor="uncontrolled-native">
+          <InputLabel variant='standard' htmlFor='uncontrolled-native'>
             Crypto News
           </InputLabel>
           <NativeSelect
@@ -29,8 +29,8 @@ function DropdownSelect({ onExcludeChange }) {
               id: 'uncontrolled-native',
             }}
           >
-            <option value="BTC">Bitcoin News</option>
-            <option value="ETH">Ethereum News</option>
+            <option value='BTC'>Bitcoin News</option>
+            <option value='ETH'>Ethereum News</option>
           </NativeSelect>
         </FormControl>
       </Box>
