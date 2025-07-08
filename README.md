@@ -1,259 +1,99 @@
-[简体中文](https://pnpm.io/zh/) |
-[日本語](https://pnpm.io/ja/) |
-[한국어](https://pnpm.io/ko/) |
-[Italiano](https://pnpm.io/it/) |
-[Português Brasileiro](https://pnpm.io/pt/)
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
 
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset="https://i.imgur.com/qlW1eEG.png">
-  <source media="(prefers-color-scheme: dark)"  srcset="https://i.imgur.com/qlW1eEG.png">
-  <img src="https://i.imgur.com/qlW1eEG.png" alt="pnpm">
-</picture>
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-Fast, disk space efficient package manager:
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-* **Fast.** Up to 2x faster than the alternatives (see [benchmark](#benchmark)).
-* **Efficient.** Files inside `node_modules` are linked from a single content-addressable storage.
-* **[Great for monorepos](https://pnpm.io/workspaces).**
-* **Strict.** A package can access only dependencies that are specified in its `package.json`.
-* **Deterministic.** Has a lockfile called `pnpm-lock.yaml`.
-* **Works as a Node.js version manager.** See [pnpm env use](https://pnpm.io/cli/env).
-* **Works everywhere.** Supports Windows, Linux, and macOS.
-* **Battle-tested.** Used in production by teams of [all sizes](https://pnpm.io/users) since 2016.
-* [See the full feature comparison with npm and Yarn](https://pnpm.io/feature-comparison).
+## Description
 
-To quote the [Rush](https://rushjs.io/) team:
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-> Microsoft uses pnpm in Rush repos with hundreds of projects and hundreds of PRs per day, and we’ve found it to be very fast and reliable.
+## Project setup
 
-[![npm version](https://img.shields.io/npm/v/pnpm.svg?label=latest)](https://github.com/pnpm/pnpm/releases/latest)
-[![Join the chat at Discord](https://img.shields.io/discord/731599538665553971.svg)](https://r.pnpm.io/chat)
-[![OpenCollective](https://opencollective.com/pnpm/backers/badge.svg)](https://opencollective.com/pnpm)
-[![OpenCollective](https://opencollective.com/pnpm/sponsors/badge.svg)](https://opencollective.com/pnpm)
-[![X Follow](https://img.shields.io/twitter/follow/pnpmjs.svg?style=social&label=Follow)](https://x.com/intent/follow?screen_name=pnpmjs&region=follow_link)
-[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://stand-with-ukraine.pp.ua)
+```bash
+$ pnpm install
+```
 
-## Platinum Sponsors
+## Compile and run the project
 
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://bit.dev/?utm_source=pnpm&utm_medium=readme" target="_blank"><img src="https://pnpm.io/img/users/bit.svg" width="80" alt="Bit"></a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://sanity.io/?utm_source=pnpm&utm_medium=readme" target="_blank"><img src="https://pnpm.io/img/users/sanity.svg" width="180" alt="Bit"></a>
-      </td>
-    </tr>
-  </tbody>
-</table>
+```bash
+# development
+$ pnpm run start
 
-## Gold Sponsors
+# watch mode
+$ pnpm run start:dev
 
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://discord.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/discord.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/discord_light.svg" />
-            <img src="https://pnpm.io/img/users/discord.svg" width="220" alt="Discord" />
-          </picture>
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://uscreen.de/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/uscreen.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/uscreen_light.svg" />
-            <img src="https://pnpm.io/img/users/uscreen.svg" width="180" alt="u|screen" />
-          </picture>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://www.jetbrains.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/jetbrains.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/jetbrains.svg" />
-            <img src="https://pnpm.io/img/users/jetbrains.svg" width="180" alt="JetBrains" />
-          </picture>
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://nx.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/nx.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/nx_light.svg" />
-            <img src="https://pnpm.io/img/users/nx.svg" width="120" alt="Nx" />
-          </picture>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://coderabbit.ai/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/coderabbit.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/coderabbit_light.svg" />
-            <img src="https://pnpm.io/img/users/coderabbit.svg" width="220" alt="CodeRabbit" />
-          </picture>
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://route4me.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <img src="https://pnpm.io/img/users/route4me.svg" width="220" alt="Route4Me" />
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://workleap.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/workleap.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/workleap_light.svg" />
-            <img src="https://pnpm.io/img/users/workleap.svg" width="190" alt="Workleap" />
-          </picture>
-        </a>
-      </td>
-    </tr>
-  </tbody>
-</table>
+# production mode
+$ pnpm run start:prod
+```
 
-## Silver Sponsors
+## Run tests
 
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://leniolabs.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <img src="https://pnpm.io/img/users/leniolabs.jpg" width="40" alt="Leniolabs_">
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://vercel.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/vercel.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/vercel_light.svg" />
-            <img src="https://pnpm.io/img/users/vercel.svg" width="90" alt="Vercel" />
-          </picture>
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://depot.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/depot.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/depot_light.svg" />
-            <img src="https://pnpm.io/img/users/depot.svg" width="100" alt="Depot" />
-          </picture>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://moonrepo.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/moonrepo.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/moonrepo_light.svg" />
-            <img src="https://pnpm.io/img/users/moonrepo.svg" width="100" alt="moonrepo" />
-          </picture>
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://devowl.io/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/devowlio.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/devowlio.svg" />
-            <img src="https://pnpm.io/img/users/devowlio.svg" width="100" alt="devowl.io" />
-          </picture>
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://cerbos.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/cerbos.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/cerbos_light.svg" />
-            <img src="https://pnpm.io/img/users/cerbos.svg" width="90" alt="Cerbos" />
-          </picture>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://vlt.sh/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/vlt.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/vlt_light.svg" />
-            <img src="https://pnpm.io/img/users/vlt.svg" width="70" alt="vlt" />
-          </picture>
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://vite.dev/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <img src="https://pnpm.io/img/users/vitejs.svg" width="32" alt="Vite">
-        </a>
-      </td>
-      <td align="center" valign="middle">
-        <a href="https://macpaw.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcset="https://pnpm.io/img/users/macpaw.svg" />
-            <source media="(prefers-color-scheme: dark)" srcset="https://pnpm.io/img/users/macpaw_light.svg" />
-            <img src="https://pnpm.io/img/users/macpaw.svg" width="100" />
-          </picture>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" valign="middle">
-        <a href="https://opensource.mercedes-benz.com/?utm_source=pnpm&utm_medium=readme" target="_blank">
-          <img src="https://pnpm.io/img/users/mercedes.svg" width="32" alt="Vite">
-        </a>
-      </td>
-    </tr>
-  </tbody>
-</table>
+```bash
+# unit tests
+$ pnpm run test
 
-Support this project by [becoming a sponsor](https://opencollective.com/pnpm#sponsor).
+# e2e tests
+$ pnpm run test:e2e
 
-## Background
+# test coverage
+$ pnpm run test:cov
+```
 
-pnpm uses a content-addressable filesystem to store all files from all module directories on a disk.
-When using npm, if you have 100 projects using lodash, you will have 100 copies of lodash on disk.
-With pnpm, lodash will be stored in a content-addressable storage, so:
+## Deployment
 
-1. If you depend on different versions of lodash, only the files that differ are added to the store.
-  If lodash has 100 files, and a new version has a change only in one of those files,
-  `pnpm update` will only add 1 new file to the storage.
-1. All the files are saved in a single place on the disk. When packages are installed, their files are linked
-  from that single place consuming no additional disk space. Linking is performed using either hard-links or reflinks (copy-on-write).
+When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
 
-As a result, you save gigabytes of space on your disk and you have a lot faster installations!
-If you'd like more details about the unique `node_modules` structure that pnpm creates and
-why it works fine with the Node.js ecosystem, read this small article: [Flat node_modules is not the only way](https://pnpm.io/blog/2020/05/27/flat-node-modules-is-not-the-only-way).
+If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
 
-💖 Like this project? Let people know with a [tweet](https://r.pnpm.io/tweet)
+```bash
+$ pnpm install -g mau
+$ mau deploy
+```
 
-## Getting Started
+With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
 
-- [Installation](https://pnpm.io/installation)
-- [Usage](https://pnpm.io/pnpm-cli)
-- [Frequently Asked Questions](https://pnpm.io/faq)
-- [Chat](https://r.pnpm.io/chat)
-- [X](https://x.com/pnpmjs)
-- [Bluesky](https://bsky.app/profile/pnpm.io)
+## Resources
 
-## Benchmark
+Check out a few resources that may come in handy when working with NestJS:
 
-pnpm is up to 2x faster than npm and Yarn classic. See all benchmarks [here](https://r.pnpm.io/benchmarks).
+- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
+- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
+- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
+- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
+- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
+- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
+- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
+- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-Benchmarks on an app with lots of dependencies:
+## Support
 
-![](https://pnpm.io/img/benchmarks/alotta-files.svg)
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+
+## Stay in touch
+
+- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
 
 ## License
-## 🔄 最新更新 (2025/05/28)
-**🚀 新增**：CoinGecko API 金鑰整合  
-**🐛 修復**：CORS 和 404 連線問題  
-**⚡ 優化**：錯誤處理和 API 文檔
+
+Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
