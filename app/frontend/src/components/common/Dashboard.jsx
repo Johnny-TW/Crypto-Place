@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { Paper } from '@mui/material';
 
@@ -6,16 +5,18 @@ function Dashboard({ columns, marketListData }) {
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (
-    <div className="dashboard-container z-0 mb-10 rounded-lg">
-      <div className="dashboard-area">
-        <div className="mb-3 grid grid-cols-12 gap-2 items-center">
-          <div className="col-span-12 sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1">
+    <div className='dashboard-container z-0 mb-10 rounded-lg'>
+      <div className='dashboard-area'>
+        <div className='mb-3 grid grid-cols-12 gap-2 items-center'>
+          <div className='col-span-12 sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'>
             {/* 空的區域 */}
           </div>
-          <div className="col-span-12 sm:col-span-10 md:col-span-10 lg:col-span-10 xl:col-span-10">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 text-center">Markets Overview</h2>
+          <div className='col-span-12 sm:col-span-10 md:col-span-10 lg:col-span-10 xl:col-span-10'>
+            <h2 className='text-3xl font-bold tracking-tight text-gray-900 text-center'>
+              Markets Overview
+            </h2>
           </div>
-          <div className="col-span-12 sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1">
+          <div className='col-span-12 sm:col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1'>
             {/* 空的區域 */}
           </div>
         </div>

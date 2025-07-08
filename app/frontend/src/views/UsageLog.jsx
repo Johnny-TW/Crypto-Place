@@ -1,12 +1,9 @@
-import React from 'react';
 import { Container, Row } from 'react-bootstrap';
 
 function UsageLog() {
   return (
-    <Container className="main-content-container">
-      <Row>
-        UsageLog
-      </Row>
+    <Container className='main-content-container'>
+      <Row>UsageLog</Row>
     </Container>
   );
 }

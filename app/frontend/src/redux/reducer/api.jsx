@@ -8,7 +8,7 @@ const initialState = {
   deleted: null,
 };
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action = {}) => {
   switch (action.type) {
     case 'SET_LOADING':
       const { loading, path } = action.data;
@@ -19,7 +19,11 @@ const reducer = (state = initialState, action) => {
       // 只要path開頭一樣就刪除，避免takeLatest issue
       loadingStack = loading
         ? [...loadingStack, action.data]
-        : _.filter(loadingStack, (item) => _.first(_.split(item.path, '/')) !== _.first(_.split(path, '/')));
+        : _.filter(
+          loadingStack,
+          item =>
+            _.first(_.split(item.path, '/')) !== _.first(_.split(path, '/'))
+        );
 
       return {
         ...state,

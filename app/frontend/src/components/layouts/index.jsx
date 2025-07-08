@@ -5,11 +5,4 @@ import HomePageCard from './HomePageCard';
 import HomePageCards from './HomePageCards';
 import HomePageTitle from './HomePageTitle';
 
-export {
-  Default,
-  Footer,
-  Header,
-  HomePageCard,
-  HomePageCards,
-  HomePageTitle,
-};
+export { Default, Footer, Header, HomePageCard, HomePageCards, HomePageTitle };

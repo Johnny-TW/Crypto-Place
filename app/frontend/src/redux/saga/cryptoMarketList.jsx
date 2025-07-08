@@ -1,5 +1,6 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
 import axios from 'axios';
+import { API_METHOD } from '../api/apiService';
 import { CRYPTO_MARKET_LIST } from '../api/api';
 
 export const fetchCryptoMarketList = () => ({
@@ -9,14 +10,13 @@ export const fetchCryptoMarketList = () => ({
 function* fetchMarketListSaga() {
   try {
     const options = {
-      method: 'GET',
+      method: API_METHOD.GET,
       url: CRYPTO_MARKET_LIST,
       params: {
         per_page: '250',
       },
       headers: {
         accept: 'application/json',
-        // 'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB',
       },
     };
 

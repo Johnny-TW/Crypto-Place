@@ -8,6 +8,9 @@ import CryptoDetails from './cryptoDetails';
 import CryptoCoinChart from './cryptoCoinChart';
 import CryptoMarketList from './cryptoMarketList';
 import exchangeDetailsSaga from './cryptoExchangesDetails';
+import nftDashboardSaga from './nftDashboard';
+import nftDetailsSaga from './nftDetails';
+import employeeInfoSaga from './employeeInfo';
 
 import { API_METHOD, APIKit } from '../api/apiService';
 
@@ -26,15 +29,17 @@ export function* fetchApi({
   failValue = null,
   params = {},
   json = false,
-  parameters = null,
+  // parameters = null,
 }) {
   try {
     const response = yield call(APIKit.request, {
       method,
-      url: path, // 使用 path 作為 url
+      url: path,
       params,
       headers: {
-        'Content-Type': json ? 'application/json' : 'application/x-www-form-urlencoded',
+        'Content-Type': json
+          ? 'application/json'
+          : 'application/x-www-form-urlencoded',
         Authorization: `Bearer ${Cookies.get('token')}`,
       },
       data,
@@ -69,6 +74,9 @@ function* rootSaga() {
     CryptoCoinChart(),
     CryptoMarketList(),
     exchangeDetailsSaga(),
+    nftDashboardSaga(),
+    nftDetailsSaga(),
+    employeeInfoSaga(),
   ]);
 }
 

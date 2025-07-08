@@ -1,5 +1,6 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
 import axios from 'axios';
+import { API_METHOD } from '../api/apiService';
 import { CRYPTO_DETAILS_CHART } from '../api/api';
 
 export const fetchCryptoChart = (coinId, timeRange) => ({
@@ -7,21 +8,36 @@ export const fetchCryptoChart = (coinId, timeRange) => ({
   payload: { coinId, timeRange },
 });
 
+const convertRangeToDays = range => {
+  switch (range) {
+    case '24h':
+      return 1;
+    case '7d':
+      return 7;
+    case '30d':
+      return 30;
+    case '1y':
+      return 365;
+    default:
+      return 1;
+  }
+};
+
 function* fetchCryptoChartSaga(action) {
   try {
     const { coinId, timeRange } = action.payload;
+    const days = convertRangeToDays(timeRange);
     const options = {
-      method: 'GET',
+      method: API_METHOD.GET,
       url: CRYPTO_DETAILS_CHART.replace('bitcoin', coinId),
       params: {
         vs_currency: 'usd',
-        days: timeRange,
+        days,
         interval: 'daily',
         precision: '18',
       },
       headers: {
         accept: 'application/json',
-        // 'x-cg-demo-api-key': 'CG-nrJXAB28gG2xbfsdLieGcxWB',
       },
     };
 

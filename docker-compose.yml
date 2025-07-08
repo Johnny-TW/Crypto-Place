@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # Frontend Service
+  frontend:
+    image: crypto-place-frontend:latest
+    ports:
+      - "3001:5173"
+    environment:
+      - NODE_ENV=development
+    networks:
+      - crypto-network
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+      placement:
+        constraints:
+          - node.role == manager
+
+  # Backend Service
+  backend:
+    image: crypto-place-backend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - crypto-network
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+      placement:
+        constraints:
+          - node.role == manager
+
+  # JSON Server Service
+  json-server:
+    image: crypto-place-json-server:latest
+    ports:
+      - "3002:3002"
+    networks:
+      - crypto-network
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  crypto-network:
+    driver: overlay
+    attachable: true
+    driver_opts:
+      encrypted: "true"
+
+volumes:
+  node_modules_frontend:
+    driver: local
+  node_modules_backend:
+    driver: local
+  app_logs:
+    driver: local

@@ -1,12 +1,9 @@
-/// <reference types="vitest" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
 export default defineConfig({
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
   test: {
     globals: true,
     environment: 'jsdom',
@@ -20,7 +17,7 @@ export default defineConfig({
       { find: '@constant', replacement: resolve(__dirname, 'src/constant') },
       { find: '@hooks', replacement: resolve(__dirname, 'src/hooks') },
       { find: '@images', replacement: resolve(__dirname, 'src/images') },
-      { find: '@styleLaouts', replacement: resolve(__dirname, 'src/styles/layouts') },
+      { find: '@styleLayouts', replacement: resolve(__dirname, 'src/styles/layouts') },
       { find: '@styleViews', replacement: resolve(__dirname, 'src/styles/views') },
       { find: '@redux', replacement: resolve(__dirname, 'src/redux') },
       { find: '@utils', replacement: resolve(__dirname, 'src/utils') },
@@ -50,12 +47,8 @@ export default defineConfig({
   build: {
     outDir: 'build',
     commonjsOptions: {
-      include: [
-        'node_modules/**',
-      ],
-      exclude: [
-        'node_modules/process-es6/**',
-      ],
+      include: ['node_modules/**'],
+      exclude: ['node_modules/process-es6/**'],
     },
     rollupOptions: {
       output: {
