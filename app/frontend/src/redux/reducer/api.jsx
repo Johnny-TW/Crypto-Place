@@ -20,10 +20,10 @@ const reducer = (state = initialState, action = {}) => {
       loadingStack = loading
         ? [...loadingStack, action.data]
         : _.filter(
-          loadingStack,
-          item =>
-            _.first(_.split(item.path, '/')) !== _.first(_.split(path, '/'))
-        );
+            loadingStack,
+            item =>
+              _.first(_.split(item.path, '/')) !== _.first(_.split(path, '/'))
+          );
 
       return {
         ...state,

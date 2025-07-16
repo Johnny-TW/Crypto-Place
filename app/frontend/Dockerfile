@@ -17,7 +17,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Set environment variables
-ENV VITE_API_BASE_URL=http://localhost:3000
+ENV VITE_API_BASE_URL=http://localhost:5001
 ENV VITE_FE_PORT=5173
 
 # Expose port

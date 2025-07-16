@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -20,9 +20,9 @@ import {
 } from '@heroicons/react/24/outline';
 
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { fetchEmployeeInfo } from '../../redux/saga/employeeInfo';
+import { logoutRequest } from '../../redux/saga/auth';
 
-const Cryptocurrencies = [{ name: 'Crypto Coins', href: '/' }];
+const Cryptocurrencies = [{ name: 'Crypto Coins', href: '/dashboard' }];
 
 const Exchanges = [{ name: 'Crypto Exchanges', href: '/exchanges' }];
 
@@ -33,40 +33,62 @@ const Learn = [
   { name: 'API', href: '/api' },
 ];
 
-const LogOut = [{ name: 'Log out', href: '#', icon: ArrowLeftOnRectangleIcon }];
+// const LogOut = [{ name: 'Log out', href: '#', icon: ArrowLeftOnRectangleIcon }];
 
 export default function Example() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { employeeInfo, loading } = useSelector(
-    state =>
-      state.employeeInfo || {
-        employeeInfo: {},
-        loading: false,
-      }
+  const { user, isLoading } = useSelector(state => state.auth || {});
+
+  const handleLogout = () => {
+    dispatch(logoutRequest());
+  };
+
+  // Generate employee data from auth user - memoized to prevent unnecessary re-renders
+  const employee = useMemo(
+    () => [
+      {
+        name: 'Name',
+        description: user?.chName || user?.enName || user?.name || 'Loading...',
+      },
+      {
+        name: 'Employee ID',
+        description: user?.emplId || 'Loading...',
+      },
+      {
+        name: 'Department',
+        description: user?.deptDescr || 'Loading...',
+      },
+      {
+        name: 'Job Title',
+        description: user?.jobTitle || 'Loading...',
+      },
+      {
+        name: 'E-mail',
+        description: user?.email || 'Loading...',
+      },
+      {
+        name: 'Phone',
+        description: user?.phone || 'Loading...',
+      },
+      {
+        name: 'Office',
+        description: user?.office || 'Loading...',
+      },
+    ],
+    [
+      user?.chName,
+      user?.enName,
+      user?.name,
+      user?.emplId,
+      user?.deptDescr,
+      user?.jobTitle,
+      user?.email,
+      user?.phone,
+      user?.office,
+    ]
   );
-
-  useEffect(() => {
-    dispatch(fetchEmployeeInfo());
-  }, [dispatch]);
-
-  // Generate employee data from API response - memoized to prevent unnecessary re-renders
-  const employee = useMemo(() => [
-    { name: 'Name', description: employeeInfo.name || 'Loading...' },
-    {
-      name: 'Employee ID',
-      description: employeeInfo.employeeId || 'Loading...',
-    },
-    {
-      name: 'Department',
-      description: employeeInfo.department || 'Loading...',
-    },
-    {
-      name: 'E-mail',
-      description: employeeInfo.email || 'johnny43697@gmail.com',
-    },
-  ], [employeeInfo.name, employeeInfo.employeeId, employeeInfo.department, employeeInfo.email]);
 
   return (
     <header className='justify-between'>
@@ -75,7 +97,7 @@ export default function Example() {
         className='mx-auto flex items-center justify-between p-6 lg:px-8'
       >
         <div className='flex lg:flex-1'>
-          <a href='/' className='-m-1.5 p-1.5'>
+          <a href='/dashboard' className='-m-1.5 p-1.5'>
             <span className='sr-only'>Your Company</span>
             <img
               alt=''
@@ -249,7 +271,7 @@ export default function Example() {
               className='absolute top-full left-1/2 transform -translate-x-1/2 z-10 mt-3 w-screen max-w-xs overflow-hidden rounded-2xl bg-white ring-1 shadow-lg ring-gray-900/5 transition data-closed:translate-y-1 data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-150 data-leave:ease-in'
             >
               <div className='p-2'>
-                {Cryptocurrencies.map(item => (
+                {Learn.filter(item => item.name === 'API').map(item => (
                   <div
                     key={item.name}
                     className='group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50'
@@ -277,13 +299,10 @@ export default function Example() {
               <div className='relative'>
                 <span className='absolute -inset-1.5' />
                 <span className='sr-only'>Open user menu</span>
-                <img
-                  className='size-8 rounded-full bg-gray-50'
-                  src='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
-                  alt='User profile'
-                />
               </div>
-              {loading ? 'Loading...' : employeeInfo.name || 'Johnny Yeh'}
+              {isLoading
+                ? 'Loading...'
+                : user?.chName || user?.enName || user?.name || 'Johnny Yeh'}
               <ChevronDownIcon
                 aria-hidden='true'
                 className='size-5 flex-none text-gray-400'
@@ -314,19 +333,17 @@ export default function Example() {
                 ))}
               </div>
               <div className='grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50'>
-                {LogOut.map(item => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className='flex items-center justify-center gap-x-2.5 p-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-100'
-                  >
-                    <item.icon
-                      aria-hidden='true'
-                      className='size-5 flex-none text-gray-400'
-                    />
-                    {item.name}
-                  </a>
-                ))}
+                <button
+                  type='button'
+                  onClick={handleLogout}
+                  className='flex items-center justify-center gap-x-2.5 p-3 text-sm/6 font-semibold text-gray-900 hover:bg-gray-100'
+                >
+                  <ArrowLeftOnRectangleIcon
+                    aria-hidden='true'
+                    className='size-5 flex-none text-gray-400'
+                  />
+                  Log out
+                </button>
               </div>
             </PopoverPanel>
           </Popover>
@@ -342,7 +359,7 @@ export default function Example() {
         <DialogPanel className='fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10'>
           <div className='flex items-center justify-between'>
             <a href='#' className='-m-1.5 p-1.5'>
-              <span className='sr-only'>Your Company</span>
+              <span className='sr-only text-gray-900'>ENBG</span>
               <img
                 alt=''
                 src='/src/images/svg/ENBG_logo.svg'
@@ -517,7 +534,7 @@ export default function Example() {
                       </DisclosureButton>
 
                       <DisclosurePanel className='px-4 py-2'>
-                        {Cryptocurrencies.map(item => (
+                        {Learn.filter(item => item.name === 'API').map(item => (
                           <div
                             key={item.name}
                             className='group relative flex items-center gap-x-6 rounded-lg p-2 text-sm/6 hover:bg-gray-50'
@@ -542,12 +559,13 @@ export default function Example() {
                 </Disclosure>
               </div>
               <div className='py-6'>
-                <a
-                  href='#'
-                  className='-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50'
+                <button
+                  type='button'
+                  onClick={handleLogout}
+                  className='-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50 w-full text-left'
                 >
                   Log Out
-                </a>
+                </button>
               </div>
             </div>
           </div>

@@ -6,7 +6,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import CardLists from '@components/common/CardLists';
 import Breadcrumb from '@components/common/Breadcrumbs';
 import DropdownSelect from '@components/common/DropdownSelect';
-import { fetchCryptoNews } from '@redux/saga/cryptoNews';
 import { useDispatch, useSelector } from 'react-redux';
 
 function CryptoNews() {
@@ -16,11 +15,11 @@ function CryptoNews() {
 
   const handleExcludeChange = category => {
     console.log('Handling category change:', category);
-    dispatch(fetchCryptoNews(category));
+    dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: { category } });
   };
 
   useEffect(() => {
-    dispatch(fetchCryptoNews('BTC'));
+    dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: { category: 'BTC' } });
   }, [dispatch]);
 
   console.log(news);

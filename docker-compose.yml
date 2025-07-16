@@ -1,9 +1,23 @@
 version: '3.8'
 
 services:
+  # Database Service
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: crypto_place
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - crypto-network
+
   # Frontend Service
   frontend:
-    image: crypto-place-frontend:latest
+    image: ${DOCKER_USERNAME}/crypto-place-frontend:latest
     ports:
       - "3001:5173"
     environment:
@@ -33,12 +47,15 @@ services:
 
   # Backend Service
   backend:
-    image: crypto-place-backend:latest
+    image: ${DOCKER_USERNAME}/crypto-place-backend:latest
     ports:
-      - "3000:3000"
+      - "5001:5001"
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=5001
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/crypto_place?schema=public
+    depends_on:
+      - postgres
     networks:
       - crypto-network
     deploy:
@@ -62,33 +79,6 @@ services:
         constraints:
           - node.role == manager
 
-  # JSON Server Service
-  json-server:
-    image: crypto-place-json-server:latest
-    ports:
-      - "3002:3002"
-    networks:
-      - crypto-network
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-      update_config:
-        parallelism: 1
-        delay: 10s
-        failure_action: rollback
-      resources:
-        limits:
-          cpus: '0.3'
-          memory: 256M
-        reservations:
-          cpus: '0.1'
-          memory: 128M
-      placement:
-        constraints:
-          - node.role == manager
 
 networks:
   crypto-network:
@@ -98,6 +88,8 @@ networks:
       encrypted: "true"
 
 volumes:
+  postgres_data:
+    driver: local
   node_modules_frontend:
     driver: local
   node_modules_backend:

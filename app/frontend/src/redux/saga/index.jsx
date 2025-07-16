@@ -11,8 +11,9 @@ import exchangeDetailsSaga from './cryptoExchangesDetails';
 import nftDashboardSaga from './nftDashboard';
 import nftDetailsSaga from './nftDetails';
 import employeeInfoSaga from './employeeInfo';
+import authSaga from './auth';
 
-import { API_METHOD, APIKit } from '../api/apiService';
+import { API_METHOD, APIKit } from '../api/apiService.jsx';
 
 export function* setLoading(loading, path, method) {
   yield put({ type: 'SET_LOADING', data: { loading, path, method } });
@@ -77,6 +78,7 @@ function* rootSaga() {
     nftDashboardSaga(),
     nftDetailsSaga(),
     employeeInfoSaga(),
+    authSaga(),
   ]);
 }
 

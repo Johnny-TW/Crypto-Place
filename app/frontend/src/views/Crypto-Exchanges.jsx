@@ -2,7 +2,6 @@ import { useEffect, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
 import { Paper } from '@mui/material';
-import { fetchCryptoMarketList } from '@redux/saga/cryptoMarketList';
 import { useHistory } from 'react-router-dom';
 
 function Home() {
@@ -99,7 +98,7 @@ function Home() {
   );
 
   const fetchData = useCallback(() => {
-    dispatch(fetchCryptoMarketList());
+    dispatch({ type: 'FETCH_CRYPTO_MARKET_LIST' });
   }, [dispatch]);
 
   useEffect(() => {
@@ -136,7 +135,7 @@ function Home() {
             columns={columns}
             loading={isLoading}
             initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[10, 20, 30, 40, 50]}
+            pageSizeOptions={[10, 20, 30, 40, 50, 100]}
             sx={{
               cursor: 'pointer',
               backgroundColor: '#FFFFFF',

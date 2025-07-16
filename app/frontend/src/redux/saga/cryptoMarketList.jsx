@@ -9,6 +9,8 @@ export const fetchCryptoMarketList = () => ({
 
 function* fetchMarketListSaga() {
   try {
+    yield put({ type: 'FETCH_MARKET_LIST_REQUEST' });
+
     const options = {
       method: API_METHOD.GET,
       url: CRYPTO_MARKET_LIST,
@@ -30,7 +32,7 @@ function* fetchMarketListSaga() {
 }
 
 function* marketListSaga() {
-  yield takeLatest('FETCH_MARKET_LIST_REQUEST', fetchMarketListSaga);
+  yield takeLatest('FETCH_CRYPTO_MARKET_LIST', fetchMarketListSaga);
 }
 
 export default marketListSaga;

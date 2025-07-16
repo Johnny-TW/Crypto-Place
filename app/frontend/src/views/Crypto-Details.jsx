@@ -10,10 +10,6 @@ import CryptoNews from '@components/common/CryptoNews';
 import BasicBreadcrumbs from '@components/common/Breadcrumbs';
 import AutoPlay from '@components/common/AutoPlay';
 
-import { fetchCryptoDetails } from '@redux/saga/cryptoDetails';
-import { fetchCryptoChart } from '@redux/saga/cryptoCoinChart';
-import { fetchCryptoMarketList } from '@redux/saga/cryptoMarketList';
-
 function CryptoDetails() {
   const columns = useMemo(
     () => [
@@ -109,6 +105,9 @@ function CryptoDetails() {
   const { marketListData, loading: marketListLoading } = useSelector(
     state => state.cryptoMarketList
   );
+  const { news: cryptoNews, loading: newsLoading } = useSelector(
+    state => state.cryptoNews
+  );
 
   const isLoading =
     detailsLoading ||
@@ -119,12 +118,13 @@ function CryptoDetails() {
     !marketListData;
 
   const fetchInitialData = useCallback(() => {
-    dispatch(fetchCryptoDetails(coinId));
-    dispatch(fetchCryptoMarketList());
+    dispatch({ type: 'FETCH_CRYPTO_DETAILS', payload: { coinId } });
+    dispatch({ type: 'FETCH_CRYPTO_MARKET_LIST' });
+    dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: 'BTC' });
   }, [dispatch, coinId]);
 
   const fetchChartData = useCallback(() => {
-    dispatch(fetchCryptoChart(coinId, timeRange));
+    dispatch({ type: 'FETCH_CRYPTO_CHART', payload: { coinId, timeRange } });
   }, [dispatch, coinId, timeRange]);
 
   useEffect(() => {
@@ -172,7 +172,7 @@ function CryptoDetails() {
       />
       <Dashboard columns={columns} marketListData={marketListData} />
       <CryptoNews />
-      <AutoPlay />
+      <AutoPlay news={cryptoNews} isLoading={newsLoading} />
     </div>
   );
 }

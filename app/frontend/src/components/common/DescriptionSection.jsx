@@ -30,7 +30,7 @@ function DescriptionSection({ name, description, href }) {
             {isExpanded ? 'Show Less' : 'Show More'}
           </button>
           <div className='mt-4 flex gap-4'>
-            {href && href.homepage[0] && (
+            {href && href.homepage[0] ? (
               <a
                 href={href.homepage[0]}
                 target='_blank'
@@ -40,8 +40,8 @@ function DescriptionSection({ name, description, href }) {
                 <Globe className='h-4 w-4' />
                 Website
               </a>
-            )}
-            {href && href.repos_url.github[0] && (
+            ) : null}
+            {href && href.repos_url.github[0] ? (
               <a
                 href={href.repos_url.github[0]}
                 target='_blank'
@@ -51,7 +51,7 @@ function DescriptionSection({ name, description, href }) {
                 <Github className='h-4 w-4' />
                 Github
               </a>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

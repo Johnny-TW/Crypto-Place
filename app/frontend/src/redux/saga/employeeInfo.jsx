@@ -1,5 +1,6 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { EMPLOYEE_INFO, EMPLOYEES_LIST } from '../api/api';
 
 export const fetchEmployeeInfo = () => ({
@@ -17,7 +18,13 @@ export const updateEmployeeInfo = employeeData => ({
 
 function* fetchEmployeeInfoSaga() {
   try {
-    const response = yield call(axios.get, EMPLOYEE_INFO);
+    const token = Cookies.get('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = yield call(axios.get, EMPLOYEE_INFO, config);
     yield put({
       type: 'FETCH_EMPLOYEE_INFO_SUCCESS',
       payload: response.data,
@@ -32,7 +39,13 @@ function* fetchEmployeeInfoSaga() {
 
 function* fetchEmployeesListSaga() {
   try {
-    const response = yield call(axios.get, EMPLOYEES_LIST);
+    const token = Cookies.get('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = yield call(axios.get, EMPLOYEES_LIST, config);
     yield put({
       type: 'FETCH_EMPLOYEES_LIST_SUCCESS',
       payload: response.data,
@@ -47,7 +60,18 @@ function* fetchEmployeesListSaga() {
 
 function* updateEmployeeInfoSaga(action) {
   try {
-    const response = yield call(axios.put, EMPLOYEE_INFO, action.payload);
+    const token = Cookies.get('token');
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = yield call(
+      axios.put,
+      EMPLOYEE_INFO,
+      action.payload,
+      config
+    );
     yield put({
       type: 'UPDATE_EMPLOYEE_INFO_SUCCESS',
       payload: response.data,

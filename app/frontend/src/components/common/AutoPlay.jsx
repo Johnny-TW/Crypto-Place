@@ -1,19 +1,8 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { fetchCryptoNews } from '@redux/saga/cryptoNews';
 
-function AutoPlay() {
-  const dispatch = useDispatch();
-  const news = useSelector(state => state.cryptoNews.news);
-  const isLoading = useSelector(state => state.cryptoNews.loading);
-
-  useEffect(() => {
-    dispatch(fetchCryptoNews('BTC'));
-  }, [dispatch]);
-
+function AutoPlay({ news, isLoading }) {
   const settings = {
     dots: true,
     infinite: true,
