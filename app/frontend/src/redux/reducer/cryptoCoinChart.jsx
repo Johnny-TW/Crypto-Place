@@ -6,6 +6,7 @@ const initialState = {
 
 const cryptoCoinChartReducer = (state = initialState, action = {}) => {
   switch (action.type) {
+    case 'FETCH_CRYPTO_CHART':
     case 'FETCH_CRYPTO_CHART_REQUEST':
       return {
         ...state,

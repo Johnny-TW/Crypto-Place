@@ -1,6 +1,11 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
 import axios from 'axios';
-import { API_METHOD } from '../api/apiService';
+import { API_METHOD } from '../api/apiService.jsx';
+
+export const fetchExchangeDetails = exchangeId => ({
+  type: 'FETCH_EXCHANGE_DETAILS',
+  payload: exchangeId,
+});
 
 function* fetchExchangeDetailsSaga(action) {
   try {

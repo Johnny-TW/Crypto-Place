@@ -4,7 +4,8 @@ import { PrismaClient } from '@prisma/client';
 @Injectable()
 export class PrismaService
   extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy {
+  implements OnModuleInit, OnModuleDestroy
+{
   constructor() {
     super({
       log:
@@ -15,7 +16,22 @@ export class PrismaService
   }
 
   async onModuleInit() {
-    await this.$connect();
+    try {
+      console.log('Attempting to connect to database...');
+      await Promise.race([
+        this.$connect(),
+        new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error('Database connection timeout')),
+            10000,
+          ),
+        ),
+      ]);
+      console.log('Successfully connected to database');
+    } catch (error) {
+      console.error('Failed to connect to database:', error);
+      throw error;
+    }
   }
 
   async onModuleDestroy() {

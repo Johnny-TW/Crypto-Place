@@ -10,7 +10,7 @@ function DropdownSelect({ onExcludeChange }) {
   const handleChange = event => {
     const newValue = event.target.value;
     setSelected(newValue);
-    // console.log('Dropdown selected:', newValue);
+    console.log('Dropdown selected:', newValue);
     onExcludeChange(newValue);
   };
 

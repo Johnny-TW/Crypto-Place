@@ -9,7 +9,6 @@ import {
   Select,
   Paper,
 } from '@mui/material';
-import { fetchNftList } from '../redux/saga/nftDashboard';
 
 import '../styles/views/nft-dashboard.scss';
 
@@ -79,7 +78,7 @@ function StickyHeadTable() {
   };
 
   useEffect(() => {
-    dispatch(fetchNftList(order));
+    dispatch({ type: 'FETCH_NFT_LIST', payload: { order } });
   }, [dispatch, order]);
 
   const paginationModel = { page: 0, pageSize: 20 };

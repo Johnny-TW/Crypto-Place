@@ -7,6 +7,7 @@ const initialState = {
 const cryptoDetailsReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'FETCH_CRYPTO_DETAILS':
+    case 'FETCH_CRYPTO_DETAILS_REQUEST':
       return { ...state, loading: true, error: null };
     case 'FETCH_CRYPTO_DETAILS_SUCCESS':
       return { ...state, loading: false, cryptoDetails: action.payload };

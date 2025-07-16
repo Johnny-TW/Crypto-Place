@@ -25,15 +25,11 @@ export const initReactScan = async () => {
 
       scan(reactScanConfig);
 
-      /* eslint-disable no-console */
       console.log('🔍 React Scan 已啟用');
       console.log('📊 監控配置:', reactScanConfig);
       console.log('💡 提示: 打開開發者工具查看重新渲染分析');
-      /* eslint-enable no-console */
     } catch (error) {
-      /* eslint-disable no-console */
       console.warn('React Scan 初始化失敗:', error);
-      /* eslint-enable no-console */
     }
   }
 };

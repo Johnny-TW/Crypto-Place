@@ -17,10 +17,10 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css,scss,json}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css,scss,json}\"",
     "lint:format": "npm run lint:fix && npm run format",
+    "type-check": "tsc --noEmit",
+    "test:e2e": "echo 'E2E tests not configured yet'",
     "scan": "react-scan",
-    "scan:fix": "react-scan --fix",
-    "json-server": "json-server --watch src/json-server/db.json --port 3001",
-    "json-server:bg": "json-server --watch src/json-server/db.json --port 3001 &"
+    "scan:fix": "react-scan --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -53,7 +53,6 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "html-react-parser": "^5.2.2",
     "js-cookie": "^3.0.5",
-    "json-server": "1.0.0-beta.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.513.0",
     "react": "^18.2.0",

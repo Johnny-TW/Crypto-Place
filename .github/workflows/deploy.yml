@@ -71,9 +71,9 @@ jobs:
     - name: Run security audit
       run: |
         cd app/frontend
-        npm audit --audit-level moderate
+        pnpm audit --audit-level moderate
         cd ../backend
-        npm audit --audit-level moderate
+        pnpm audit --audit-level moderate
 
   build:
     runs-on: ubuntu-latest
@@ -149,6 +149,7 @@ jobs:
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/crypto-place-backend:latest
           ${{ secrets.DOCKER_USERNAME }}/crypto-place-backend:${{ github.sha }}
+          
 
   deploy:
     runs-on: ubuntu-latest
@@ -170,5 +171,6 @@ jobs:
     - name: Health check
       run: |
         echo "🔍 Running health checks..."
-        # 添加健康檢查腳本
+        chmod +x ./scripts/health-check.sh
+        ./scripts/health-check.sh ${{ secrets.FRONTEND_URL }} ${{ secrets.BACKEND_URL }}
         echo "✅ Health checks passed!"

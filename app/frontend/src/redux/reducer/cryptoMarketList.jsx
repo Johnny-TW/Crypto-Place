@@ -6,6 +6,7 @@ const initialState = {
 
 const cryptoMarketReducer = (state = initialState, action) => {
   switch (action.type) {
+    case 'FETCH_CRYPTO_MARKET_LIST':
     case 'FETCH_MARKET_LIST_REQUEST':
       return {
         ...state,

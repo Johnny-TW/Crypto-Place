@@ -1,6 +1,5 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
 import axios from 'axios';
-import { API_METHOD } from '../api/apiService';
 import { CRYPTO_NEWS } from '../api/api';
 
 export const fetchCryptoNews = excludeCategory => ({
@@ -10,33 +9,33 @@ export const fetchCryptoNews = excludeCategory => ({
 
 export function* fetchCryptoNewsSaga(action) {
   try {
+    yield put({ type: 'FETCH_CRYPTO_NEWS_REQUEST' });
+
     const excludeCategory = action.payload;
 
-    const options = {
-      method: API_METHOD.GET,
-      url: CRYPTO_NEWS,
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-      params: {
-        lang: 'EN',
-        limit: 10,
-        exclude_categories: excludeCategory,
-        api_key:
-          'b1b0f1cbc762734d6003ea2af861dadecdd20ed39e717d8b4a15bf351640488b',
-      },
+    // 使用後端 API 而不是直接調用外部 API
+    const params = {
+      lang: 'EN',
+      limit: 10,
+      exclude_categories: excludeCategory,
     };
 
-    console.log('API Request params:', options.params);
+    console.log('API Request params:', params);
 
-    const response = yield call(axios.request, options);
+    const response = yield call(axios.get, CRYPTO_NEWS, { params });
     console.log('API Response:', response.data);
+
+    // 確保我們正確提取 Data 陣列
+    const newsData = response.data.Data || response.data;
+    console.log('Processed news data:', newsData);
+    console.log('Number of news items:', newsData?.length);
 
     yield put({
       type: 'FETCH_CRYPTO_NEWS_SUCCESS',
-      payload: response.data.Data,
+      payload: newsData,
     });
   } catch (error) {
+    console.error('News API Error:', error);
     yield put({ type: 'FETCH_CRYPTO_NEWS_FAILURE', error: error.message });
   }
 }

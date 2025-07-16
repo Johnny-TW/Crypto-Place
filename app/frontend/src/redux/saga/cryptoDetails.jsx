@@ -9,6 +9,8 @@ export const fetchCryptoDetails = coinId => ({
 
 function* fetchCryptoDetailsSaga(action) {
   try {
+    yield put({ type: 'FETCH_CRYPTO_DETAILS_REQUEST' });
+
     const options = {
       headers: {
         accept: 'application/json',

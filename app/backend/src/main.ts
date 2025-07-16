@@ -51,35 +51,32 @@ async function bootstrap() {
       'Crypto Place 應用程式的 API 文檔 - 提供加密貨幣、NFT、新聞等數據',
     )
     .setVersion('2.0.0')
+    .addTag('auth', '認證相關 API')
     .addTag('crypto', '加密貨幣相關 API')
     .addTag('nft', 'NFT 相關 API')
     .addTag('news', '新聞相關 API')
     .addTag('market', '市場相關 API')
+    .addTag('employee', '員工相關 API')
+    .addTag('system', '系統相關 API')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: '輸入 JWT 令牌',
+        in: 'header',
+      },
+      'JWT-auth',
+    )
     .addServer('http://localhost:5001', '本地開發環境')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
-  SwaggerModule.setup('api/docs', app, document, {
-    customSiteTitle: 'Crypto Place API 文檔',
-    customCss: `
-      .swagger-ui .topbar { display: none }
-      .swagger-ui .info .title { color: #1f2937; font-size: 2rem; }
-      .swagger-ui .info .description { color: #374151; }
-      .swagger-ui .scheme-container { background: #f3f4f6; padding: 20px; border-radius: 8px; }
-    `,
-    customfavIcon: '/favicon.ico',
-    swaggerOptions: {
-      persistAuthorization: true,
-      displayRequestDuration: true,
-      docExpansion: 'list',
-      filter: true,
-      showRequestHeaders: true,
-      tryItOutEnabled: true,
-    },
-  });
+  SwaggerModule.setup('api/docs', app, document);
 
-  const port = configService.get('port') || 3000;
+  const port = configService.get<number>('PORT') || 5001;
 
   await app.listen(port, '0.0.0.0');
 

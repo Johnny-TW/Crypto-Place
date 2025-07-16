@@ -13,7 +13,6 @@ import MediaCard from '@components/common/MediaCard';
 import PerformanceTable from '@components/nft/PerformanceTable';
 import NFTInfoSection from '@components/nft/NFTInfoSection';
 import NFTLinksSection from '@components/nft/NFTLinksSection';
-import { fetchNftDetails, fetchNftNews } from '../redux/saga/nftDetails';
 
 function NFTDetails() {
   const { name } = useParams();
@@ -33,12 +32,12 @@ function NFTDetails() {
 
   useEffect(() => {
     if (name) {
-      dispatch(fetchNftDetails(name));
+      dispatch({ type: 'FETCH_NFT_DETAILS', payload: { nftId: name } });
     }
   }, [dispatch, name]);
 
   useEffect(() => {
-    dispatch(fetchNftNews());
+    dispatch({ type: 'FETCH_NFT_NEWS' });
   }, [dispatch]);
 
   if (loading) {
@@ -73,7 +72,6 @@ function NFTDetails() {
     );
   }
 
-  // Safely access nested properties with optional chaining
   const chartData = [
     {
       timePeriod: '24h',
@@ -134,7 +132,6 @@ function NFTDetails() {
     <div className='overflow-hidden'>
       <div className='mx-auto max-w-1xl lg:px-8'>
         <div className='mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2'>
-          {/* NFT Performance */}
           <div className=''>
             <div className='lg:max-w-lg'>
               <img
@@ -165,9 +162,7 @@ function NFTDetails() {
                   {percentageChange.toFixed(2)} %
                 </p>
               </div>
-              {/* Applicant Information */}
               <NFTInfoSection nftData={nftData} />
-              {/* Info Information */}
               <NFTLinksSection links={links} />
             </div>
           </div>
@@ -183,7 +178,6 @@ function NFTDetails() {
                 </p>
               </div>
               <PerformanceTable chartData={chartData} />
-              {/* NFT Description */}
               <div className='mt-6 text-base text-gray-600 max-w-full'>
                 <h1 className='font-bold text-black text-lg mb-2'>
                   About {nftData?.name}

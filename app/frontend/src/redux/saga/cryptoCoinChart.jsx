@@ -1,6 +1,6 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
 import axios from 'axios';
-import { API_METHOD } from '../api/apiService';
+import { API_METHOD } from '../api/apiService.jsx';
 import { CRYPTO_DETAILS_CHART } from '../api/api';
 
 export const fetchCryptoChart = (coinId, timeRange) => ({
@@ -25,6 +25,8 @@ const convertRangeToDays = range => {
 
 function* fetchCryptoChartSaga(action) {
   try {
+    yield put({ type: 'FETCH_CRYPTO_CHART_REQUEST' });
+
     const { coinId, timeRange } = action.payload;
     const days = convertRangeToDays(timeRange);
     const options = {
@@ -55,7 +57,7 @@ function* fetchCryptoChartSaga(action) {
 }
 
 function* cryptoChartSaga() {
-  yield takeLatest('FETCH_CRYPTO_CHART_REQUEST', fetchCryptoChartSaga);
+  yield takeLatest('FETCH_CRYPTO_CHART', fetchCryptoChartSaga);
 }
 
 export default cryptoChartSaga;

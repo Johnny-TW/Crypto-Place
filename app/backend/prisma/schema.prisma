@@ -5,9 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native"]
-  engineType = "binary"
+  engineType    = "library"
 }
 
 datasource db {
@@ -16,11 +16,35 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  email         String   @unique
+  name          String?
+  password      String
+  role          Role     @default(USER)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  emplId        String?
+  enName        String?
+  chName        String?
+  jobTitle      String?
+  phone         String?
+  office        String?
+  deptId        String?
+  deptDescr     String?
+  supvEmplId    String?
+  site          String?
+  emplCategoryA String?
+  bg            String?
+  fnLvl1        String?
+  fnLvl2        String?
+  deptRoleName  String?
+  deptRoleAbbr  String?
+}
+
+enum Role {
+  USER
+  ADMIN
 }
 
 model Crypto {
