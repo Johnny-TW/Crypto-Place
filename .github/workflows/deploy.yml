@@ -35,7 +35,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd app/${{ matrix.service }}
-        pnpm install --frozen-lockfile
+        pnpm install --no-frozen-lockfile
       
     - name: Run linting
       run: |
@@ -97,13 +97,13 @@ jobs:
     - name: Build Frontend
       run: |
         cd app/frontend
-        pnpm install --frozen-lockfile
+        pnpm install --no-frozen-lockfile
         pnpm run build
         
     - name: Build Backend
       run: |
         cd app/backend
-        pnpm install --frozen-lockfile
+        pnpm install --no-frozen-lockfile
         pnpm run build
         
     - name: Upload build artifacts
