@@ -144,16 +144,18 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       
-    - name: Debug secrets
+    - name: Check Docker secrets
       run: |
-        echo "DOCKER_USERNAME length: ${#DOCKER_USERNAME}"
-        echo "DOCKER_PASSWORD length: ${#DOCKER_PASSWORD}"
-        echo "Username starts with: ${DOCKER_USERNAME:0:5}..."
-      env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
+          echo "DOCKER_USERNAME is not set"
+          echo "SKIP_DOCKER=true" >> $GITHUB_ENV
+        else
+          echo "DOCKER_USERNAME is set"
+          echo "SKIP_DOCKER=false" >> $GITHUB_ENV
+        fi
         
     - name: Login to Docker Hub
+      if: env.SKIP_DOCKER == 'false'
       uses: docker/login-action@v3
       with:
         registry: docker.io
@@ -161,6 +163,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         
     - name: Build and push Frontend image
+      if: env.SKIP_DOCKER == 'false'
       uses: docker/build-push-action@v5
       with:
         context: ./app/frontend
@@ -171,6 +174,7 @@ jobs:
           johnny23511/crypto-place-frontend:${{ github.sha }}
           
     - name: Build and push Backend image
+      if: env.SKIP_DOCKER == 'false'
       uses: docker/build-push-action@v5
       with:
         context: ./app/backend
