@@ -17,36 +17,33 @@ function AppContent() {
   }, [dispatch]);
 
   return (
-    <ReduxProvider store={store}>
-      <Router path='/'>
-        <Switch>
-          {routes.map((route, index) => (
-            <Route key={index} path={route.path} exact={route.exact}>
-              <route.layout>
-                {(() => {
-                  if (route.protected) {
-                    return (
-                      <ProtectedRoute>
-                        <route.component />
-                      </ProtectedRoute>
-                    );
-                  }
-                  if (route.redirectIfAuthenticated) {
-                    return (
-                      <LoginRedirect>
-                        <route.component />
-                      </LoginRedirect>
-                    );
-                  }
-                  return <route.component />;
-                })()}
-              </route.layout>
-            </Route>
-          ))}
-        </Switch>
-      </Router>
-      {/* <MatomoProvider> */}
-    </ReduxProvider>
+    <Router path='/'>
+      <Switch>
+        {routes.map((route, index) => (
+          <Route key={index} path={route.path} exact={route.exact}>
+            <route.layout>
+              {(() => {
+                if (route.protected) {
+                  return (
+                    <ProtectedRoute>
+                      <route.component />
+                    </ProtectedRoute>
+                  );
+                }
+                if (route.redirectIfAuthenticated) {
+                  return (
+                    <LoginRedirect>
+                      <route.component />
+                    </LoginRedirect>
+                  );
+                }
+                return <route.component />;
+              })()}
+            </route.layout>
+          </Route>
+        ))}
+      </Switch>
+    </Router>
   );
 }
 

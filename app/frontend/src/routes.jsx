@@ -9,6 +9,7 @@ import CryptoExchangesDetails from './views/Crypto-Exchanges-Details';
 import CryptoAPI from './views/Crypto-api';
 import NotFound from './views/NotFound';
 import Login from './views/Login';
+import Register from './views/Register';
 
 const routes = [
   {
@@ -23,6 +24,13 @@ const routes = [
     exact: true,
     layout: Default,
     component: Login,
+    redirectIfAuthenticated: true,
+  },
+  {
+    path: '/register',
+    exact: true,
+    layout: Default,
+    component: Register,
     redirectIfAuthenticated: true,
   },
   {

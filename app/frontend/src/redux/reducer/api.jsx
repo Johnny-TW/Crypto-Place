@@ -10,7 +10,7 @@ const initialState = {
 
 const reducer = (state = initialState, action = {}) => {
   switch (action.type) {
-    case 'SET_LOADING':
+    case 'SET_LOADING': {
       const { loading, path } = action.data;
       let { loadingStack } = state;
 
@@ -20,16 +20,17 @@ const reducer = (state = initialState, action = {}) => {
       loadingStack = loading
         ? [...loadingStack, action.data]
         : _.filter(
-            loadingStack,
-            item =>
-              _.first(_.split(item.path, '/')) !== _.first(_.split(path, '/'))
-          );
+          loadingStack,
+          item =>
+            _.first(_.split(item.path, '/')) !== _.first(_.split(path, '/'))
+        );
 
       return {
         ...state,
         loadingStack,
         loading: loadingStack.length,
       };
+    }
     case 'SET_API_ERROR':
       return {
         ...state,
