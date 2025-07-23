@@ -23,6 +23,7 @@
     "scan:fix": "react-scan --fix"
   },
   "dependencies": {
+    "@datapunt/matomo-tracker-react": "^0.5.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@fontsource/roboto": "^5.1.1",
@@ -55,6 +56,7 @@
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
     "lucide-react": "^0.513.0",
+    "query-string": "^9.2.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^18.2.0",

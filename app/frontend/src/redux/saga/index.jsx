@@ -13,7 +13,7 @@ import nftDetailsSaga from './nftDetails';
 import employeeInfoSaga from './employeeInfo';
 import authSaga from './auth';
 
-import { API_METHOD, APIKit } from '../api/apiService.jsx';
+import { APIKit } from '../api/apiService';
 
 export function* setLoading(loading, path, method) {
   yield put({ type: 'SET_LOADING', data: { loading, path, method } });
