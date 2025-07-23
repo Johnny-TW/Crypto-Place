@@ -24,4 +24,4 @@ RUN pnpm build
 EXPOSE 5001
 
 # Start the application
-CMD ["pnpm", "start:prod"]
+CMD ["sh", "-c", "pnpm prisma:generate:prod && pnpm start:prod"]

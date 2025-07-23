@@ -15,7 +15,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   async register(registerDto: RegisterDto) {
     const { email, name, password } = registerDto;
@@ -92,7 +92,7 @@ export class AuthService {
         deptRoleName: true,
         deptRoleAbbr: true,
       },
-    } as any);
+    });
 
     if (!user) {
       throw new UnauthorizedException('電子郵件或密碼錯誤');
@@ -176,7 +176,7 @@ export class AuthService {
         deptRoleName: true,
         deptRoleAbbr: true,
       },
-    } as any);
+    });
 
     if (!user) {
       throw new NotFoundException('用戶不存在');

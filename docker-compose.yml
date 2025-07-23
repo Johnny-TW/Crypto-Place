@@ -14,6 +14,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - crypto-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Frontend Service
   frontend:
@@ -53,9 +58,10 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=5001
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/crypto_place?schema=public
+      - DATABASE_URL=prisma+postgres://postgres:password@postgres:5432/crypto_place?schema=public
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - crypto-network
     deploy:
@@ -79,13 +85,9 @@ services:
         constraints:
           - node.role == manager
 
-
 networks:
   crypto-network:
-    driver: overlay
-    attachable: true
-    driver_opts:
-      encrypted: "true"
+    driver: bridge
 
 volumes:
   postgres_data:

@@ -13,12 +13,21 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: '@', replacement: resolve(__dirname, 'src') },
-      { find: '@components', replacement: resolve(__dirname, 'src/components') },
+      {
+        find: '@components',
+        replacement: resolve(__dirname, 'src/components'),
+      },
       { find: '@constant', replacement: resolve(__dirname, 'src/constant') },
       { find: '@hooks', replacement: resolve(__dirname, 'src/hooks') },
       { find: '@images', replacement: resolve(__dirname, 'src/images') },
-      { find: '@styleLayouts', replacement: resolve(__dirname, 'src/styles/layouts') },
-      { find: '@styleViews', replacement: resolve(__dirname, 'src/styles/views') },
+      {
+        find: '@styleLayouts',
+        replacement: resolve(__dirname, 'src/styles/layouts'),
+      },
+      {
+        find: '@styleViews',
+        replacement: resolve(__dirname, 'src/styles/views'),
+      },
       { find: '@redux', replacement: resolve(__dirname, 'src/redux') },
       { find: '@utils', replacement: resolve(__dirname, 'src/utils') },
     ],

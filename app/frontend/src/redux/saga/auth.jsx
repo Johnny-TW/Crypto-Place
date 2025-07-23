@@ -33,9 +33,10 @@ function* loginSaga(action) {
       `${API_BASE_URL}/api/auth/login`,
       action.payload
     );
+
     const { access_token, user } = response.data;
 
-    Cookies.set('token', access_token, { expires: 1 }); // 1 day expiry
+    Cookies.set('token', access_token, { expires: 1 });
 
     yield put({
       type: 'LOGIN_SUCCESS',
@@ -119,14 +120,16 @@ function* logoutSaga() {
     yield put({ type: 'CLEAR_EMPLOYEE_DATA' });
 
     Swal.fire({
-      icon: 'info',
-      title: '已登出',
+      icon: 'success',
+      title: '登出成功！',
       text: '您已成功登出',
-      timer: 1500,
+      timer: 2000,
       showConfirmButton: false,
     });
 
-    window.location.href = '/';
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1500);
   } catch (error) {
     yield put({
       type: 'LOGOUT_FAILURE',

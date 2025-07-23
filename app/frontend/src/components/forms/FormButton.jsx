@@ -67,10 +67,12 @@ function FormButton({
       {loading ? (
         <span className='absolute left-0 inset-y-0 flex items-center pl-3'>
           <svg
-            className={`h-5 w-5 ${loading
+            className={cn(
+              'h-5 w-5',
+              loading
                 ? 'text-gray-300'
                 : 'text-indigo-500 group-hover:text-indigo-400'
-              }`}
+            )}
             xmlns='http://www.w3.org/2000/svg'
             viewBox='0 0 20 20'
             fill='currentColor'
