@@ -1,6 +1,6 @@
 import { takeLatest, put, call } from 'redux-saga/effects';
 import axios from 'axios';
-import { API_METHOD } from '../api/apiService.jsx';
+import { API_METHOD } from '../api/apiService';
 import { CRYPTO_DETAILS_CHART } from '../api/api';
 
 export const fetchCryptoChart = (coinId, timeRange) => ({

@@ -34,13 +34,13 @@ function* loginSaga(action) {
       action.payload
     );
 
-    const { access_token, user } = response.data;
+    const { access_token: accessToken, user } = response.data;
 
-    Cookies.set('token', access_token, { expires: 1 });
+    Cookies.set('token', accessToken, { expires: 1 });
 
     yield put({
       type: 'LOGIN_SUCCESS',
-      payload: { token: access_token, user },
+      payload: { token: accessToken, user },
     });
 
     Swal.fire({
@@ -79,13 +79,13 @@ function* registerSaga(action) {
       `${API_BASE_URL}/api/auth/register`,
       action.payload
     );
-    const { access_token, user } = response.data;
+    const { access_token: accessToken, user } = response.data;
 
-    Cookies.set('token', access_token, { expires: 1 });
+    Cookies.set('token', accessToken, { expires: 1 });
 
     yield put({
       type: 'REGISTER_SUCCESS',
-      payload: { token: access_token, user },
+      payload: { token: accessToken, user },
     });
 
     Swal.fire({

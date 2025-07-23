@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import {
   MatomoProvider as Provider,
@@ -13,13 +13,13 @@ function MatomoProvider({ children }) {
   // urlBase及siteId於env管理
   const instance =
     !import.meta.env.VITE_MATOMO_URL_BASE ||
-      !import.meta.env.VITE_MATOMO_SITE_ID
+    !import.meta.env.VITE_MATOMO_SITE_ID
       ? null
       : createInstance({
-        urlBase: import.meta.env.VITE_MATOMO_URL_BASE,
-        siteId: import.meta.env.VITE_MATOMO_SITE_ID,
-        userId: undefined, // optional, default value: `undefined`.
-      });
+          urlBase: import.meta.env.VITE_MATOMO_URL_BASE,
+          siteId: import.meta.env.VITE_MATOMO_SITE_ID,
+          userId: undefined, // optional, default value: `undefined`.
+        });
 
   useEffect(() => {
     if (!user) return;

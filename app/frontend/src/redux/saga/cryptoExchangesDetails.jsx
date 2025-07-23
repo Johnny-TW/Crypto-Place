@@ -1,6 +1,6 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
 import axios from 'axios';
-import { API_METHOD } from '../api/apiService.jsx';
+import { API_METHOD } from '../api/apiService';
 
 export const fetchExchangeDetails = exchangeId => ({
   type: 'FETCH_EXCHANGE_DETAILS',
