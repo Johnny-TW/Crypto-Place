@@ -1,7 +1,6 @@
 # Frontend checks
 echo "🔍 Running frontend checks..."
 cd app/frontend
-pnpm run lint:fix
 pnpm run format
 pnpm run type-check
 

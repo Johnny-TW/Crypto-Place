@@ -104,7 +104,9 @@ export class AuthController {
     if (user.loginType === 'employee' || user.id === 0) {
       try {
         // 重新撈取完整的員工資料
-        const employeeData = await this.authService.getEmployeeProfile(user.emplId);
+        const employeeData = await this.authService.getEmployeeProfile(
+          user.emplId,
+        );
         return employeeData.user; // 只回傳 user 物件，hrData 由前端 Redux 管理
       } catch (error) {
         // 如果撈取失敗，返回 JWT 中的基本資料

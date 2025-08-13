@@ -21,7 +21,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: JwtPayload) {
     try {
       // 檢查是否為員工登入 token
-      if (payload.loginType === 'employee' || typeof payload.sub === 'string' && payload.sub.startsWith('employee_')) {
+      if (
+        payload.loginType === 'employee' ||
+        (typeof payload.sub === 'string' && payload.sub.startsWith('employee_'))
+      ) {
         // 員工登入：直接返回 payload 中的用戶資料
         return {
           id: 0, // 虛擬 ID

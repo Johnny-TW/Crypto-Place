@@ -15,7 +15,7 @@ import _ from 'lodash';
 
 @Injectable()
 export class AuthService {
-  constructor( 
+  constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly dspHrApiService: DspHrApiService,
@@ -220,9 +220,11 @@ export class AuthService {
         user: virtualUser,
         hrData, // 原始 HR 資料
       };
-
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof UnauthorizedException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof UnauthorizedException
+      ) {
         throw error;
       }
       console.error('Employee login error:', error);
@@ -232,7 +234,10 @@ export class AuthService {
 
   async getUserProfile(userId: number | string) {
     // 如果是員工用戶（虛擬用戶），直接返回錯誤或處理
-    if (userId === 0 || (typeof userId === 'string' && userId.startsWith('employee_'))) {
+    if (
+      userId === 0 ||
+      (typeof userId === 'string' && userId.startsWith('employee_'))
+    ) {
       throw new NotFoundException('員工用戶資料請從前端 Redux store 獲取');
     }
 
@@ -341,7 +346,6 @@ export class AuthService {
         user: virtualUser,
         hrData: hrData,
       };
-
     } catch (error) {
       console.error('Get employee profile error:', error);
       throw new NotFoundException('無法獲取員工資料');
