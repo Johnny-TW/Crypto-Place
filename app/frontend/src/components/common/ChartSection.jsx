@@ -41,6 +41,7 @@ function ChartSection({ coinChartData, timeRange, setTimeRange }) {
   const data = transformData(coinChartData);
   const days = ['24h', '7d', '30d', '1y'];
 
+  // eslint-disable-next-line no-console
   console.log(timeRange);
 
   return (

@@ -20,14 +20,18 @@ export function* fetchCryptoNewsSaga(action) {
       exclude_categories: excludeCategory,
     };
 
+    // eslint-disable-next-line no-console
     console.log('API Request params:', params);
 
     const response = yield call(axios.get, CRYPTO_NEWS, { params });
+    // eslint-disable-next-line no-console
     console.log('API Response:', response.data);
 
     // 確保我們正確提取 Data 陣列
     const newsData = response.data.Data || response.data;
+    // eslint-disable-next-line no-console
     console.log('Processed news data:', newsData);
+    // eslint-disable-next-line no-console
     console.log('Number of news items:', newsData?.length);
 
     yield put({
@@ -35,6 +39,7 @@ export function* fetchCryptoNewsSaga(action) {
       payload: newsData,
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('News API Error:', error);
     yield put({ type: 'FETCH_CRYPTO_NEWS_FAILURE', error: error.message });
   }

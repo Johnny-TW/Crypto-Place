@@ -16,6 +16,11 @@ export const registerRequest = userData => ({
   payload: userData,
 });
 
+export const employeeLoginRequest = employeeData => ({
+  type: 'EMPLOYEE_LOGIN_REQUEST',
+  payload: employeeData,
+});
+
 export const logoutRequest = () => ({
   type: 'LOGOUT_REQUEST',
 });
@@ -64,6 +69,53 @@ function* loginSaga(action) {
       icon: 'error',
       title: '登入失敗',
       text: error.response?.data?.message || '請檢查您的帳號密碼',
+    });
+  } finally {
+    yield put({ type: 'SET_AUTH_LOADING', payload: false });
+  }
+}
+
+function* employeeLoginSaga(action) {
+  try {
+    yield put({ type: 'SET_AUTH_LOADING', payload: true });
+
+    const response = yield call(
+      axios.post,
+      `${API_BASE_URL}/api/auth/employee-login`,
+      action.payload
+    );
+
+    const { access_token: accessToken, user, hrData } = response.data;
+
+    Cookies.set('token', accessToken, { expires: 1 });
+
+    yield put({
+      type: 'EMPLOYEE_LOGIN_SUCCESS',
+      payload: { token: accessToken, user, hrData },
+    });
+
+    Swal.fire({
+      icon: 'success',
+      title: '員工登入成功！',
+      text: `歡迎，${user.name || user.enName || user.chName}`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    setTimeout(() => {
+      window.location.href = '/dashboard';
+    }, 1000);
+  } catch (error) {
+    yield put({
+      type: 'EMPLOYEE_LOGIN_FAILURE',
+      payload: error.response?.data?.message || '員工登入失敗',
+    });
+
+    Swal.fire({
+      icon: 'error',
+      title: '員工登入失敗',
+      text:
+        error.response?.data?.message || '請檢查您的員工工號或聯繫系統管理員',
     });
   } finally {
     yield put({ type: 'SET_AUTH_LOADING', payload: false });
@@ -173,6 +225,7 @@ function* checkAuthStatusSaga() {
 
 function* authSaga() {
   yield takeLatest('LOGIN_REQUEST', loginSaga);
+  yield takeLatest('EMPLOYEE_LOGIN_REQUEST', employeeLoginSaga);
   yield takeLatest('REGISTER_REQUEST', registerSaga);
   yield takeLatest('LOGOUT_REQUEST', logoutSaga);
   yield takeLatest('CHECK_AUTH_STATUS', checkAuthStatusSaga);

@@ -39,30 +39,75 @@ export default function Example() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { user, isLoading } = useSelector(state => state.auth || {});
+  const { user, loginType, isLoading } = useSelector(state => state.auth || {});
 
   const handleLogout = () => {
     dispatch(logoutRequest());
   };
 
-  // Generate employee data from auth user - memoized to prevent unnecessary re-renders
-  const employee = useMemo(
-    () => [
+  // Generate employee data - simplified using only user object
+  const employee = useMemo(() => {
+    if (loginType === 'employee') {
+      // 員工登入：顯示更多欄位和格式化
+      return [
+        {
+          name: 'Name',
+          description: user?.enName || user?.name || 'Loading...',
+        },
+        {
+          name: 'Employee ID',
+          description: user?.emplId || 'Loading...',
+        },
+        {
+          name: 'Department',
+          description: user?.deptId || 'Loading...',
+        },
+        {
+          name: 'Job Title',
+          description: user?.jobTitle || 'Loading...',
+        },
+        {
+          name: 'E-mail',
+          description: user?.email || 'Loading...',
+        },
+        {
+          name: 'Phone',
+          description: user?.phone || 'Loading...',
+        },
+        {
+          name: 'Location',
+          description: user?.office || user?.site || 'Loading...',
+        },
+        {
+          name: 'Company',
+          description: user?.bg || 'Loading...',
+        },
+        {
+          name: 'Hire Date',
+          description: user?.hireDate
+            ? new Date(user.hireDate).toLocaleDateString()
+            : 'Loading...',
+        },
+      ];
+    }
+
+    // 一般用戶登入：使用 user 資料庫資料
+    return [
       {
         name: 'Name',
-        description: user?.chName || user?.enName || user?.name || 'Loading...',
+        description: user?.enName || user?.name || 'Loading...',
       },
       {
         name: 'Employee ID',
-        description: user?.emplId || 'Loading...',
+        description: user?.emplId || 'N/A',
       },
       {
         name: 'Department',
-        description: user?.deptDescr || 'Loading...',
+        description: user?.deptDescr || 'N/A',
       },
       {
         name: 'Job Title',
-        description: user?.jobTitle || 'Loading...',
+        description: user?.jobTitle || 'N/A',
       },
       {
         name: 'E-mail',
@@ -70,25 +115,14 @@ export default function Example() {
       },
       {
         name: 'Phone',
-        description: user?.phone || 'Loading...',
+        description: user?.phone || 'N/A',
       },
       {
         name: 'Office',
-        description: user?.office || 'Loading...',
+        description: user?.office || 'N/A',
       },
-    ],
-    [
-      user?.chName,
-      user?.enName,
-      user?.name,
-      user?.emplId,
-      user?.deptDescr,
-      user?.jobTitle,
-      user?.email,
-      user?.phone,
-      user?.office,
-    ]
-  );
+    ];
+  }, [user, loginType]);
 
   return (
     <header className='justify-between'>

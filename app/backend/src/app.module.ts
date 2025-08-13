@@ -4,11 +4,12 @@ import { HttpModule } from '@nestjs/axios';
 import { APP_GUARD } from '@nestjs/core';
 import configuration from './config/configuration';
 import { AppController } from './app.controller';
-import { ApiModule } from './api/api.module';
+import { ApiModule } from './controllers/api/api.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { EmployeeModule } from './employee/employee.module';
-import { AuthModule } from './auth/auth.module';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { UserModule } from './controllers/user/user.module';
+import { AuthModule } from './controllers/auth/auth.module';
+import { JwtAuthGuard } from './controllers/auth/guards/jwt-auth.guard';
+import { PostsModule } from './controllers/posts/posts.module';
 
 @Module({
   imports: [
@@ -24,14 +25,10 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     PrismaModule,
     AuthModule,
     ApiModule,
-    EmployeeModule,
+    UserModule,
+    PostsModule,
   ],
   controllers: [AppController],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}

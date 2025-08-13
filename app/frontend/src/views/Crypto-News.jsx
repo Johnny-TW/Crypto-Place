@@ -14,6 +14,7 @@ function CryptoNews() {
   const isLoading = useSelector(state => state.cryptoNews.loading);
 
   const handleExcludeChange = category => {
+    // eslint-disable-next-line no-console
     console.log('Handling category change:', category);
     dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: { category } });
   };
@@ -22,6 +23,7 @@ function CryptoNews() {
     dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: { category: 'BTC' } });
   }, [dispatch]);
 
+  // eslint-disable-next-line no-console
   console.log(news);
 
   if (isLoading) {

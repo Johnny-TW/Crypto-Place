@@ -1,12 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native"]
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl", "linux-musl-openssl-3.0.x"]
   engineType    = "library"
 }
 
@@ -40,11 +34,7 @@ model User {
   fnLvl2        String?
   deptRoleName  String?
   deptRoleAbbr  String?
-}
-
-enum Role {
-  USER
-  ADMIN
+  Post          Post[]
 }
 
 model Crypto {
@@ -58,4 +48,20 @@ model Crypto {
   priceChange24h Float?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Int      @default(0)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
 }

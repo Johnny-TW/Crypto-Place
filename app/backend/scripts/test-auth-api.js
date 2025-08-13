@@ -2,6 +2,11 @@ const axios = require('axios');
 
 const API_BASE_URL = 'http://localhost:5001';
 
+// 測試登入 API 和 Profile API
+// 確保在執行此腳本前已經啟動了後端服務
+// 並且已經有一個名為 'user' 的模型
+// 在 Prisma schema 中定義了相應的欄位  
+
 async function testAuthAPI() {
   try {
     console.log('=== 測試登入 API ===');

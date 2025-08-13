@@ -23,6 +23,7 @@ function CryptoExchangesDetails() {
     state => state.cryptoExchangesDetails
   );
 
+  // eslint-disable-next-line no-console
   console.log(exchangeId);
 
   useEffect(() => {

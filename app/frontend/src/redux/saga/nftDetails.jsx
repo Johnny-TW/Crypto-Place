@@ -25,6 +25,7 @@ function* fetchNftDetailsWithRetry(options, maxRetries = 3, baseDelay = 1000) {
           ? parseInt(retryAfter, 10) // 添加 radix 參數
           : baseDelay * 2 ** attempt;
 
+        // eslint-disable-next-line no-console
         console.warn(
           `NFT Details API rate limit hit, retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries + 1})`
         );

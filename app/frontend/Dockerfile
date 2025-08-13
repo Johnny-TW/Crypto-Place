@@ -1,20 +1,24 @@
 # Frontend Dockerfile
-FROM node:18-alpine
+FROM node:18-alpine AS base
 
-# Install pnpm
-RUN corepack enable pnpm
+# Install pnpm and add non-root user
+RUN corepack enable pnpm && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S react -u 1001
 
-# Set working directory
+# Development stage
+FROM base AS development
 WORKDIR /app
+USER react
 
 # Copy package files
-COPY package.json pnpm-lock.yaml ./
+COPY --chown=react:nodejs package.json pnpm-lock.yaml ./
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
 # Copy source code
-COPY . .
+COPY --chown=react:nodejs . .
 
 # Set environment variables
 ENV VITE_API_BASE_URL=http://localhost:5001

@@ -10,6 +10,7 @@ function DropdownSelect({ onExcludeChange }) {
   const handleChange = event => {
     const newValue = event.target.value;
     setSelected(newValue);
+    // eslint-disable-next-line no-console
     console.log('Dropdown selected:', newValue);
     onExcludeChange(newValue);
   };

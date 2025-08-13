@@ -105,6 +105,7 @@ function Home() {
     fetchData();
   }, [fetchData]);
 
+  // eslint-disable-next-line no-console
   console.log(marketListData);
 
   const isLoading = marketListLoading || !marketListData;

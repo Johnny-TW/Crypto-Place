@@ -23,9 +23,11 @@ function* fetchMarketListSaga() {
     };
 
     const response = yield call(axios.request, options);
+    // eslint-disable-next-line no-console
     console.log('Market data response:', response.data);
     yield put({ type: 'FETCH_MARKET_LIST_SUCCESS', payload: response.data });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Error fetching market data:', error);
     yield put({ type: 'FETCH_MARKET_LIST_FAILURE', error: error.message });
   }

@@ -1,0 +1,60 @@
+services:
+  # Database Service
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: crypto_place
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - crypto-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Frontend Service (Production)
+  frontend:
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "3001:80"
+    networks:
+      - crypto-network
+    restart: on-failure
+    mem_limit: 256m
+    cpus: 0.25
+
+  # Backend Service (Production)
+  backend:
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/crypto_place?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - crypto-network
+    restart: on-failure
+    mem_limit: 512m
+    cpus: 0.5
+
+networks:
+  crypto-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
