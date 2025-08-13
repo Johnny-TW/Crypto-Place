@@ -4,4 +4,3 @@ export class CreateAuthDto {
   @ApiProperty()
   emplid: string;
 }
-

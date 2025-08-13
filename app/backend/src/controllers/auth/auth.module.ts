@@ -8,10 +8,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { PrismaModule } from '../../prisma/prisma.module';
-import { DspHrApiService } from 'src/services/api/dsp.hr.api.service';  
+import { DspHrApiService } from 'src/services/api/dsp.hr.api.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as fsStore from 'cache-manager-fs-hash';
-
 
 @Module({
   imports: [
@@ -37,7 +36,13 @@ import * as fsStore from 'cache-manager-fs-hash';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, JwtAuthGuard, RolesGuard, DspHrApiService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    JwtAuthGuard,
+    RolesGuard,
+    DspHrApiService,
+  ],
   exports: [AuthService, JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}

@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 @Injectable()
 export class PostsService {
-  constructor(private prismaService: PrismaService) { }
+  constructor(private prismaService: PrismaService) {}
 
   create(createPostDto: CreatePostDto) {
     return this.prismaService.post.create({
@@ -26,11 +26,11 @@ export class PostsService {
     const post = await this.prismaService.post.findUnique({
       where: { id },
     });
-    
+
     if (!post) {
       throw new HttpException(`Post with id ${id} not found`, 404);
     }
-    
+
     return post;
   }
 
