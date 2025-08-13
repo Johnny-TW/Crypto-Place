@@ -4,8 +4,10 @@
   top: 0;
   width: 100%;
   z-index: 999;
-  box-shadow: 0 0.275rem 0.75rem -0.0625rem rgba(11, 15, 25, .06), 0 0.125rem 0.4rem -0.0625rem rgba(11, 15, 25, .03) !important;
-  background-color: #6C63FF !important;
+  box-shadow:
+    0 0.275rem 0.75rem -0.0625rem rgba(11, 15, 25, 0.06),
+    0 0.125rem 0.4rem -0.0625rem rgba(11, 15, 25, 0.03) !important;
+  background-color: #6c63ff !important;
 }
 
 .Header_title {
@@ -13,13 +15,13 @@
 }
 
 .Sidebar_list_icon {
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: 600;
   font-style: normal;
 }
 
 .Sign_button {
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-weight: 600;
   font-style: normal;
 }

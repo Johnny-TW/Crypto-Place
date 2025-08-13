@@ -56,7 +56,6 @@ async function bootstrap() {
     .addTag('nft', 'NFT 相關 API')
     .addTag('news', '新聞相關 API')
     .addTag('market', '市場相關 API')
-    .addTag('employee', '員工相關 API')
     .addTag('system', '系統相關 API')
     .addBearerAuth(
       {

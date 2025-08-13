@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { AppModule } from './app.module';
 import { AppController } from './app.controller';
-import { ApiModule } from './api/api.module';
+import { ApiModule } from './controllers/api/api.module';
 
 describe('AppModule', () => {
   let module: TestingModule;

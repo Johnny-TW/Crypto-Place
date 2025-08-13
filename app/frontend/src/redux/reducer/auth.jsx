@@ -4,6 +4,8 @@ const initialState = {
   user: null,
   token: null,
   error: null,
+  hrData: null,
+  loginType: null,
 };
 
 const authReducer = (state = initialState, action) => {
@@ -24,10 +26,25 @@ const authReducer = (state = initialState, action) => {
         user: action.payload.user,
         token: action.payload.token,
         error: null,
+        loginType: 'user',
+        hrData: null,
+      };
+
+    case 'EMPLOYEE_LOGIN_SUCCESS':
+      return {
+        ...state,
+        isAuthenticated: true,
+        isLoading: false,
+        user: action.payload.user,
+        token: action.payload.token,
+        error: null,
+        loginType: 'employee',
+        hrData: action.payload.hrData,
       };
 
     case 'LOGIN_FAILURE':
     case 'REGISTER_FAILURE':
+    case 'EMPLOYEE_LOGIN_FAILURE':
       return {
         ...state,
         isAuthenticated: false,
@@ -35,6 +52,8 @@ const authReducer = (state = initialState, action) => {
         user: null,
         token: null,
         error: action.payload,
+        loginType: null,
+        hrData: null,
       };
 
     case 'LOGOUT_SUCCESS':
@@ -45,6 +64,8 @@ const authReducer = (state = initialState, action) => {
         user: null,
         token: null,
         error: null,
+        loginType: null,
+        hrData: null,
       };
 
     case 'LOGOUT_FAILURE':
@@ -62,6 +83,11 @@ const authReducer = (state = initialState, action) => {
         user: action.payload.user,
         token: action.payload.token,
         error: null,
+        loginType: action.payload.user?.loginType || 'user',
+        hrData:
+          action.payload.user?.loginType === 'employee'
+            ? action.payload.user.hrData
+            : null,
       };
 
     case 'AUTH_STATUS_NO_TOKEN':

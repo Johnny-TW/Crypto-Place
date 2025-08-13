@@ -67,6 +67,7 @@ function StickyHeadTable() {
     state => state.nftDashboard || { nftList: [], loading: false, error: null }
   );
 
+  // eslint-disable-next-line no-console
   console.log('NFT Dashboard Redux State:', { nftList, loading, error });
 
   const handleChange = event => {

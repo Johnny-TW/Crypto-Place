@@ -1,5 +1,8 @@
 {
 	"dependencies": {
 		"@google/generative-ai": "^0.24.1"
+	},
+	"scripts": {
+		"prepare": "husky"
 	}
 }

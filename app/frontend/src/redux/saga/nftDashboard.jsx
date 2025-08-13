@@ -21,6 +21,7 @@ function* fetchNftListWithRetry(options, maxRetries = 3, baseDelay = 1000) {
           ? parseInt(retryAfter, 10) * 1000
           : baseDelay * 2 ** attempt;
 
+        // eslint-disable-next-line no-console
         console.warn(
           `NFT API rate limit hit, retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries + 1})`
         );
