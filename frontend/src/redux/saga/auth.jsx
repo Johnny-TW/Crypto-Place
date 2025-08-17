@@ -30,11 +30,7 @@ function* loginSaga(action) {
   try {
     yield put({ type: 'SET_AUTH_LOADING', payload: true });
 
-    const response = yield call(
-      APIKit.post,
-      '/api/auth/login',
-      action.payload
-    );
+    const response = yield call(APIKit.post, '/api/auth/login', action.payload);
 
     const { access_token: accessToken, user } = response.data;
 
@@ -198,11 +194,7 @@ function* checkAuthStatusSaga() {
         },
       };
 
-      const response = yield call(
-        APIKit.get,
-        '/api/auth/profile',
-        config
-      );
+      const response = yield call(APIKit.get, '/api/auth/profile', config);
 
       yield put({
         type: 'AUTH_STATUS_SUCCESS',
