@@ -9,10 +9,180 @@ on:
 env:
   NODE_VERSION: '18'
   PNPM_VERSION: '9'
+  REGISTRY: docker.io
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      frontend-cache-key: ${{ steps.cache-keys.outputs.frontend }}
+      backend-cache-key: ${{ steps.cache-keys.outputs.backend }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: ${{ env.PNPM_VERSION }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Generate cache keys
+      id: cache-keys
+      run: |
+        echo "frontend=$(echo ${{ hashFiles('frontend/pnpm-lock.yaml', 'frontend/package.json') }})" >> $GITHUB_OUTPUT
+        echo "backend=$(echo ${{ hashFiles('backend/pnpm-lock.yaml', 'backend/package.json') }})" >> $GITHUB_OUTPUT
+    
+    - name: Cache frontend dependencies
+      uses: actions/cache@v4
+      with:
+        path: frontend/node_modules
+        key: frontend-deps-${{ steps.cache-keys.outputs.frontend }}
+        restore-keys: frontend-deps-
+    
+    - name: Cache backend dependencies
+      uses: actions/cache@v4
+      with:
+        path: backend/node_modules
+        key: backend-deps-${{ steps.cache-keys.outputs.backend }}
+        restore-keys: backend-deps-
+    
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        pnpm install --frozen-lockfile
+    
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        pnpm install --frozen-lockfile
+
   test:
     runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      matrix:
+        service: [frontend, backend]
+      fail-fast: false
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: ${{ env.PNPM_VERSION }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+    
+    - name: Restore dependencies cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ matrix.service }}/node_modules
+        key: ${{ format('{0}-deps-{1}', matrix.service, matrix.service == 'frontend' && needs.setup.outputs.frontend-cache-key || needs.setup.outputs.backend-cache-key) }}
+        restore-keys: ${{ matrix.service }}-deps-
+        fail-on-cache-miss: true
+      
+    - name: Run linting
+      run: |
+        cd ${{ matrix.service }}
+        pnpm run lint
+        
+    - name: Run type checking
+      run: |
+        cd ${{ matrix.service }}
+        if [ -f "tsconfig.json" ]; then
+          pnpm run type-check
+        fi
+        
+    - name: Run unit tests
+      run: |
+        cd ${{ matrix.service }}
+        if [ "${{ matrix.service }}" = "frontend" ]; then
+          pnpm run test -- --coverage --run
+        else
+          pnpm run test:ci
+        fi
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./${{ matrix.service }}/coverage/lcov.info
+        flags: ${{ matrix.service }}
+        
+    - name: Run E2E tests (frontend only)
+      if: matrix.service == 'frontend'
+      run: |
+        cd ${{ matrix.service }}
+        pnpm run test:e2e
+
+  # 安全審計 (與測試並行)
+  security:
+    runs-on: ubuntu-latest
+    needs: setup
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v3
+      with:
+        version: ${{ env.PNPM_VERSION }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'pnpm'
+      
+    - name: Restore frontend dependencies
+      uses: actions/cache@v4
+      with:
+        path: frontend/node_modules
+        key: frontend-deps-${{ needs.setup.outputs.frontend-cache-key }}
+        fail-on-cache-miss: true
+    
+    - name: Restore backend dependencies
+      uses: actions/cache@v4
+      with:
+        path: backend/node_modules
+        key: backend-deps-${{ needs.setup.outputs.backend-cache-key }}
+        fail-on-cache-miss: true
+        
+    - name: Run dependency audit
+      run: |
+        cd frontend
+        pnpm audit --audit-level high
+        cd ../backend
+        pnpm audit --audit-level high
+    
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+    
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [setup, test, security]
     strategy:
       matrix:
         service: [frontend, backend]
@@ -31,111 +201,33 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'pnpm'
-        
-    - name: Install dependencies
-      run: |
-        cd app/${{ matrix.service }}
-        pnpm install --no-frozen-lockfile
-      
-    - name: Run linting
-      run: |
-        cd app/${{ matrix.service }}
-        pnpm run lint
-        
-    - name: Run type checking (if applicable)
-      run: |
-        cd app/${{ matrix.service }}
-        if [ -f "tsconfig.json" ]; then
-          pnpm run type-check || true
-        fi
-        
-    - name: Run tests
-      run: |
-        cd app/${{ matrix.service }}
-        pnpm run test
-        
-    - name: Run E2E tests (frontend only)
-      if: matrix.service == 'frontend'
-      run: |
-        cd app/${{ matrix.service }}
-        pnpm run test:e2e || true
-
-  security:
-    runs-on: ubuntu-latest
-    needs: test
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v3
+    - name: Restore dependencies cache
+      uses: actions/cache@v4
       with:
-        version: ${{ env.PNPM_VERSION }}
+        path: ${{ matrix.service }}/node_modules
+        key: ${{ format('{0}-deps-{1}', matrix.service, matrix.service == 'frontend' && needs.setup.outputs.frontend-cache-key || needs.setup.outputs.backend-cache-key) }}
+        fail-on-cache-miss: true
         
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'pnpm'
-      
-    - name: Install dependencies
+    - name: Build application
       run: |
-        cd app/frontend
-        pnpm install --no-frozen-lockfile
-        cd ../backend
-        pnpm install --no-frozen-lockfile
-        
-    - name: Run security audit
-      run: |
-        cd app/frontend
-        pnpm audit --audit-level high || echo "Frontend audit completed with warnings"
-        cd ../backend
-        pnpm audit --audit-level high || echo "Backend audit completed with warnings"
-
-  build:
-    runs-on: ubuntu-latest
-    needs: [test, security]
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v3
-      with:
-        version: ${{ env.PNPM_VERSION }}
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'pnpm'
-        
-    - name: Build Frontend
-      run: |
-        cd app/frontend
-        pnpm install --no-frozen-lockfile
-        pnpm run build
-        
-    - name: Build Backend
-      run: |
-        cd app/backend
-        pnpm install --no-frozen-lockfile
+        cd ${{ matrix.service }}
         pnpm run build
         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: build-files
-        path: |
-          app/frontend/dist
-          app/backend/dist
+        name: ${{ matrix.service }}-build
+        path: ${{ matrix.service }}/dist
+        retention-days: 1
 
   docker-build:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main'
+    strategy:
+      matrix:
+        service: [frontend, backend]
     
     steps:
     - name: Checkout code
@@ -144,50 +236,75 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ matrix.service }}-build
+        path: ${{ matrix.service }}/dist
+      
     - name: Check Docker secrets
+      id: docker-secrets
       run: |
-        if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then
-          echo "DOCKER_USERNAME is not set"
-          echo "SKIP_DOCKER=true" >> $GITHUB_ENV
+        if [ -n "${{ secrets.DOCKER_USERNAME }}" ] && [ -n "${{ secrets.DOCKER_TOKEN }}" ]; then
+          echo "available=true" >> $GITHUB_OUTPUT
         else
-          echo "DOCKER_USERNAME is set"
-          echo "SKIP_DOCKER=false" >> $GITHUB_ENV
+          echo "available=false" >> $GITHUB_OUTPUT
         fi
         
     - name: Login to Docker Hub
-      if: env.SKIP_DOCKER == 'false'
+      if: steps.docker-secrets.outputs.available == 'true'
       uses: docker/login-action@v3
       with:
-        registry: docker.io
+        registry: ${{ env.REGISTRY }}
         username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        password: ${{ secrets.DOCKER_TOKEN }}  # 使用 Token 而非密碼
         
-    - name: Build and push Frontend image
-      if: env.SKIP_DOCKER == 'false'
+    - name: Extract metadata
+      if: steps.docker-secrets.outputs.available == 'true'
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: johnny23511/crypto-place-${{ matrix.service }}
+        tags: |
+          type=ref,event=branch
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+        
+    - name: Build and push Docker image
+      if: steps.docker-secrets.outputs.available == 'true'
       uses: docker/build-push-action@v5
       with:
-        context: ./app/frontend
-        file: ./app/frontend/Dockerfile.prod
+        context: ./${{ matrix.service }}
+        file: ./${{ matrix.service }}/${{ matrix.service == 'frontend' && 'Dockerfile.prod' || 'Dockerfile' }}
         push: true
-        tags: |
-          johnny23511/crypto-place-frontend:latest
-          johnny23511/crypto-place-frontend:${{ github.sha }}
-          
-    - name: Build and push Backend image
-      if: env.SKIP_DOCKER == 'false'
-      uses: docker/build-push-action@v5
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        build-args: |
+          ${{ matrix.service == 'frontend' && format('VITE_API_BASE_URL={0}', vars.VITE_API_BASE_URL || 'http://localhost:5001') || '' }}
+    
+    - name: Run security scan on image
+      if: steps.docker-secrets.outputs.available == 'true'
+      uses: aquasecurity/trivy-action@master
       with:
-        context: ./app/backend
-        push: true
-        tags: |
-          johnny23511/crypto-place-backend:latest
-          johnny23511/crypto-place-backend:${{ github.sha }}
-          
+        image-ref: johnny23511/crypto-place-${{ matrix.service }}:latest
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results
+      if: steps.docker-secrets.outputs.available == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+
   deploy:
     runs-on: ubuntu-latest
     needs: docker-build
     if: github.ref == 'refs/heads/main'
-    environment: production
+    environment: 
+      name: production
+      url: ${{ vars.FRONTEND_URL }}
     
     steps:
     - name: Checkout code
@@ -196,19 +313,27 @@ jobs:
     - name: Deploy to production
       run: |
         echo "🚀 Deploying to production..."
-        # 這裡可以添加你的部署腳本
-        # 例如：SSH 到服務器，更新 Docker 容器等
+        # TODO: 實現實際的部署邏輯
+        # 例如：使用 SSH 連接到服務器，更新 Docker 容器
+        # 或者調用雲服務 API 進行部署
         echo "✅ Deployment completed!"
         
-    - name: Health check
+    - name: Run health checks
+      if: ${{ vars.FRONTEND_URL && vars.BACKEND_URL }}
       run: |
         echo "🔍 Running health checks..."
-        if [ -n "${{ secrets.FRONTEND_URL }}" ] && [ -n "${{ secrets.BACKEND_URL }}" ]; then
-          echo "Production URLs configured, running health checks..."
-          chmod +x ./scripts/health-check.sh
-          ./scripts/health-check.sh ${{ secrets.FRONTEND_URL }} ${{ secrets.BACKEND_URL }}
-          echo "✅ Health checks passed!"
-        else
-          echo "Production URLs not configured, skipping health checks"
-          echo "✅ Deployment completed without health checks"
-        fi
+        chmod +x ./scripts/health-check.sh
+        ./scripts/health-check.sh ${{ vars.FRONTEND_URL }} ${{ vars.BACKEND_URL }}
+        echo "✅ Health checks passed!"
+        
+    - name: Notify deployment status
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: |
+          Deployment ${{ job.status }} for commit ${{ github.sha }}
+          Repository: ${{ github.repository }}
+          Branch: ${{ github.ref_name }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -6,8 +6,8 @@
 set -e
 
 # 預設 URL
-FRONTEND_URL=${1:-"http://localhost:3000"}
-BACKEND_URL=${2:-"http://localhost:8000"}
+FRONTEND_URL=${1:-"http://localhost:3001"}
+BACKEND_URL=${2:-"http://localhost:5001"}
 
 echo "🔍 開始進行健康檢查..."
 echo "Frontend URL: $FRONTEND_URL"

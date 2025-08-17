@@ -147,14 +147,14 @@ prod_build() {
     print_header "🏭 Building production images..."
     
     # Build frontend production image
-    if [ -f "app/frontend/Dockerfile.prod" ]; then
+    if [ -f "frontend/Dockerfile.prod" ]; then
         print_status "Building frontend production image..."
-        docker build -t crypto-place-frontend:prod -f app/frontend/Dockerfile.prod app/frontend/
+        docker build -t crypto-place-frontend:prod -f frontend/Dockerfile.prod frontend/
     fi
     
     # Build backend production image
     print_status "Building backend production image..."
-    docker build -t crypto-place-backend:prod app/backend/
+    docker build -t crypto-place-backend:prod backend/
     
     print_status "Production images built successfully!"
     docker images | grep crypto-place

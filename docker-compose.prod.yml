@@ -21,7 +21,7 @@ services:
   # Frontend Service (Production)
   frontend:
     build:
-      context: ./app/frontend
+      context: ./frontend
       dockerfile: Dockerfile.prod
     ports:
       - "3001:80"
@@ -34,7 +34,7 @@ services:
   # Backend Service (Production)
   backend:
     build:
-      context: ./app/backend
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "5001:5001"
