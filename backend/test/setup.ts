@@ -1,8 +1,19 @@
 process.env.API_KEY = 'test-api-key';
 process.env.NODE_ENV = 'test';
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test_db';
 
 process.env.COINGECKO_API_URL = 'https://api.coingecko.com/api/v3';
 process.env.CRYPTOCOMPARE_API_URL = 'https://min-api.cryptocompare.com';
+
+// Global mock for PrismaClient
+jest.mock('@prisma/client', () => ({
+  PrismaClient: jest.fn().mockImplementation(() => ({
+    $connect: jest.fn().mockResolvedValue(undefined),
+    $disconnect: jest.fn().mockResolvedValue(undefined),
+    onModuleInit: jest.fn(),
+    onModuleDestroy: jest.fn(),
+  })),
+}));
 
 beforeAll(async () => {
   console.log('🧪 Starting test suite...');
