@@ -317,10 +317,31 @@ jobs:
     - name: Deploy to production
       run: |
         echo "🚀 Deploying to production..."
-        # TODO: 實現實際的部署邏輯
-        # 例如：使用 SSH 連接到服務器，更新 Docker 容器
-        # 或者調用雲服務 API 進行部署
-        echo "✅ Deployment completed!"
+        
+        # 方案 1: 本地 Docker Compose 部署 (適合測試)
+        if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          echo "📦 準備 Docker Compose 部署..."
+          chmod +x ./scripts/deploy.sh
+          
+          # 在 CI/CD 環境中，我們只能模擬部署流程
+          echo "🔨 建置 Docker 映像檔..."
+          docker-compose -f docker-compose.prod.yml build
+          
+          echo "🧪 測試服務啟動..."
+          docker-compose -f docker-compose.prod.yml up -d
+          sleep 10
+          
+          echo "🔍 檢查服務狀態..."
+          docker-compose -f docker-compose.prod.yml ps
+          
+          echo "🛑 停止測試服務..."
+          docker-compose -f docker-compose.prod.yml down
+          
+          echo "✅ 部署驗證完成！"
+          echo "📋 實際部署步驟："
+          echo "   1. 在目標服務器執行: git pull origin main"
+          echo "   2. 在目標服務器執行: ./scripts/deploy.sh production"
+        fi
         
     - name: Run health checks
       if: ${{ vars.FRONTEND_URL && vars.BACKEND_URL }}
