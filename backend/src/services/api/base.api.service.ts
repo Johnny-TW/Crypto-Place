@@ -35,14 +35,15 @@ export class BaseApiService {
       return cache_data;
     }
 
+    // Configure secure HTTPS options with proper certificate validation
     const options = {
       method: method,
       url: url,
       headers: header,
       params: query,
       data: body,
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      httpsAgent: new (require('https').Agent)({ rejectUnauthorized: false }),
+      // Note: Always validate SSL certificates for security
+      // If custom certificate handling is needed, implement proper CA verification
     };
 
     if (body instanceof FormData) {

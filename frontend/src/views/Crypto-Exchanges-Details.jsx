@@ -3,6 +3,22 @@ import { useEffect, useMemo } from 'react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
+// Secure HTML sanitization function to prevent XSS attacks
+const sanitizeHtml = (html) => {
+  if (!html) return '';
+  let cleaned = html;
+  let prevLength;
+  // Repeatedly strip HTML tags until none remain to handle nested tags
+  do {
+    prevLength = cleaned.length;
+    cleaned = cleaned.replace(/<[^>]*>/g, '');
+  } while (cleaned.length !== prevLength);
+  // Also decode HTML entities for safety
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = cleaned;
+  return textarea.value;
+};
+
 import { Paper } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
@@ -270,7 +286,7 @@ function CryptoExchangesDetails() {
                   <div className='text-sm'>
                     {exchangeDetails?.description ? (
                       <p>
-                        {exchangeDetails.description.replace(/<[^>]*>/g, '')}
+                        {sanitizeHtml(exchangeDetails.description)}
                       </p>
                     ) : null}
                   </div>
