@@ -44,14 +44,14 @@ jobs:
         echo "backend=$(echo ${{ hashFiles('backend/pnpm-lock.yaml', 'backend/package.json') }})" >> $GITHUB_OUTPUT
     
     - name: Cache frontend dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v4.2.0
       with:
         path: frontend/node_modules
         key: frontend-deps-${{ steps.cache-keys.outputs.frontend }}
         restore-keys: frontend-deps-
     
     - name: Cache backend dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v4.2.0
       with:
         path: backend/node_modules
         key: backend-deps-${{ steps.cache-keys.outputs.backend }}
@@ -91,12 +91,11 @@ jobs:
         cache: 'pnpm'
     
     - name: Restore dependencies cache
-      uses: actions/cache@v4
+      uses: actions/cache@v4.2.0
       with:
         path: ${{ matrix.service }}/node_modules
         key: ${{ format('{0}-deps-{1}', matrix.service, matrix.service == 'frontend' && needs.setup.outputs.frontend-cache-key || needs.setup.outputs.backend-cache-key) }}
         restore-keys: ${{ matrix.service }}-deps-
-        fail-on-cache-miss: true
       
     - name: Run linting
       run: |
@@ -152,18 +151,16 @@ jobs:
         cache: 'pnpm'
       
     - name: Restore frontend dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v4.2.0
       with:
         path: frontend/node_modules
         key: frontend-deps-${{ needs.setup.outputs.frontend-cache-key }}
-        fail-on-cache-miss: true
     
     - name: Restore backend dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v4.2.0
       with:
         path: backend/node_modules
         key: backend-deps-${{ needs.setup.outputs.backend-cache-key }}
-        fail-on-cache-miss: true
         
     - name: Run dependency audit
       run: |
@@ -206,11 +203,10 @@ jobs:
         cache: 'pnpm'
     
     - name: Restore dependencies cache
-      uses: actions/cache@v4
+      uses: actions/cache@v4.2.0
       with:
         path: ${{ matrix.service }}/node_modules
         key: ${{ format('{0}-deps-{1}', matrix.service, matrix.service == 'frontend' && needs.setup.outputs.frontend-cache-key || needs.setup.outputs.backend-cache-key) }}
-        fail-on-cache-miss: true
         
     - name: Build application
       run: |
