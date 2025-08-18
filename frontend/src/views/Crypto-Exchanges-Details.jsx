@@ -2,9 +2,17 @@
 import { useEffect, useMemo } from 'react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { Paper } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { BsDribbble, BsFacebook, BsGithub } from 'react-icons/bs';
+
+import Breadcrumb from '@components/common/Breadcrumbs';
+import LogoClouds from '@components/common/LogoClouds';
 
 // Secure HTML sanitization function to prevent XSS attacks
-const sanitizeHtml = (html) => {
+const sanitizeHtml = html => {
   if (!html) return '';
   let cleaned = html;
   let prevLength;
@@ -18,17 +26,6 @@ const sanitizeHtml = (html) => {
   textarea.innerHTML = cleaned;
   return textarea.value;
 };
-
-import { Paper } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-
-import Breadcrumb from '@components/common/Breadcrumbs';
-import LogoClouds from '@components/common/LogoClouds';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-
-import { BsDribbble, BsFacebook, BsGithub } from 'react-icons/bs';
 
 function CryptoExchangesDetails() {
   const dispatch = useDispatch();
@@ -285,9 +282,7 @@ function CryptoExchangesDetails() {
                   </h1>
                   <div className='text-sm'>
                     {exchangeDetails?.description ? (
-                      <p>
-                        {sanitizeHtml(exchangeDetails.description)}
-                      </p>
+                      <p>{sanitizeHtml(exchangeDetails.description)}</p>
                     ) : null}
                   </div>
                 </div>
