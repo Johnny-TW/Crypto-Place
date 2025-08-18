@@ -321,17 +321,17 @@ jobs:
           
           # 在 CI/CD 環境中，我們只能模擬部署流程
           echo "🔨 建置 Docker 映像檔..."
-          docker-compose -f docker-compose.prod.yml build
+          docker compose -f docker-compose.prod.yml build
           
           echo "🧪 測試服務啟動..."
-          docker-compose -f docker-compose.prod.yml up -d
+          docker compose -f docker-compose.prod.yml up -d
           sleep 10
           
           echo "🔍 檢查服務狀態..."
-          docker-compose -f docker-compose.prod.yml ps
+          docker compose -f docker-compose.prod.yml ps
           
           echo "🛑 停止測試服務..."
-          docker-compose -f docker-compose.prod.yml down
+          docker compose -f docker-compose.prod.yml down
           
           echo "✅ 部署驗證完成！"
           echo "📋 實際部署步驟："
