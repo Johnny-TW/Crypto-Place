@@ -5,6 +5,7 @@
   "author": "Your Name",
   "private": true,
   "license": "MIT",
+  "packageManager": "pnpm@9.14.0",
   "scripts": {
     "build": "prisma generate --no-engine && nest build",
     "build:dev": "prisma generate && nest build",

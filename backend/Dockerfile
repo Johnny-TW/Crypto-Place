@@ -10,14 +10,17 @@ RUN corepack enable pnpm && \
 # Development stage
 FROM base AS development
 WORKDIR /app
-USER nestjs
 
-# Copy package files and prisma schema
+# Copy package files and prisma schema with proper ownership
 COPY --chown=nestjs:nodejs package.json pnpm-lock.yaml ./
 COPY --chown=nestjs:nodejs prisma ./prisma
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install dependencies as root, then change ownership
+RUN pnpm install --frozen-lockfile && \
+    chown -R nestjs:nodejs /app
+
+# Switch to nestjs user for subsequent operations
+USER nestjs
 
 # Copy source code
 COPY --chown=nestjs:nodejs . .
@@ -34,14 +37,17 @@ CMD ["dumb-init", "pnpm", "start:dev"]
 # Production stage
 FROM base AS production
 WORKDIR /app
-USER nestjs
 
-# Copy package files and prisma schema
+# Copy package files and prisma schema with proper ownership
 COPY --chown=nestjs:nodejs package.json pnpm-lock.yaml ./
 COPY --chown=nestjs:nodejs prisma ./prisma
 
-# Install production dependencies only
-RUN pnpm install --frozen-lockfile --prod
+# Install production dependencies as root, then change ownership
+RUN pnpm install --frozen-lockfile --prod && \
+    chown -R nestjs:nodejs /app
+
+# Switch to nestjs user for subsequent operations
+USER nestjs
 
 # Copy source code
 COPY --chown=nestjs:nodejs . .
