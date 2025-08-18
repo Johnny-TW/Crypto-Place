@@ -42,8 +42,8 @@ WORKDIR /app
 COPY --chown=nestjs:nodejs package.json pnpm-lock.yaml ./
 COPY --chown=nestjs:nodejs prisma ./prisma
 
-# Install production dependencies as root, then change ownership
-RUN pnpm install --frozen-lockfile --prod && \
+# Install all dependencies for building (including devDependencies)
+RUN pnpm install --frozen-lockfile && \
     chown -R nestjs:nodejs /app
 
 # Switch to nestjs user for subsequent operations
@@ -54,6 +54,16 @@ COPY --chown=nestjs:nodejs . .
 
 # Build the application
 RUN pnpm build && pnpm prisma:generate:prod
+
+# Switch back to root to clean up dev dependencies
+USER root
+
+# Remove dev dependencies and reinstall only production dependencies
+RUN pnpm install --frozen-lockfile --prod && \
+    chown -R nestjs:nodejs /app
+
+# Switch back to nestjs user for runtime
+USER nestjs
 
 # Expose port
 EXPOSE 5001
