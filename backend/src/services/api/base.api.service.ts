@@ -2,6 +2,7 @@ import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import FormData from 'form-data';
+import https from 'https';
 
 @Injectable()
 export class BaseApiService {
@@ -42,8 +43,10 @@ export class BaseApiService {
       headers: header,
       params: query,
       data: body,
-      // Note: Always validate SSL certificates for security
-      // If custom certificate handling is needed, implement proper CA verification
+      // For development environment with self-signed certificates
+      httpsAgent: new https.Agent({  
+        rejectUnauthorized: process.env.NODE_ENV === 'production'
+      })
     };
 
     if (body instanceof FormData) {

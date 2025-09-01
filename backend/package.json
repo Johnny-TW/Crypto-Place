@@ -102,9 +102,9 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "lint-staged": {
-    "src/**/*.ts": [
+    "src/**/*.{js,ts}": [
       "eslint --fix",
-      "prettier --write"
+      "jest --bail --findRelatedTests --passWithNoTests"
     ]
   },
   "overrides": {

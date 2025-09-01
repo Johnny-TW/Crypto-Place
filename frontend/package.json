@@ -43,8 +43,6 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
-    "@mantine/core": "^6.0.22",
-    "@mantine/hooks": "^6.0.22",
     "@mui/icons-material": "^5.16.14",
     "@mui/material": "^5.16.14",
     "@mui/styled-engine-sc": "^6.4.3",

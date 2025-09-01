@@ -8,7 +8,7 @@ function LoginRedirect({ children }) {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      history.push('/dashboard');
+      history.replace('/dashboard');
     }
   }, [isAuthenticated, isLoading, history]);
 

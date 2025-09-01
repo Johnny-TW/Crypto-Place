@@ -352,6 +352,67 @@ export class AuthService {
     }
   }
 
+  async findOrCreateEmployeeUser(employeeData: {
+    email: string;
+    name: string;
+    emplId: string;
+  }) {
+    // 先根據員工ID查找是否已有記錄
+    let user = await this.prisma.user.findFirst({
+      where: { emplId: employeeData.emplId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true,
+        emplId: true,
+      },
+    });
+
+    if (user) {
+      // 如果找到記錄，更新資料並返回
+      user = await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          email: employeeData.email,
+          name: employeeData.name,
+          isActive: true,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isActive: true,
+          emplId: true,
+        },
+      });
+    } else {
+      // 沒有記錄則創建新用戶
+      user = await this.prisma.user.create({
+        data: {
+          email: employeeData.email,
+          name: employeeData.name,
+          password: 'employee_no_password', // 員工不需要密碼登入
+          role: Role.USER,
+          isActive: true,
+          emplId: employeeData.emplId,
+        },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isActive: true,
+          emplId: true,
+        },
+      });
+    }
+
+    return user;
+  }
+
   async findAll() {
     return `This action returns all auth`;
   }

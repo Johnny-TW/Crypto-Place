@@ -33,13 +33,13 @@ const Learn = [
   { name: 'API', href: '/api' },
 ];
 
-// const LogOut = [{ name: 'Log out', href: '#', icon: ArrowLeftOnRectangleIcon }];
-
 export default function Example() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const dispatch = useDispatch();
-  const { user, loginType, isLoading } = useSelector(state => state.auth || {});
+  const user = useSelector(state => state.auth?.user);
+  const loginType = useSelector(state => state.auth?.loginType);
+  const isLoading = useSelector(state => state.auth?.isLoading);
 
   const handleLogout = () => {
     dispatch(logoutRequest());

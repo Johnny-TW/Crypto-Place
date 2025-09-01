@@ -1,17 +1,101 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Paper, FormControl, MenuItem, Select, Grid } from '@mui/material';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { FormControl, MenuItem, Select, Typography } from '@mui/material';
+import { FavoriteRounded, ShowChartRounded } from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
+import FavoriteButton from '../components/common/FavoriteButton';
+import FavoriteListPanel from '../components/common/FavoriteListPanel';
+import CustomTabs from '../components/common/CustomTabs';
+import { useWatchlist } from '../hooks/useWatchlist';
 import '@styleViews/dashboard.scss';
+import '../styles/components/tabs.scss';
 
 function StickyHeadTable() {
+  const dispatch = useDispatch();
+  const coinList = useSelector(state => state.coinList.coinList);
+  const [currency, setCurrency] = useState('usd');
+  const [currentTab, setCurrentTab] = useState(0);
+  const history = useHistory();
+
+  // 使用 watchlist hook 管理所有 watchlist 相關邏輯
+  const {
+    watchlist,
+    isLoading: watchlistLoading,
+    error: watchlistError,
+    count: watchlistCount,
+    getFavoriteStatusMap,
+    shouldLoadBatchStatus,
+    checkBatchStatus,
+    addToWatchlist,
+    removeFromWatchlist,
+    fetchWatchlist,
+    getCount,
+  } = useWatchlist();
+
+  // 批量載入收藏狀態
+  const loadBatchWatchlistStatus = useCallback(() => {
+    if (!coinList || coinList.length === 0) {
+      return;
+    }
+
+    const coinIds = coinList.map(coin => coin.id);
+    if (shouldLoadBatchStatus(coinIds)) {
+      checkBatchStatus(coinIds);
+    }
+  }, [coinList, shouldLoadBatchStatus, checkBatchStatus]);
+
+  // 取得當前的狀態映射
+  const watchlistStatus = getFavoriteStatusMap();
+
+  const handleFavoriteToggle = useCallback(
+    data => {
+      if (data.action === 'add') {
+        // 只傳遞後端 API 需要的欄位
+        const coinData = {
+          coinId: data.coinId,
+          coinName: data.coinName,
+          symbol: data.symbol,
+          image: data.image,
+        };
+        addToWatchlist(coinData);
+      } else if (data.action === 'remove') {
+        removeFromWatchlist(data.coinId);
+      }
+    },
+    [addToWatchlist, removeFromWatchlist]
+  );
+
   const columns = useMemo(
     () => [
       {
+        field: 'favorite',
+        headerName: 'Favorite',
+        minWidth: 100,
+        align: 'center',
+        headerAlign: 'center',
+        sortable: false,
+        renderCell: params => (
+          <div
+            style={{ display: 'flex', justifyContent: 'center', width: '100%' }}
+          >
+            <FavoriteButton
+              coinId={params.row.id}
+              coinName={params.row.name}
+              symbol={params.row.symbol}
+              image={params.row.image}
+              size='small'
+              isFavorite={watchlistStatus[params.row.id] || false}
+              isLoading={watchlistLoading}
+              onToggle={handleFavoriteToggle}
+            />
+          </div>
+        ),
+      },
+      {
         field: 'market_cap_rank',
         headerName: 'ID',
-        minWidth: 100,
+        minWidth: 80,
         align: 'left',
       },
       {
@@ -33,7 +117,7 @@ function StickyHeadTable() {
         minWidth: 100,
         align: 'left',
       },
-      { field: 'name', headerName: 'Name', minWidth: 150 },
+      { field: 'name', headerName: 'Name', minWidth: 200 },
       {
         field: 'price_change_percentage_24h',
         headerName: 'Price 24H',
@@ -76,17 +160,27 @@ function StickyHeadTable() {
         align: 'left',
       },
     ],
-    []
+    [watchlistStatus, handleFavoriteToggle, watchlistLoading]
   );
-
-  const dispatch = useDispatch();
-  const coinList = useSelector(state => state.coinList.coinList);
-  const [currency, setCurrency] = useState('usd');
-  const history = useHistory();
 
   const handleChange = event => {
     setCurrency(event.target.value);
   };
+
+  const handleTabChange = newValue => {
+    setCurrentTab(newValue);
+
+    // 當切換到 Market Overview (tab 1) 時，重新載入收藏狀態以確保同步
+    if (newValue === 1) {
+      loadBatchWatchlistStatus();
+    }
+  };
+
+  // 初始化時載入 watchlist 數據
+  useEffect(() => {
+    fetchWatchlist();
+    getCount();
+  }, [fetchWatchlist, getCount]);
 
   function CurrencySelect() {
     return (
@@ -106,45 +200,122 @@ function StickyHeadTable() {
     );
   }
 
-  const handleRowClick = params => {
-    history.push(`/Crypto-details/${params.row.id}`);
-  };
+  const handleRowClick = useCallback(
+    params => {
+      history.push(`/Crypto-details/${params.row.id}`);
+    },
+    [history]
+  );
 
   useEffect(() => {
     dispatch({ type: 'FETCH_COIN_LIST', payload: { currency } });
   }, [dispatch, currency]);
 
+  // 批量載入收藏狀態 - 當 coinList 變化時
+  useEffect(() => {
+    loadBatchWatchlistStatus();
+  }, [loadBatchWatchlistStatus]);
+
   const paginationModel = { page: 0, pageSize: 20 };
 
-  return (
-    <>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={3}>
-          <CurrencySelect />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <h2 className='text-3xl font-bold tracking-tight text-gray-900 text-center'>
-            The Main Function
-          </h2>
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          {/* 空的區域 */}
-        </Grid>
-      </Grid>
-      <Paper className='mt-5 mb-20' sx={{ width: '100%' }} elevation={1}>
-        <DataGrid
-          rows={coinList}
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[10, 20, 30, 40, 50]}
-          sx={{
-            cursor: 'pointer',
-            backgroundColor: '#FFFFFF',
-          }}
-          onRowClick={handleRowClick}
+  // 準備 Tab 數據
+  const tabsData = [
+    {
+      label: 'My Favorites',
+      icon: <FavoriteRounded className='w-5 h-5' />,
+      badge: watchlistCount,
+      content: (
+        <FavoriteListPanel
+          watchlist={watchlist}
+          isLoading={watchlistLoading}
+          error={watchlistError}
         />
-      </Paper>
-    </>
+      ),
+    },
+    {
+      label: 'Market Overview',
+      icon: <ShowChartRounded className='w-5 h-5' />,
+      content: (
+        <div className='space-y-6'>
+          {/* Currency Selector */}
+          <div className='flex items-center gap-4'>
+            <Typography
+              variant='subtitle2'
+              className='text-gray-700 font-medium'
+            >
+              Currency :
+            </Typography>
+            <div className='min-w-[120px]'>
+              <CurrencySelect />
+            </div>
+          </div>
+
+          {/* Market Data Grid */}
+          <div className='bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden'>
+            <DataGrid
+              rows={coinList}
+              columns={columns}
+              initialState={{ pagination: { paginationModel } }}
+              pageSizeOptions={[10, 20, 30, 40, 50]}
+              sx={{
+                height: 600,
+                cursor: 'pointer',
+                backgroundColor: '#FFFFFF',
+                border: 'none',
+                '& .MuiDataGrid-cell:focus': {
+                  outline: 'none',
+                },
+                '& .MuiDataGrid-row:hover': {
+                  backgroundColor: 'rgba(59, 130, 246, 0.04)',
+                },
+                '& .MuiDataGrid-columnHeaders': {
+                  backgroundColor: '#f8fafc',
+                  fontWeight: 600,
+                  borderBottom: '1px solid #e2e8f0',
+                },
+                '& .MuiDataGrid-cell': {
+                  borderBottom: '1px solid #f1f5f9',
+                },
+                '& .MuiDataGrid-footerContainer': {
+                  borderTop: '1px solid #e2e8f0',
+                  backgroundColor: '#f8fafc',
+                },
+              }}
+              onRowClick={handleRowClick}
+              disableColumnMenu
+              disableSelectionOnClick
+            />
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className='min-h-screen py-8 px-4'>
+      <div className='max-w-7xl mx-auto'>
+        {/* Header Section */}
+        <div className='text-center mb-8'>
+          <h1 className='text-4xl font-bold text-gray-900 mb-2'>
+            Cryptocurrency Market
+          </h1>
+          <p className='text-lg text-gray-600'>
+            Track your favorite cryptocurrencies and market trends
+          </p>
+        </div>
+
+        {/* Custom Tailwind Tabs */}
+        <CustomTabs
+          tabs={tabsData}
+          activeTab={currentTab}
+          onChange={handleTabChange}
+          className='max-w-full'
+        />
+
+        {/* Bottom Spacing */}
+        <div className='mb-16' />
+      </div>
+    </div>
   );
 }
 

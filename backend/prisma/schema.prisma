@@ -10,14 +10,14 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
+  id            Int         @id @default(autoincrement())
+  email         String      @unique
   name          String?
   password      String
-  role          Role     @default(USER)
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  role          Role        @default(USER)
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
   emplId        String?
   enName        String?
   chName        String?
@@ -35,6 +35,7 @@ model User {
   deptRoleName  String?
   deptRoleAbbr  String?
   Post          Post[]
+  Watchlist     Watchlist[]
 }
 
 model Crypto {
@@ -59,6 +60,21 @@ model Post {
   updatedAt DateTime @updatedAt
   order     Int      @default(0)
   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+}
+
+model Watchlist {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  coinId    String
+  coinName  String
+  symbol    String
+  image     String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, coinId])
+  @@map("watchlists")
 }
 
 enum Role {

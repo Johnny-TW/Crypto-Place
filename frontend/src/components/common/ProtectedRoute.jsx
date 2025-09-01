@@ -8,7 +8,7 @@ function ProtectedRoute({ children }) {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      history.push('/login');
+      history.replace('/login');
     }
   }, [isAuthenticated, isLoading, history]);
 

@@ -10,6 +10,7 @@ import { UserModule } from './controllers/user/user.module';
 import { AuthModule } from './controllers/auth/auth.module';
 import { JwtAuthGuard } from './controllers/auth/guards/jwt-auth.guard';
 import { PostsModule } from './controllers/posts/posts.module';
+import { WatchlistModule } from './controllers/watchlist/watchlist.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PostsModule } from './controllers/posts/posts.module';
     ApiModule,
     UserModule,
     PostsModule,
+    WatchlistModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -16,11 +16,11 @@ import {
   ExchangeDto,
 } from './dto/api-response.dto';
 
-@ApiTags('crypto')
 @Controller()
 export class ApiController {
   constructor(private readonly apiService: ApiService) {}
 
+  @ApiTags('crypto')
   @Get('coins/markets')
   @ApiOperation({
     summary: '獲取加密貨幣市場數據',
@@ -60,6 +60,7 @@ export class ApiController {
     return this.apiService.getCoinsMarkets(query);
   }
 
+  @ApiTags('crypto')
   @Get('coins/:id')
   @ApiOperation({
     summary: '獲取加密貨幣詳細資訊',
@@ -122,6 +123,7 @@ export class ApiController {
     return this.apiService.getNftById(id);
   }
 
+  @ApiTags('crypto')
   @Get('coins/bitcoin/market_chart')
   @ApiOperation({
     summary: '獲取比特幣價格圖表',
@@ -199,6 +201,7 @@ export class ApiController {
     return this.apiService.getNews(query);
   }
 
+  @ApiTags('crypto')
   @Get('crypto-details')
   @ApiOperation({
     summary: '獲取加密貨幣詳細資訊',
@@ -213,6 +216,7 @@ export class ApiController {
     return this.apiService.getCryptoDetails(query);
   }
 
+  @ApiTags('crypto')
   @Get('crypto-details/chart/:id')
   @ApiOperation({
     summary: '獲取比特幣詳細圖表',

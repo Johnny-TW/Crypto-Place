@@ -25,15 +25,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         payload.loginType === 'employee' ||
         (typeof payload.sub === 'string' && payload.sub.startsWith('employee_'))
       ) {
-        // 員工登入：直接返回 payload 中的用戶資料
-        return {
-          id: 0, // 虛擬 ID
+        // 員工登入：找到或創建對應的資料庫用戶
+        const user = await this.authService.findOrCreateEmployeeUser({
           email: payload.email,
           name: payload.name,
-          role: payload.role,
           emplId: payload.emplId,
+        });
+        
+        return {
+          id: user.id, // 使用真實的資料庫 ID
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          emplId: user.emplId,
           loginType: 'employee',
-          isActive: true,
+          isActive: user.isActive,
         };
       } else {
         // 一般用戶登入：從資料庫驗證

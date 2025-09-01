@@ -1,7 +1,7 @@
 import { all, put, call } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 import Swal from 'sweetalert2';
-
+import { APIKit } from '../api/apiService';
 import CoinList from './cryptoDashboard';
 import CryptoNews from './cryptoNews';
 import CryptoDetails from './cryptoDetails';
@@ -12,8 +12,7 @@ import nftDashboardSaga from './nftDashboard';
 import nftDetailsSaga from './nftDetails';
 import employeeInfoSaga from './employeeInfo';
 import authSaga from './auth';
-
-import { APIKit } from '../api/apiService';
+import { watchlistSaga } from './watchlist';
 
 export function* setLoading(loading, path, method) {
   yield put({ type: 'SET_LOADING', data: { loading, path, method } });
@@ -79,6 +78,7 @@ function* rootSaga() {
     nftDetailsSaga(),
     employeeInfoSaga(),
     authSaga(),
+    watchlistSaga(),
   ]);
 }
 

@@ -48,10 +48,6 @@ function* loginSaga(action) {
       timer: 2000,
       showConfirmButton: false,
     });
-
-    setTimeout(() => {
-      window.location.href = '/dashboard';
-    }, 1000);
   } catch (error) {
     yield put({
       type: 'LOGIN_FAILURE',
@@ -94,10 +90,6 @@ function* employeeLoginSaga(action) {
       timer: 2000,
       showConfirmButton: false,
     });
-
-    setTimeout(() => {
-      window.location.href = '/dashboard';
-    }, 1000);
   } catch (error) {
     yield put({
       type: 'EMPLOYEE_LOGIN_FAILURE',
@@ -171,10 +163,6 @@ function* logoutSaga() {
       timer: 2000,
       showConfirmButton: false,
     });
-
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 1500);
   } catch (error) {
     yield put({
       type: 'LOGOUT_FAILURE',

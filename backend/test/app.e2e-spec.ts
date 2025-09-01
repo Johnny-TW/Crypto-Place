@@ -3,9 +3,12 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { HttpModule } from '@nestjs/axios';
+import { Server } from 'http';
 
 describe('Crypto Place API (e2e)', () => {
   let app: INestApplication;
+  
+  const getServer = (): Server => app.getHttpServer() as Server;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -23,7 +26,7 @@ describe('Crypto Place API (e2e)', () => {
 
   describe('Root Routes', () => {
     it('/api (GET) - should return welcome message', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api')
         .expect(200)
         .expect((res) => {
@@ -40,7 +43,7 @@ describe('Crypto Place API (e2e)', () => {
     });
 
     it('/api/health (GET) - should return health status', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/health')
         .expect(200)
         .expect((res) => {
@@ -58,7 +61,7 @@ describe('Crypto Place API (e2e)', () => {
 
   describe('API Routes', () => {
     it('/api/coins/markets (GET) - should return coins market data', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/coins/markets')
         .expect(200)
         .expect((res) => {
@@ -70,7 +73,7 @@ describe('Crypto Place API (e2e)', () => {
     }, 30000);
 
     it('/api/coins/markets (GET) with query params - should accept query parameters', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/coins/markets?vs_currency=usd&per_page=10')
         .expect(200)
         .expect((res) => {
@@ -79,7 +82,7 @@ describe('Crypto Place API (e2e)', () => {
     }, 30000);
 
     it('/api/coins/bitcoin (GET) - should return Bitcoin data', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/coins/bitcoin')
         .expect(200)
         .expect((res) => {
@@ -91,7 +94,7 @@ describe('Crypto Place API (e2e)', () => {
     }, 30000);
 
     it('/api/nfts/list (GET) - should return NFTs list', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/nfts/list')
         .expect(200)
         .expect((res) => {
@@ -100,7 +103,7 @@ describe('Crypto Place API (e2e)', () => {
     }, 30000);
 
     it('/api/news (GET) - should return crypto news', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/news')
         .expect(200)
         .expect((res) => {
@@ -112,7 +115,7 @@ describe('Crypto Place API (e2e)', () => {
     }, 30000);
 
     it('/api/crypto-market-list (GET) - should return exchanges list', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/crypto-market-list')
         .expect(200)
         .expect((res) => {
@@ -123,7 +126,7 @@ describe('Crypto Place API (e2e)', () => {
 
   describe('Error Handling', () => {
     it('/api/coins/invalid-coin-id (GET) - should handle invalid coin ID', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/coins/invalid-coin-id-that-does-not-exist')
         .expect((res) => {
           expect([200, 400, 404, 500]).toContain(res.status);
@@ -134,7 +137,7 @@ describe('Crypto Place API (e2e)', () => {
     }, 30000);
 
     it('/api/nfts/invalid-nft-id (GET) - should handle invalid NFT ID', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/nfts/invalid-nft-id-that-does-not-exist')
         .expect((res) => {
           expect([200, 400, 404, 500]).toContain(res.status);
@@ -145,7 +148,7 @@ describe('Crypto Place API (e2e)', () => {
     }, 30000);
 
     it('/api/exchanges/invalid-exchange-id (GET) - should handle invalid exchange ID', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/api/exchanges/invalid-exchange-id-that-does-not-exist')
         .expect((res) => {
           expect([200, 400, 404, 500]).toContain(res.status);
@@ -156,7 +159,7 @@ describe('Crypto Place API (e2e)', () => {
     }, 30000);
 
     it('Invalid route - should return 404', () => {
-      return request(app.getHttpServer())
+      return request(getServer())
         .get('/invalid-route-that-does-not-exist')
         .expect(404);
     });
@@ -164,7 +167,7 @@ describe('Crypto Place API (e2e)', () => {
 
   describe('API Response Structure', () => {
     it('should have consistent error response structure', async () => {
-      const response = await request(app.getHttpServer())
+      await request(getServer())
         .get('/api/coins/definitely-invalid-coin-id')
         .expect((res) => {
           if (res.status >= 400) {
@@ -182,7 +185,7 @@ describe('Crypto Place API (e2e)', () => {
       ];
 
       for (const endpoint of endpoints) {
-        await request(app.getHttpServer())
+        await request(getServer())
           .get(endpoint)
           .expect(200)
           .expect((res) => {
@@ -196,7 +199,7 @@ describe('Crypto Place API (e2e)', () => {
     it('should respond to health check within reasonable time', async () => {
       const start = Date.now();
 
-      await request(app.getHttpServer()).get('/api/health').expect(200);
+      await request(getServer()).get('/api/health').expect(200);
 
       const duration = Date.now() - start;
       expect(duration).toBeLessThan(1000);
@@ -205,7 +208,7 @@ describe('Crypto Place API (e2e)', () => {
     it('should handle concurrent requests', async () => {
       const requests = Array(3)
         .fill(null)
-        .map(() => request(app.getHttpServer()).get('/api/health').expect(200));
+        .map(() => request(getServer()).get('/api/health').expect(200));
 
       const responses = await Promise.allSettled(requests);
 

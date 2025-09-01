@@ -54,6 +54,8 @@ async function bootstrap() {
     )
     .setVersion('2.0.0')
     .addTag('auth', '認證相關 API')
+    .addTag('User', '用戶管理 API')
+    .addTag('posts', '貼文管理 API')
     .addTag('crypto', '加密貨幣相關 API')
     .addTag('nft', 'NFT 相關 API')
     .addTag('news', '新聞相關 API')
