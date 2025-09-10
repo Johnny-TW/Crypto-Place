@@ -219,8 +219,13 @@ export class ApiController {
   @ApiTags('crypto')
   @Get('crypto-details/chart/:id')
   @ApiOperation({
-    summary: '獲取比特幣詳細圖表',
-    description: '獲取比特幣的詳細圖表數據',
+    summary: '獲取加密貨幣詳細圖表',
+    description: '根據幣種 ID 獲取對應的詳細圖表數據',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '加密貨幣 ID，例如 bitcoin、ethereum、solana 等',
+    example: 'bitcoin',
   })
   @ApiQuery({
     name: 'vs_currency',
@@ -239,8 +244,8 @@ export class ApiController {
     description: '成功獲取圖表數據',
     type: MarketChartDto,
   })
-  async getCryptoDetailsChartBitcoin(@Query() query: any) {
-    return this.apiService.getCryptoDetailsChartBitcoin(query);
+  async getCryptoDetailsChart(@Param('id') id: string, @Query() query: any) {
+    return this.apiService.getCryptoDetailsChart(id, query);
   }
 
   @Get('crypto-market-list')

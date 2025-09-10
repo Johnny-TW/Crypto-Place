@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["DOM", "DOM.Iterable", "ES6"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["frontend/src/*"],
+      "@components/*": ["frontend/src/components/*"],
+      "@constant/*": ["frontend/src/constant/*"],
+      "@hooks/*": ["frontend/src/hooks/*"],
+      "@images/*": ["frontend/src/images/*"],
+      "@styleLayouts/*": ["frontend/src/styles/layouts/*"],
+      "@styleViews/*": ["frontend/src/styles/views/*"],
+      "@redux/*": ["frontend/src/redux/*"],
+      "@utils/*": ["frontend/src/utils/*"]
+    }
+  },
+  "include": [
+    "frontend/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "frontend/node_modules",
+    "backend/node_modules"
+  ]
+}

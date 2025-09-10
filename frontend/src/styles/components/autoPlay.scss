@@ -1,0 +1,20 @@
+/* Slider navigation buttons styling */
+.slider-container .slick-prev,
+.slider-container .slick-next {
+  z-index: 10;
+  border-radius: 50%;
+  background-color: #353535
+}
+
+.slider-container .slick-prev:focus,
+.slider-container .slick-next:focus {
+  outline: none;
+}
+
+.slider-container .slick-prev:before,
+.slider-container .slick-next:before {
+  color: white;
+  width: 20px;
+  height: 20px;
+  opacity: 1;
+}

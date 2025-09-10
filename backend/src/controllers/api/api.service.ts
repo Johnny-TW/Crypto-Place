@@ -152,6 +152,8 @@ export class ApiService {
 
   async getNews(query: any) {
     try {
+      this.logger.log('Fetching news with query:', JSON.stringify(query));
+      
       const response = await firstValueFrom(
         this.httpService.get(
           `${this.cryptocompareApiUrl}/news/v1/article/list`,
@@ -160,6 +162,39 @@ export class ApiService {
           },
         ),
       );
+      
+      // 檢查響應數據結構
+      this.logger.log('CryptoCompare API response structure:', 
+        Object.keys(response.data));
+      
+      if (response.data && response.data.Data && Array.isArray(response.data.Data)) {
+        this.logger.log(`Found ${response.data.Data.length} news items`);
+        
+        // 記錄第一個新聞項目的欄位，以確認圖片欄位
+        if (response.data.Data.length > 0) {
+          this.logger.log('First news item fields:', 
+            Object.keys(response.data.Data[0]));
+          
+          // 檢查所有可能的圖片欄位名稱
+          const imageFields = ['imageurl', 'image_url', 'IMAGE_URL', 'image', 'thumbnail'];
+          imageFields.forEach(field => {
+            this.logger.log(`Image field ${field} value:`, 
+              response.data.Data[0][field]);
+          });
+
+          // 如果 IMAGE_URL 欄位存在但值為 undefined，添加一個後備圖片 URL
+          if ('IMAGE_URL' in response.data.Data[0] && !response.data.Data[0].IMAGE_URL) {
+            this.logger.log('Adding fallback image URL to missing IMAGE_URL field');
+            response.data.Data = response.data.Data.map(item => {
+              if ('IMAGE_URL' in item && !item.IMAGE_URL) {
+                // 使用固定的加密貨幣圖片作為後備圖片
+                item.IMAGE_URL = 'https://www.cryptocompare.com/media/37746251/btc.png';
+              }
+              return item;
+            });
+          }
+        }
+      }
 
       return response.data;
     } catch (error) {
@@ -190,11 +225,11 @@ export class ApiService {
     }
   }
 
-  async getCryptoDetailsChartBitcoin(query: any) {
+  async getCryptoDetailsChart(coinId: string, query: any) {
     try {
       const response = await firstValueFrom(
         this.httpService.get(
-          `${this.coingeckoApiUrl}/coins/bitcoin/market_chart`,
+          `${this.coingeckoApiUrl}/coins/${coinId}/market_chart`,
           {
             params: query,
             headers: this.getCoingeckoHeaders(),
@@ -204,7 +239,7 @@ export class ApiService {
 
       return response.data;
     } catch (error) {
-      this.logger.error('Error fetching crypto details chart:', error.message);
+      this.logger.error(`Error fetching crypto details chart for ${coinId}:`, error.message);
       throw new HttpException(
         { error: error.message },
         error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,

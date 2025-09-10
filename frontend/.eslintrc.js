@@ -10,21 +10,25 @@ module.exports = {
     'airbnb/hooks',
     'plugin:react/recommended',
     'plugin:jsx-a11y/recommended',
+    'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
   ],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
     ecmaVersion: 12,
     sourceType: 'module',
+    project: require.resolve('./tsconfig.json'),
   },
-  plugins: ['react', 'react-hooks', 'jsx-a11y', 'prettier'],
+  plugins: ['react', 'react-hooks', 'jsx-a11y', 'prettier', '@typescript-eslint'],
   rules: {
     'prettier/prettier': 'error',
 
     'react/jsx-props-no-spreading': 'off',
     'react/prop-types': 'off',
+    'react/require-default-props': 'off',
     'react/no-invalid-html-attribute': 'error',
     'react/no-unsafe': 'error',
     'react/void-dom-elements-no-children': 'error',
@@ -33,7 +37,7 @@ module.exports = {
     'react/jsx-pascal-case': 'error',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-uses-react': 'off',
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
+    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
 
     'default-param-last': 'off',
     'no-param-reassign': [
@@ -49,6 +53,8 @@ module.exports = {
       {
         js: 'never',
         jsx: 'never',
+        ts: 'never',
+        tsx: 'never',
       },
     ],
     'max-len': [
@@ -59,7 +65,7 @@ module.exports = {
     // 'no-console': 'warn',
     'no-unused-vars': [
       'error',
-      { vars: 'all', args: 'after-used', ignoreRestSiblings: true },
+      { vars: 'all', args: 'after-used', ignoreRestSiblings: true, argsIgnorePattern: '^_' },
     ],
     'react/no-array-index-key': 'off',
     'react/no-unstable-nested-components': 'off',
@@ -80,6 +86,7 @@ module.exports = {
           '**/craco.config.{js,jsx}',
         ],
         optionalDependencies: false,
+        packageDir: __dirname,
       },
     ],
   },
@@ -100,10 +107,11 @@ module.exports = {
           ['@redux', `${__dirname}/src/redux`],
           ['@utils', `${__dirname}/src/utils`],
         ],
-        extensions: ['.js', '.jsx'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
       node: {
-        extensions: ['.js', '.jsx'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        paths: ['node_modules', `${__dirname}/node_modules`],
       },
     },
   },

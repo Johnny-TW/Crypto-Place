@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+import { Globe, Github } from 'lucide-react';
+import { Typography } from '@mui/material';
+
+interface LinkData {
+  homepage: string[];
+  repos_url: {
+    github: string[];
+  };
+}
+
+interface DescriptionSectionProps {
+  name: string;
+  description: string;
+  href: LinkData | null;
+}
+
+function DescriptionSection({
+  name,
+  description,
+  href,
+}: DescriptionSectionProps) {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
+  const toggleDescription = (): void => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <>
+      <div className='mb-3'>
+        <Typography
+          variant='h5'
+          fontWeight='bold'
+          gutterBottom
+          className='text-center font-bold'
+        >
+          About {name}
+        </Typography>
+      </div>
+      <div className='mb-10 bg-white rounded-lg border border-gray-300'>
+        <div className='p-6'>
+          <p
+            className={`text-gray-700 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}
+          >
+            {description}
+          </p>
+          <button
+            type='button'
+            onClick={toggleDescription}
+            className='mt-2 text-blue-600 hover:text-blue-800'
+          >
+            {isExpanded ? 'Show Less' : 'Show More'}
+          </button>
+          <div className='mt-4 flex gap-4'>
+            {href && href.homepage[0] ? (
+              <a
+                href={href.homepage[0]}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex items-center gap-2 text-blue-600 hover:text-blue-800'
+              >
+                <Globe className='h-4 w-4' />
+                Website
+              </a>
+            ) : null}
+            {href && href.repos_url.github[0] ? (
+              <a
+                href={href.repos_url.github[0]}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='flex items-center gap-2 text-blue-600 hover:text-blue-800'
+              >
+                <Github className='h-4 w-4' />
+                Github
+              </a>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default DescriptionSection;

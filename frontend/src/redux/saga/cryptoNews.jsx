@@ -27,12 +27,8 @@ export function* fetchCryptoNewsSaga(action) {
     // eslint-disable-next-line no-console
     console.log('API Response:', response.data);
 
-    // 確保我們正確提取 Data 陣列
+    // 如果返回的數據是嵌套的，提取正確的數據
     const newsData = response.data.Data || response.data;
-    // eslint-disable-next-line no-console
-    console.log('Processed news data:', newsData);
-    // eslint-disable-next-line no-console
-    console.log('Number of news items:', newsData?.length);
 
     yield put({
       type: 'FETCH_CRYPTO_NEWS_SUCCESS',
