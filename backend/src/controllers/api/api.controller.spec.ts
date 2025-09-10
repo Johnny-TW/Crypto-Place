@@ -15,7 +15,7 @@ describe('ApiController', () => {
     getBitcoinMarketChart: jest.fn(),
     getNews: jest.fn(),
     getCryptoDetails: jest.fn(),
-    getCryptoDetailsChartBitcoin: jest.fn(),
+    getCryptoDetailsChart: jest.fn(),
     getCryptoMarketList: jest.fn(),
     getExchangeById: jest.fn(),
   };
@@ -242,7 +242,7 @@ describe('ApiController', () => {
     });
   });
 
-  describe('getCryptoDetailsChartBitcoin', () => {
+  describe('getCryptoDetailsChart', () => {
     it('should return Bitcoin detailed chart data', async () => {
       const mockQuery = { vs_currency: 'usd', days: '7' };
       const mockChartData = {
@@ -250,17 +250,18 @@ describe('ApiController', () => {
         market_caps: [[1623456000000, 900000000000]],
       };
 
-      mockApiService.getCryptoDetailsChartBitcoin.mockResolvedValue(
+      mockApiService.getCryptoDetailsChart.mockResolvedValue(
         mockChartData,
       );
 
-      const result = await controller.getCryptoDetailsChartBitcoin(mockQuery);
+      const result = await controller.getCryptoDetailsChart('bitcoin', mockQuery);
 
       expect(result).toEqual(mockChartData);
-      expect(apiService.getCryptoDetailsChartBitcoin).toHaveBeenCalledWith(
+      expect(apiService.getCryptoDetailsChart).toHaveBeenCalledWith(
+        'bitcoin',
         mockQuery,
       );
-      expect(apiService.getCryptoDetailsChartBitcoin).toHaveBeenCalledTimes(1);
+      expect(apiService.getCryptoDetailsChart).toHaveBeenCalledTimes(1);
     });
   });
 

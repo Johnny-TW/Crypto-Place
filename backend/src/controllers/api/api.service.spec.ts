@@ -511,7 +511,7 @@ describe('ApiService', () => {
     });
   });
 
-  describe('getCryptoDetailsChartBitcoin', () => {
+  describe('getCryptoDetailsChart', () => {
     it('should return Bitcoin detailed chart data', async () => {
       const mockChartData = {
         prices: [[1623456000000, 50000]],
@@ -529,7 +529,7 @@ describe('ApiService', () => {
       mockHttpService.get.mockReturnValue(of(mockAxiosResponse));
 
       const query = { vs_currency: 'usd', days: '7' };
-      const result = await service.getCryptoDetailsChartBitcoin(query);
+      const result = await service.getCryptoDetailsChart('bitcoin', query);
 
       expect(result).toEqual(mockChartData);
       expect(mockHttpService.get).toHaveBeenCalledWith(
@@ -552,7 +552,7 @@ describe('ApiService', () => {
 
       mockHttpService.get.mockReturnValue(throwError(() => mockError));
 
-      await expect(service.getCryptoDetailsChartBitcoin({})).rejects.toThrow(
+      await expect(service.getCryptoDetailsChart('bitcoin', {})).rejects.toThrow(
         HttpException,
       );
     });
