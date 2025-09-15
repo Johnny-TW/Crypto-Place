@@ -8,7 +8,6 @@ import {
   DisclosureButton,
   Popover,
   PopoverButton,
-  PopoverGroup,
   PopoverPanel,
   DisclosurePanel,
 } from '@headlessui/react';
@@ -20,7 +19,6 @@ import {
 } from '@heroicons/react/24/outline';
 
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
-import { logoutRequest } from '../../redux/saga/auth';
 
 interface MenuItem {
   name: string;
@@ -80,13 +78,11 @@ function Navbar(): JSX.Element {
   );
 
   const handleLogout = () => {
-    dispatch(logoutRequest());
+    dispatch({ type: 'LOGOUT_REQUEST' });
   };
 
-  // Generate employee data - simplified using only user object
   const employee = useMemo((): Employee[] => {
     if (loginType === 'employee') {
-      // 員工登入：顯示更多欄位和格式化
       return [
         {
           name: 'Name',

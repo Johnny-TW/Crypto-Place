@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -26,36 +26,41 @@ function StickyHeadTable() {
     { value: 'market_cap_usd_desc', label: 'Market Cap USD Desc' },
   ];
 
-  const columns = [
+  const columns: GridColDef[] = [
     {
       field: 'id',
       headerName: 'ID',
       minWidth: 300,
-      align: 'left',
+      align: 'left' as const,
+      type: 'string',
     },
     {
       field: 'symbol',
       headerName: 'Symbol',
       minWidth: 300,
-      align: 'left',
+      align: 'left' as const,
+      type: 'string',
     },
     {
       field: 'name',
       headerName: 'Name',
       minWidth: 300,
-      align: 'left',
+      align: 'left' as const,
+      type: 'string',
     },
     {
       field: 'asset_platform_id',
       headerName: 'Asset Platform ID',
       minWidth: 200,
-      align: 'left',
+      align: 'left' as const,
+      type: 'string',
     },
     {
       field: 'contract_address',
       headerName: 'Contract Address',
       minWidth: 600,
-      align: 'left',
+      align: 'left' as const,
+      type: 'string',
     },
   ];
 
@@ -63,24 +68,49 @@ function StickyHeadTable() {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const { nftList, loading, error } = useSelector(
-    state => state.nftDashboard || { nftList: [], loading: false, error: null }
+  interface RootState {
+    nftDashboard?: {
+      data: any[];
+      loading: boolean;
+      error: null | string;
+    };
+  }
+
+  const {
+    data: nftList,
+    loading,
+    error,
+  } = useSelector(
+    (state: RootState) =>
+      state.nftDashboard || { data: [], loading: false, error: null }
   );
 
   // eslint-disable-next-line no-console
   console.log('NFT Dashboard Redux State:', { nftList, loading, error });
 
-  const handleChange = event => {
+  const handleChange = (event: {
+    target: {
+      value: string;
+      name?: string;
+    };
+  }): void => {
     setOrder(event.target.value);
   };
 
-  const handleRowClick = params => {
+  interface GridRowParams {
+    row: {
+      id: string;
+      [key: string]: any;
+    };
+  }
+
+  const handleRowClick = (params: GridRowParams): void => {
     history.push(`/NFT-details/${params.row.id}`);
   };
 
   useEffect(() => {
     dispatch({ type: 'FETCH_NFT_LIST', payload: { order } });
-  }, [dispatch, order]);
+  }, [order]);
 
   const paginationModel = { page: 0, pageSize: 20 };
 

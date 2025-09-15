@@ -72,7 +72,7 @@ interface RouteParams {
 }
 
 interface ExchangeDetailsState {
-  exchangeDetails: ExchangeDetails | null;
+  data: ExchangeDetails | null;
   loading: boolean;
   error: string | null;
 }
@@ -100,7 +100,7 @@ const sanitizeHtml = (html: string | null | undefined): string => {
 function CryptoExchangesDetails() {
   const dispatch = useDispatch();
   const { exchangeId } = useParams<RouteParams>();
-  const { exchangeDetails, loading: isLoading } = useSelector(
+  const { data: exchangeDetails, loading: isLoading } = useSelector(
     (state: RootState) => state.cryptoExchangesDetails
   );
 
@@ -411,9 +411,9 @@ function CryptoExchangesDetails() {
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (
-    <div className='overflow-hidden py-20 sm:py-10'>
-      <div className='mx-auto max-w-1xl lg:px-8'>
-        <div className='mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2'>
+    <div className='overflow-hidden w-full py-10'>
+      <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+        <div className='mx-auto grid max-w-full grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2'>
           {/* Exchange Details */}
           <div className=''>
             <div className='w-full max-w-full'>

@@ -25,7 +25,7 @@ interface CryptoData {
 }
 
 interface PriceOverviewSectionProps {
-  data: CryptoData;
+  data: CryptoData | null;
 }
 
 const formatNumber = (num: number): string => {
@@ -35,6 +35,27 @@ const formatNumber = (num: number): string => {
 };
 
 function PriceOverviewSection({ data }: PriceOverviewSectionProps) {
+  // 如果沒有資料，顯示 loading 或空狀態
+  if (!data || !data.market_data) {
+    return (
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-5'>
+        {[...Array(4)].map((_, index) => (
+          <div
+            key={index}
+            className='bg-white rounded-lg border border-gray-300 p-6'
+          >
+            <div className='flex justify-between items-center'>
+              <div className='h-5 w-5 bg-gray-200 rounded animate-pulse' />
+              <div className='text-right'>
+                <div className='h-4 w-20 bg-gray-200 rounded animate-pulse mb-2' />
+                <div className='h-6 w-24 bg-gray-200 rounded animate-pulse' />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-5'>
       <div className='bg-white rounded-lg border border-gray-300 p-6'>

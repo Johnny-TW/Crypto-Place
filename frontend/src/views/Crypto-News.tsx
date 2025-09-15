@@ -57,7 +57,7 @@ function CryptoNews() {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: { category: 'BTC' } });
-  }, [dispatch]);
+  }, []);
 
   // Transform NewsArticle array to NewsItem array
   const transformedNews = news

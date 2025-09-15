@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 
-import { cn } from '@/lib/utils';
+import cn from '@/lib/utils';
 
 const Tabs = TabsPrimitive.Root;
 
@@ -41,10 +41,8 @@ const TabsContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
-    className={cn(
-      'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-      className
-    )}
+    className={cn('mt-2 ring-offset-background', className)}
+    // 移除 focus-visible 屬性以避免在對話框打開時的焦點問題
     {...props}
   />
 ));

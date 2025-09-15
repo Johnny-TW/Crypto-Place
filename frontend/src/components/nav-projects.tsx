@@ -25,7 +25,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-export function NavProjects({
+function NavProjects({
   projects,
   onItemClick,
 }: {
@@ -35,7 +35,7 @@ export function NavProjects({
     icon: LucideIcon;
     onClick?: () => void;
   }[];
-  onItemClick?: (url: string) => void;
+  onItemClick?: (_url: string) => void;
 }) {
   const { isMobile } = useSidebar();
 
@@ -96,3 +96,5 @@ export function NavProjects({
     </SidebarGroup>
   );
 }
+
+export default NavProjects;

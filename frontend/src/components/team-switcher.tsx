@@ -19,7 +19,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-export function TeamSwitcher({
+function TeamSwitcher({
   teams,
 }: {
   teams: {
@@ -89,3 +89,5 @@ export function TeamSwitcher({
     </SidebarMenu>
   );
 }
+
+export default TeamSwitcher;

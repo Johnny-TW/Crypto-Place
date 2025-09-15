@@ -19,7 +19,7 @@ interface CoinChartData {
 interface ChartSectionProps {
   coinChartData: CoinChartData;
   timeRange: '7d' | '30d' | '1y';
-  setTimeRange: (range: '7d' | '30d' | '1y') => void;
+  setTimeRange: (_range: '7d' | '30d' | '1y') => void;
 }
 
 interface MarginConfig {
@@ -222,7 +222,74 @@ const generateChartData = (
 const ChartSection: React.FC<ChartSectionProps> = memo(
   ({ coinChartData, timeRange, setTimeRange }) => {
     const theme = useTheme();
+    const days: Array<'7d' | '30d' | '1y'> = ['7d', '30d', '1y'];
 
+    // 將所有 useMemo 移到條件語句之前，確保它們總是被調用
+    // 1. 生成圖表數據
+    const { dataPoints, labels } = useMemo(() => {
+      // 如果數據不可用，返回空數組
+      if (
+        !coinChartData ||
+        !coinChartData.prices ||
+        coinChartData.prices.length === 0
+      ) {
+        return { dataPoints: [], labels: [] };
+      }
+      return generateChartData(coinChartData, timeRange);
+    }, [coinChartData, timeRange]);
+
+    // 2. 計算價格變化統計
+    const stats = useMemo((): Stats => {
+      if (!dataPoints || dataPoints.length < 2) {
+        return { change: 0, changePercent: 0, trend: 'neutral' };
+      }
+
+      const firstPrice = dataPoints[0];
+      const lastPrice = dataPoints[dataPoints.length - 1];
+      const change = lastPrice - firstPrice;
+      const changePercent = (change / firstPrice) * 100;
+      let trend: 'up' | 'down' | 'neutral';
+
+      if (change > 0) {
+        trend = 'up';
+      } else if (change < 0) {
+        trend = 'down';
+      } else {
+        trend = 'neutral';
+      }
+
+      return { change, changePercent, trend };
+    }, [dataPoints]);
+
+    // 3. 根據時間範圍定義 X 軸配置
+    const xAxisConfig = useMemo(() => {
+      const config = {
+        scaleType: 'point' as const,
+        data: labels,
+        valueFormatter: (value: string) => value || '',
+      };
+
+      // 針對不同的時間範圍添加特定的配置
+      const configWithInterval = {
+        ...config,
+        tickInterval: undefined as
+          | ((_value: string, _index: number) => boolean)
+          | undefined,
+      };
+
+      if (timeRange === '7d') {
+        // 7D: 顯示所有日期標籤 (7個點)
+        configWithInterval.tickInterval = (_, index) => index % 1 === 0;
+      } else if (timeRange === '30d') {
+        // 30D: 顯示所有標籤 (約10個點)
+        configWithInterval.tickInterval = (_, index) => index % 1 === 0;
+      }
+      // 1Y 視圖不需要特殊的 tickInterval，因為我們已經把數據聚合為月份
+
+      return configWithInterval;
+    }, [labels, timeRange]);
+
+    // 顯示加載狀態
     if (
       !coinChartData ||
       !coinChartData.prices ||
@@ -252,12 +319,7 @@ const ChartSection: React.FC<ChartSectionProps> = memo(
       );
     }
 
-    const { dataPoints, labels } = useMemo(
-      () => generateChartData(coinChartData, timeRange),
-      [coinChartData, timeRange]
-    );
-    const days: Array<'7d' | '30d' | '1y'> = ['7d', '30d', '1y'];
-
+    // 檢查生成的數據點
     if (!dataPoints || dataPoints.length === 0) {
       return (
         <Card
@@ -279,56 +341,6 @@ const ChartSection: React.FC<ChartSectionProps> = memo(
         </Card>
       );
     }
-
-    // 計算價格變化統計 - 使用 useMemo 優化
-    const stats = useMemo((): Stats => {
-      if (!dataPoints || dataPoints.length < 2) {
-        return { change: 0, changePercent: 0, trend: 'neutral' };
-      }
-
-      const firstPrice = dataPoints[0];
-      const lastPrice = dataPoints[dataPoints.length - 1];
-      const change = lastPrice - firstPrice;
-      const changePercent = (change / firstPrice) * 100;
-      let trend: 'up' | 'down' | 'neutral';
-      if (change > 0) {
-        trend = 'up';
-      } else if (change < 0) {
-        trend = 'down';
-      } else {
-        trend = 'neutral';
-      }
-
-      return { change, changePercent, trend };
-    }, [dataPoints]);
-
-    // 根據時間範圍定義 X 軸配置 - 使用 useMemo 優化
-    const xAxisConfig = useMemo(() => {
-      const config = {
-        scaleType: 'point' as const,
-        data: labels,
-        valueFormatter: (value: string) => value || '',
-      };
-
-      // 針對不同的時間範圍添加特定的配置
-      const configWithInterval = {
-        ...config,
-        tickInterval: undefined as
-          | ((value: string, index: number) => boolean)
-          | undefined,
-      };
-
-      if (timeRange === '7d') {
-        // 7D: 顯示所有日期標籤 (7個點)
-        configWithInterval.tickInterval = (_, index) => index % 1 === 0;
-      } else if (timeRange === '30d') {
-        // 30D: 顯示所有標籤 (約10個點)
-        configWithInterval.tickInterval = (_, index) => index % 1 === 0;
-      }
-      // 1Y 視圖不需要特殊的 tickInterval，因為我們已經把數據聚合為月份
-
-      return configWithInterval;
-    }, [labels, timeRange]);
 
     const handleTimeRangeChange = (range: '7d' | '30d' | '1y') => {
       // 優化：只更新狀態，不觸發 API 請求

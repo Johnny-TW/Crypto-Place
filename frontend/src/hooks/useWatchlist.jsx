@@ -1,18 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useCallback } from 'react';
-import {
-  fetchWatchlistRequest,
-  addToWatchlistRequest,
-  removeFromWatchlistRequest,
-  checkWatchlistStatusRequest,
-  checkBatchWatchlistStatusRequest,
-  getWatchlistCountRequest,
-} from '../redux/saga/watchlist';
 
-/**
- * Custom hook for watchlist operations
- * 提供完整的 watchlist 功能，包含批量操作和狀態管理
- */
 export const useWatchlist = () => {
   const dispatch = useDispatch();
   const watchlistState = useSelector(state => state.watchlist);
@@ -21,13 +9,13 @@ export const useWatchlist = () => {
   const actions = {
     // 獲取完整最愛列表
     fetchWatchlist: useCallback(() => {
-      dispatch(fetchWatchlistRequest());
+      dispatch({ type: 'FETCH_WATCHLIST_REQUEST' });
     }, [dispatch]),
 
     // 新增到最愛
     addToWatchlist: useCallback(
       coinData => {
-        dispatch(addToWatchlistRequest(coinData));
+        dispatch({ type: 'ADD_TO_WATCHLIST_REQUEST', payload: coinData });
       },
       [dispatch]
     ),
@@ -35,7 +23,7 @@ export const useWatchlist = () => {
     // 從最愛移除
     removeFromWatchlist: useCallback(
       coinId => {
-        dispatch(removeFromWatchlistRequest(coinId));
+        dispatch({ type: 'REMOVE_FROM_WATCHLIST_REQUEST', payload: coinId });
       },
       [dispatch]
     ),
@@ -43,7 +31,7 @@ export const useWatchlist = () => {
     // 檢查單一幣種狀態
     checkStatus: useCallback(
       coinId => {
-        dispatch(checkWatchlistStatusRequest(coinId));
+        dispatch({ type: 'CHECK_WATCHLIST_STATUS_REQUEST', payload: coinId });
       },
       [dispatch]
     ),
@@ -52,7 +40,10 @@ export const useWatchlist = () => {
     checkBatchStatus: useCallback(
       coinIds => {
         if (Array.isArray(coinIds) && coinIds.length > 0) {
-          dispatch(checkBatchWatchlistStatusRequest(coinIds));
+          dispatch({
+            type: 'CHECK_BATCH_WATCHLIST_STATUS_REQUEST',
+            payload: coinIds,
+          });
         }
       },
       [dispatch]
@@ -60,7 +51,7 @@ export const useWatchlist = () => {
 
     // 獲取最愛數量
     getCount: useCallback(() => {
-      dispatch(getWatchlistCountRequest());
+      dispatch({ type: 'GET_WATCHLIST_COUNT_REQUEST' });
     }, [dispatch]),
   };
 
@@ -69,19 +60,25 @@ export const useWatchlist = () => {
     // 檢查特定幣種是否在最愛中
     isCoinFavorite: useCallback(
       coinId => {
-        return watchlistState.statusMap[coinId] ?? false;
+        return watchlistState.statusMap
+          ? (watchlistState.statusMap[coinId] ?? false)
+          : false;
       },
       [watchlistState.statusMap]
     ),
 
     // 獲取已載入的收藏狀態對照表
     getFavoriteStatusMap: useCallback(() => {
-      return watchlistState.statusMap;
+      return watchlistState.statusMap || {};
     }, [watchlistState.statusMap]),
 
     // 檢查是否需要批量載入狀態（用於列表頁面優化）
     shouldLoadBatchStatus: useCallback(
       coinIds => {
+        // 確保 statusMap 存在，如果不存在則返回 true 表示需要載入
+        if (!watchlistState.statusMap) {
+          return true;
+        }
         return coinIds.some(
           coinId => watchlistState.statusMap[coinId] === undefined
         );

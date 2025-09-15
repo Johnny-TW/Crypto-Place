@@ -1,6 +1,6 @@
 'use client';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   BadgeCheck,
   Bell,
@@ -8,6 +8,7 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
+  User,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -26,23 +27,17 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { logoutRequest } from '../redux/saga/auth';
 
-export default function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+export default function NavUser() {
   const { isMobile } = useSidebar();
   const dispatch = useDispatch();
+  const { user } = useSelector((state: any) => state.auth);
 
   const handleLogout = () => {
-    dispatch(logoutRequest());
+    dispatch({ type: 'LOGOUT_REQUEST' });
   };
+
+  if (!user) return null;
 
   return (
     <SidebarMenu>
@@ -85,23 +80,45 @@ export default function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
+                <User size={20} className='mr-2' />
+                員工編號: {user.emplId || 'N/A'}
+              </DropdownMenuItem>
+              <DropdownMenuItem>
                 <Sparkles size={20} className='mr-2' />
-                Upgrade to Pro
+                職稱: {user.jobTitle || 'N/A'}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck size={20} className='mr-2' />
-                Account
+                部門: {user.deptDescr || 'N/A'}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard size={20} className='mr-2' />
-                Billing
+                辦公室: {user.office || 'N/A'}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell size={20} className='mr-2' />
-                Notifications
+                分機: {user.phone || 'N/A'}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <User size={20} className='mr-2' />
+                角色: {user.role || 'N/A'}
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <BadgeCheck size={20} className='mr-2' />
+                狀態: {user.isActive ? '啟用' : '停用'}
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <CreditCard size={20} className='mr-2' />
+                註冊時間:{' '}
+                {user.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString('zh-TW')
+                  : 'N/A'}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />

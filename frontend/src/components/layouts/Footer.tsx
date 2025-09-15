@@ -1,4 +1,3 @@
-import React from 'react';
 import '../../styles/views/footer.scss';
 import {
   BsDribbble,
@@ -32,9 +31,6 @@ function Footer() {
           </div>
 
           <div className='col-span-1'>
-            <h2 className='font-semibold mb-4 text-gray-700 text-sm'>
-              Cryptocurrencies
-            </h2>
             <ul className='space-y-2'>
               <li>
                 <a
@@ -48,9 +44,6 @@ function Footer() {
           </div>
 
           <div className='col-span-1'>
-            <h2 className='font-semibold mb-4 text-gray-700 text-sm'>
-              Exchanges
-            </h2>
             <ul className='space-y-2'>
               <li>
                 <a
@@ -64,7 +57,6 @@ function Footer() {
           </div>
 
           <div className='col-span-1'>
-            <h2 className='font-semibold mb-4 text-gray-700 text-sm'>Legal</h2>
             <ul className='space-y-2'>
               <li>
                 <a

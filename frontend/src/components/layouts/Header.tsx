@@ -1,26 +1,21 @@
 import React from 'react';
 import * as MUI from '@mui/material';
 import { Inbox as InboxIcon, Mail as MailIcon } from '@mui/icons-material';
-import {
-  Bars3Icon,
-  XMarkIcon,
-  ArrowLeftOnRectangleIcon,
-} from '@heroicons/react/24/outline';
-import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 
 import '../../styles/layouts/Navbar.scss';
 
-interface LinkItem {
-  name: string;
-  href?: string;
-  target?: '_blank' | '_self' | '_parent' | '_top';
-  rel?: string;
-}
+// interface LinkItem {
+//   name: string;
+//   href?: string;
+//   target?: '_blank' | '_self' | '_parent' | '_top';
+//   rel?: string;
+// }
 
 interface DrawerListProps {
   mainList: string[];
   informationList: string[];
-  mainLinkMap: Record<string, string>;
+  mainLinks: Record<string, string>;
   linkMap: Record<string, string>;
   onClose: () => void;
 }
@@ -66,10 +61,10 @@ const ButtonAppBar: React.FC = () => {
   };
 
   const DrawerList: React.FC<DrawerListProps> = ({
-    mainList,
-    informationList,
-    mainLinkMap,
-    linkMap,
+    mainList: drawerMainList,
+    informationList: drawerInformationList,
+    mainLinks,
+    linkMap: drawerLinkMap,
     onClose,
   }) => (
     <MUI.Box
@@ -79,11 +74,11 @@ const ButtonAppBar: React.FC = () => {
       onClick={onClose}
     >
       <MUI.List>
-        {mainList.map((text, index) => (
+        {drawerMainList.map((text, index) => (
           <MUI.ListItem key={text} disablePadding>
             <MUI.ListItemButton
-              component={mainLinkMap[text] ? 'a' : 'div'}
-              href={mainLinkMap[text] || undefined}
+              component={mainLinks[text] ? 'a' : 'div'}
+              href={mainLinks[text] || undefined}
             >
               <MUI.ListItemIcon className='Sidebar_list_icon'>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -95,12 +90,14 @@ const ButtonAppBar: React.FC = () => {
       </MUI.List>
       <MUI.Divider />
       <MUI.List>
-        {informationList.map((text, index) => (
+        {drawerInformationList.map((text, index) => (
           <MUI.ListItem key={text} disablePadding>
             <MUI.ListItemButton
               component={text === 'Team Roster' ? 'a' : 'a'}
               href={
-                text === 'Team Roster' ? linkMap[text] : linkMap[text] || '#'
+                text === 'Team Roster'
+                  ? drawerLinkMap[text]
+                  : drawerLinkMap[text] || '#'
               }
               target={text === 'Team Roster' ? '_blank' : undefined}
               rel={text === 'Team Roster' ? 'noopener noreferrer' : undefined}
@@ -152,7 +149,7 @@ const ButtonAppBar: React.FC = () => {
             <DrawerList
               mainList={mainList}
               informationList={informationList}
-              mainLinkMap={mainLinkMap}
+              mainLinks={mainLinkMap}
               linkMap={linkMap}
               onClose={toggleDrawer(false)}
             />

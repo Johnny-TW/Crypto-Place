@@ -2,8 +2,8 @@ import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
+import Input from '@/components/ui/input';
+import Separator from '@/components/ui/separator';
 import {
   Sheet,
   SheetContent,
@@ -11,7 +11,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Skeleton } from '@/components/ui/skeleton';
+import Skeleton from '@/components/ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
@@ -19,8 +19,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ViewVerticalIcon } from '@radix-ui/react-icons';
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
+import cn from '@/lib/utils';
+import useIsMobile from '@/hooks/use-mobile';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -32,9 +32,9 @@ const SIDEBAR_KEYBOARD_SHORTCUT = 'b';
 type SidebarContextProps = {
   state: 'expanded' | 'collapsed';
   open: boolean;
-  setOpen: (open: boolean) => void;
+  setOpen: (_open: boolean) => void;
   openMobile: boolean;
-  setOpenMobile: (open: boolean) => void;
+  setOpenMobile: (_open: boolean) => void;
   isMobile: boolean;
   toggleSidebar: () => void;
 };
@@ -55,7 +55,7 @@ const SidebarProvider = React.forwardRef<
   React.ComponentProps<'div'> & {
     defaultOpen?: boolean;
     open?: boolean;
-    onOpenChange?: (open: boolean) => void;
+    onOpenChange?: (_open: boolean) => void;
   }
 >(
   (
@@ -78,7 +78,7 @@ const SidebarProvider = React.forwardRef<
     const [_open, _setOpen] = React.useState(defaultOpen);
     const open = openProp ?? _open;
     const setOpen = React.useCallback(
-      (value: boolean | ((value: boolean) => boolean)) => {
+      (value: boolean | ((_prevOpen: boolean) => boolean)) => {
         const openState = typeof value === 'function' ? value(open) : value;
         if (setOpenProp) {
           setOpenProp(openState);
@@ -94,7 +94,9 @@ const SidebarProvider = React.forwardRef<
 
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
-      return isMobile ? setOpenMobile(open => !open) : setOpen(open => !open);
+      return isMobile
+        ? setOpenMobile(prevOpen => !prevOpen)
+        : setOpen(prevOpen => !prevOpen);
     }, [isMobile, setOpen, setOpenMobile]);
 
     // Adds a keyboard shortcut to toggle the sidebar.
@@ -577,11 +579,8 @@ const SidebarMenuButton = React.forwardRef<
       return button;
     }
 
-    if (typeof tooltip === 'string') {
-      tooltip = {
-        children: tooltip,
-      };
-    }
+    const tooltipContent =
+      typeof tooltip === 'string' ? { children: tooltip } : tooltip;
 
     return (
       <Tooltip>
@@ -590,7 +589,7 @@ const SidebarMenuButton = React.forwardRef<
           side='right'
           align='center'
           hidden={state !== 'collapsed' || isMobile}
-          {...tooltip}
+          {...tooltipContent}
         />
       </Tooltip>
     );

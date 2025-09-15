@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
@@ -17,11 +17,8 @@ interface RouteParams {
 
 type TimeRange = '7d' | '30d' | '1y';
 
-// Flexible interfaces that avoid 'any' but allow for component compatibility
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FlexibleObject = Record<string, any>;
 
-// Define type for the crypto exchange row data
 interface CryptoExchangeRow {
   id: string;
   name: string;
@@ -35,7 +32,6 @@ interface CryptoExchangeRow {
   [key: string]: unknown;
 }
 
-// Define crypto data interface to match what PriceOverviewSection expects
 interface MarketData {
   current_price: {
     usd: number;
@@ -55,7 +51,6 @@ interface CryptoData {
   [key: string]: unknown;
 }
 
-// Redux state interfaces
 interface CryptoDetailsState {
   cryptoDetails: FlexibleObject | null;
   loading: boolean;
@@ -63,13 +58,13 @@ interface CryptoDetailsState {
 }
 
 interface CryptoDetailsChartState {
-  chartData: FlexibleObject | null;
+  data: FlexibleObject | null;
   loading: boolean;
   error: string | null;
 }
 
 interface CryptoMarketListState {
-  marketListData: FlexibleObject[] | null;
+  data: FlexibleObject[] | null;
   loading: boolean;
   error: string | null;
 }
@@ -183,41 +178,28 @@ function CryptoDetails() {
   const { cryptoDetails, loading: detailsLoading } = useSelector(
     (state: RootState) => state.cryptoDetails
   );
-  const { chartData, loading: chartLoading } = useSelector(
+
+  // Debug: 檢查 cryptoDetails 資料結構
+  console.log('🐛 Debug cryptoDetails:', cryptoDetails);
+  const { data: chartData, loading: chartLoading } = useSelector(
     (state: RootState) => state.cryptoDetailsChart
   );
-  const { marketListData, loading: marketListLoading } = useSelector(
+  const { data: marketListData, loading: marketListLoading } = useSelector(
     (state: RootState) => state.cryptoMarketList
   );
   const { news: cryptoNews, loading: newsLoading } = useSelector(
     (state: RootState) => state.cryptoNews
   );
 
-  const isLoading =
-    detailsLoading ||
-    chartLoading ||
-    marketListLoading ||
-    !cryptoDetails ||
-    !chartData ||
-    !marketListData;
-
-  const fetchInitialData = useCallback(() => {
-    dispatch({ type: 'FETCH_CRYPTO_DETAILS', payload: { coinId } });
-    dispatch({ type: 'FETCH_CRYPTO_MARKET_LIST' });
-    dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: 'BTC' });
-  }, [dispatch, coinId]);
-
-  const fetchChartData = useCallback(() => {
-    dispatch({ type: 'FETCH_CRYPTO_CHART', payload: { coinId, timeRange } });
-  }, [dispatch, coinId, timeRange]);
+  const isLoading = detailsLoading || chartLoading || marketListLoading;
 
   useEffect(() => {
-    fetchInitialData();
-  }, [fetchInitialData]);
-
-  useEffect(() => {
-    fetchChartData();
-  }, [fetchChartData]);
+    if (coinId) {
+      dispatch({ type: 'FETCH_CRYPTO_DETAILS', payload: { coinId } });
+      dispatch({ type: 'FETCH_CRYPTO_MARKET_LIST' });
+      dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: 'BTC' });
+    }
+  }, [coinId]);
 
   if (isLoading) {
     return (
@@ -228,9 +210,9 @@ function CryptoDetails() {
   }
 
   return (
-    <div className='container mx-auto px-4 py-8 max-w-7xl'>
+    <div className='container mx-auto px-4 py-4 max-w-7xl'>
       {cryptoDetails?.image ? (
-        <div className='flex items-center gap-4 mb-8 mt-5'>
+        <div className='flex items-center gap-4 mb-5 mt-5'>
           <img
             src={cryptoDetails.image.large}
             alt={cryptoDetails.name}
@@ -242,41 +224,26 @@ function CryptoDetails() {
           </div>
         </div>
       ) : null}
-      <PriceOverviewSection data={cryptoDetails as unknown as CryptoData} />
-
-      <PerformanceTable
-        cryptoData={
-          cryptoDetails as any /* eslint-disable-line @typescript-eslint/no-explicit-any */
-        }
+      <PriceOverviewSection
+        data={cryptoDetails as unknown as CryptoData | null}
       />
+
+      <PerformanceTable cryptoData={cryptoDetails as any} />
       <ChartSection
-        coinChartData={chartData}
+        coinChartData={chartData as any}
         timeRange={timeRange}
         setTimeRange={setTimeRange}
       />
       <DescriptionSection
-        name={cryptoDetails.name}
-        description={cryptoDetails.description.en}
-        href={
-          cryptoDetails.links as any /* eslint-disable-line @typescript-eslint/no-explicit-any */
-        }
+        name={cryptoDetails?.name || ''}
+        description={cryptoDetails?.description?.en || ''}
+        href={cryptoDetails?.links as any}
       />
       <div className='overflow-x-auto rounded-xl mb-5'>
-        <Dashboard
-          columns={columns}
-          marketListData={
-            marketListData as any /* eslint-disable-line @typescript-eslint/no-explicit-any */
-          }
-        />
+        <Dashboard columns={columns} marketListData={marketListData as any} />
       </div>
       <CryptoNews />
-      <AutoPlay
-        news={
-          (cryptoNews ||
-            []) as any /* eslint-disable-line @typescript-eslint/no-explicit-any */
-        }
-        isLoading={newsLoading}
-      />
+      <AutoPlay news={(cryptoNews || []) as any} isLoading={newsLoading} />
     </div>
   );
 }

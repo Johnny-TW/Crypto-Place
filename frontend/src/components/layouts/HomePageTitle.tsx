@@ -6,7 +6,7 @@ const HomePageTitle: React.FC = () => {
   return (
     <header className='Header'>
       <img
-        className='mx-auto w-full sm:w-2/3 md:w-2/3 lg:w-2/3 xl:w-1/2'
+        className='mx-auto w-full sm:w-2/3 md:w-2/3 lg:w-2/3 xl:w-1/3'
         src={tradeCrypto}
         alt='Stylized atom'
       />

@@ -42,7 +42,7 @@ export const reactScanConfig: ReactScanConfig = {
 };
 
 export const initReactScan = async (): Promise<void> => {
-  if (import.meta.env.DEV) {
+  if (import.meta.env && import.meta.env.DEV) {
     try {
       const { scan } = await import('react-scan');
 

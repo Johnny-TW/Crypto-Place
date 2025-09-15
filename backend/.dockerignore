@@ -1,23 +1,23 @@
 node_modules
-npm - debug.log
-  .npm
-  .pnpm - debug.log *
-.pnpm - store
-    .DS_Store
-  *.log
+npm-debug.log
+.npm
+.pnpm-debug.log*
+.pnpm-store
+.DS_Store
+*.log
 dist
 coverage
-  .nyc_output
-  .vscode
-  .idea
-  *.swp
-  *.swo
-  * ~
+.nyc_output
+.vscode
+.idea
+*.swp
+*.swo
+*~
 .env
-    .env.local
-    .env.development.local
-    .env.test.local
-    .env.production.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 test
-  *.spec.ts
-  *.test.ts
+*.spec.ts
+*.test.ts

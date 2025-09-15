@@ -18,7 +18,7 @@ function MatomoProvider({ children }) {
       : createInstance({
           urlBase: import.meta.env.VITE_MATOMO_URL_BASE,
           siteId: import.meta.env.VITE_MATOMO_SITE_ID,
-          userId: undefined, // optional, default value: `undefined`.
+          userId: undefined,
         });
 
   useEffect(() => {

@@ -7,14 +7,12 @@ function Home() {
   return (
     <div className='flex-grow'>
       <div className='grid grid-cols-12 gap-3'>
-        <div className='col-span-12 lg:col-span-1 xl:col-span-1' />
-        <div className='col-span-12 lg:col-span-10 xl:col-span-10'>
+        <div className='col-span-12 lg:col-span-12 xl:col-span-12'>
           <HomePageTitle />
           <MediaCard />
           <HomePageCards />
           <Dashboard />
         </div>
-        <div className='col-span-12 lg:col-span-1 xl:col-span-1' />
       </div>
     </div>
   );

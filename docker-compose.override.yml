@@ -1,6 +1,4 @@
 # Development overrides
-version: '3.8'
-
 services:
   frontend:
     environment:

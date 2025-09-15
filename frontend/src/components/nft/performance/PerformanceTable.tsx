@@ -13,20 +13,27 @@ interface CryptoDataWithMarketData {
   market_data?: MarketData;
 }
 
+interface NFTPerformanceData {
+  timePeriod: string;
+  percentage: number;
+}
+
 interface PerformanceTableProps {
   cryptoData?: CryptoDataWithMarketData | null;
-  chartData?: CryptoDataWithMarketData | null;
+  chartData?: CryptoDataWithMarketData | NFTPerformanceData[] | null;
 }
 
 const PerformanceTable: React.FC<PerformanceTableProps> = ({
   cryptoData,
   chartData,
 }) => {
-  // 兼容不同的數據來源
   const data = cryptoData || chartData;
+  const isNFTData = Array.isArray(chartData);
 
-  // 如果沒有數據或沒有 market_data，顯示加載狀態
-  if (!data || !data.market_data) {
+  if (
+    !data ||
+    (!isNFTData && !(data as CryptoDataWithMarketData).market_data)
+  ) {
     return (
       <div className='overflow-x-auto rounded-xl border border-gray-300 mb-5'>
         <div className='flex items-center justify-center py-8'>
@@ -52,6 +59,30 @@ const PerformanceTable: React.FC<PerformanceTableProps> = ({
 
   const getPercentagePrefix = (value: number | undefined): string => {
     return (value || 0) >= 0 ? '+' : '';
+  };
+
+  const getValueForPeriod = (period: string): number | undefined => {
+    if (isNFTData && Array.isArray(data)) {
+      const nftItem = data.find(item => item.timePeriod === period);
+      return nftItem?.percentage;
+    }
+    const cryptoDataItem = data as CryptoDataWithMarketData;
+    switch (period) {
+      case '24h':
+        return cryptoDataItem.market_data?.price_change_percentage_24h;
+      case '7d':
+        return cryptoDataItem.market_data?.price_change_percentage_7d;
+      case '14d':
+        return cryptoDataItem.market_data?.price_change_percentage_14d;
+      case '30d':
+        return cryptoDataItem.market_data?.price_change_percentage_30d;
+      case '60d':
+        return cryptoDataItem.market_data?.price_change_percentage_60d;
+      case '1y':
+        return cryptoDataItem.market_data?.price_change_percentage_1y;
+      default:
+        return undefined;
+    }
   };
 
   return (
@@ -81,54 +112,18 @@ const PerformanceTable: React.FC<PerformanceTableProps> = ({
         </thead>
         <tbody className='bg-white divide-y divide-gray-200'>
           <tr>
-            <td
-              className={`px-2 py-2 whitespace-nowrap text-center text-sm font-medium ${getPercentageClass(data.market_data?.price_change_percentage_24h)}`}
-            >
-              {getPercentagePrefix(
-                data.market_data?.price_change_percentage_24h
-              )}
-              {formatPercentage(data.market_data?.price_change_percentage_24h)}%
-            </td>
-            <td
-              className={`px-2 py-2 whitespace-nowrap text-center text-sm font-medium ${getPercentageClass(data.market_data?.price_change_percentage_7d)}`}
-            >
-              {getPercentagePrefix(
-                data.market_data?.price_change_percentage_7d
-              )}
-              {formatPercentage(data.market_data?.price_change_percentage_7d)}%
-            </td>
-            <td
-              className={`px-2 py-2 whitespace-nowrap text-center text-sm font-medium ${getPercentageClass(data.market_data?.price_change_percentage_14d)}`}
-            >
-              {getPercentagePrefix(
-                data.market_data?.price_change_percentage_14d
-              )}
-              {formatPercentage(data.market_data?.price_change_percentage_14d)}%
-            </td>
-            <td
-              className={`px-2 py-2 whitespace-nowrap text-center text-sm font-medium ${getPercentageClass(data.market_data?.price_change_percentage_30d)}`}
-            >
-              {getPercentagePrefix(
-                data.market_data?.price_change_percentage_30d
-              )}
-              {formatPercentage(data.market_data?.price_change_percentage_30d)}%
-            </td>
-            <td
-              className={`px-2 py-2 whitespace-nowrap text-center text-sm font-medium ${getPercentageClass(data.market_data?.price_change_percentage_60d)}`}
-            >
-              {getPercentagePrefix(
-                data.market_data?.price_change_percentage_60d
-              )}
-              {formatPercentage(data.market_data?.price_change_percentage_60d)}%
-            </td>
-            <td
-              className={`px-2 py-2 whitespace-nowrap text-center text-sm font-medium ${getPercentageClass(data.market_data?.price_change_percentage_1y)}`}
-            >
-              {getPercentagePrefix(
-                data.market_data?.price_change_percentage_1y
-              )}
-              {formatPercentage(data.market_data?.price_change_percentage_1y)}%
-            </td>
+            {['24h', '7d', '14d', '30d', '60d', '1y'].map(period => {
+              const value = getValueForPeriod(period);
+              return (
+                <td
+                  key={period}
+                  className={`px-2 py-2 whitespace-nowrap text-center text-sm font-medium ${getPercentageClass(value)}`}
+                >
+                  {getPercentagePrefix(value)}
+                  {formatPercentage(value)}%
+                </td>
+              );
+            })}
           </tr>
         </tbody>
       </table>

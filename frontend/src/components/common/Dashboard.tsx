@@ -4,7 +4,6 @@ import { Paper, Typography } from '@mui/material';
 
 interface MarketListItem {
   id: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -28,11 +27,11 @@ function Dashboard({ columns, marketListData }: DashboardProps) {
           Markets Overview
         </Typography>
       </div>
-      <div className='dashboard-container z-0 mb-10 rounded-lg flex justify-center'>
+      <div className='dashboard-container z-0 mb-8 rounded-lg flex justify-center'>
         <div className='dashboard-area w-full max-w-6xl'>
           <Paper sx={{ height: '100%', width: '100%' }} elevation={0}>
             <DataGrid
-              rows={marketListData}
+              rows={marketListData || []}
               columns={columns}
               initialState={{ pagination: { paginationModel } }}
               pageSizeOptions={[10, 20, 30, 40, 50]}

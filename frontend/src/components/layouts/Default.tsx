@@ -7,7 +7,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
+import Separator from '@/components/ui/separator';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -36,7 +36,7 @@ interface RootState {
 
 function Default({ children }: DefaultProps) {
   const history = useHistory();
-  const { isAuthenticated, user } = useSelector(
+  const { isAuthenticated } = useSelector(
     (state: RootState) => state.auth || {}
   );
 
@@ -67,7 +67,7 @@ function Default({ children }: DefaultProps) {
     return pathMap[pathname] || '頁面';
   };
 
-  // 如果未登入，使用原本的簡單布局
+  // 如果未登入，使用原本的簡單布局但不顯示 Footer
   if (!isAuthenticated) {
     return (
       <div className='flex flex-col min-h-screen'>
@@ -76,9 +76,6 @@ function Default({ children }: DefaultProps) {
             {children}
           </div>
         </main>
-        <footer>
-          <Footer />
-        </footer>
       </div>
     );
   }
@@ -86,12 +83,7 @@ function Default({ children }: DefaultProps) {
   return (
     <SidebarProvider>
       <div className='flex min-h-screen w-full bg-background'>
-        <CryptoSidebar
-          user={{
-            name: user?.name || '使用者',
-            email: user?.email || 'user@example.com',
-          }}
-        />
+        <CryptoSidebar />
 
         <SidebarInset className='flex flex-col flex-1'>
           {/* Header with sidebar trigger and breadcrumb */}
@@ -116,7 +108,7 @@ function Default({ children }: DefaultProps) {
           </header>
 
           {/* Main content */}
-          <main className='flex-1 overflow-auto p-6'>{children}</main>
+          <div className='flex flex-1 flex-col gap-4 p-4'>{children}</div>
 
           {/* Footer */}
           <footer className='border-t p-4'>

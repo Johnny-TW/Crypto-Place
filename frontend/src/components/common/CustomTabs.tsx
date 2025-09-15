@@ -100,7 +100,7 @@ function CustomTabs({
           <div
             key={index}
             className={`
-              p-4 sm:p-6 transition-all duration-300 ease-in-out
+              py-4 sm:py-6 transition-all duration-300 ease-in-out
               ${
                 activeTab === index
                   ? 'block opacity-100 transform translate-y-0'

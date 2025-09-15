@@ -38,7 +38,7 @@ function DescriptionSection({
           About {name}
         </Typography>
       </div>
-      <div className='mb-10 bg-white rounded-lg border border-gray-300'>
+      <div className='mb-8 bg-white rounded-lg border border-gray-300'>
         <div className='p-6'>
           <p
             className={`text-gray-700 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}

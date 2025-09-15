@@ -62,8 +62,8 @@ function StickyHeadTable(): JSX.Element {
 
   // 使用 watchlist hook 管理所有 watchlist 相關邏輯
   const {
-    watchlist,
-    isLoading: watchlistLoading,
+    data: watchlistData,
+    loading: watchlistLoading,
     error: watchlistError,
     count: watchlistCount,
     getFavoriteStatusMap,
@@ -85,7 +85,7 @@ function StickyHeadTable(): JSX.Element {
     if (shouldLoadBatchStatus(coinIds)) {
       checkBatchStatus(coinIds);
     }
-  }, [coinList, shouldLoadBatchStatus, checkBatchStatus]);
+  }, [coinList]);
 
   // 取得當前的狀態映射
   const watchlistStatus = getFavoriteStatusMap();
@@ -213,8 +213,13 @@ function StickyHeadTable(): JSX.Element {
   const handleTabChange = (newValue: number): void => {
     setCurrentTab(newValue);
 
+    // 當切換到 My Favorites (tab 0) 時，重新撈取 watchlist API
+    if (newValue === 0) {
+      fetchWatchlist();
+      getCount();
+    }
     // 當切換到 Market Overview (tab 1) 時，重新載入收藏狀態以確保同步
-    if (newValue === 1) {
+    else if (newValue === 1) {
       loadBatchWatchlistStatus();
     }
   };
@@ -252,16 +257,14 @@ function StickyHeadTable(): JSX.Element {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_COIN_LIST', payload: { currency } });
-  }, [dispatch, currency]);
+  }, [currency]);
 
-  // 批量載入收藏狀態 - 當 coinList 變化時
   useEffect(() => {
     loadBatchWatchlistStatus();
   }, [loadBatchWatchlistStatus]);
 
   const paginationModel = { page: 0, pageSize: 20 };
 
-  // 準備 Tab 數據
   const tabsData = [
     {
       label: 'My Favorites',
@@ -269,7 +272,7 @@ function StickyHeadTable(): JSX.Element {
       badge: watchlistCount,
       content: (
         <FavoriteListPanel
-          watchlist={watchlist}
+          watchlist={watchlistData}
           isLoading={watchlistLoading}
           error={watchlistError}
         />

@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import {
   Home,
   BarChart3,
@@ -14,10 +13,10 @@ import {
 } from 'lucide-react';
 import ENBGFavicon from '@/images/svg/ENBG_favicon.svg';
 
-import { NavMain } from '@/components/nav-main';
-import { NavProjects } from '@/components/nav-projects';
+import NavMain from '@/components/nav-main';
+import NavProjects from '@/components/nav-projects';
 import NavUser from '@/components/nav-user';
-import { TeamSwitcher } from '@/components/team-switcher';
+import TeamSwitcher from '@/components/team-switcher';
 import {
   Sidebar,
   SidebarContent,
@@ -26,38 +25,10 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 
-interface CryptoSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user?: {
-    name: string;
-    email: string;
-    avatar?: string;
-  };
-}
-
-interface AuthState {
-  isAuthenticated?: boolean;
-  user?: {
-    name?: string;
-    email?: string;
-    avatar?: string;
-  } | null;
-}
-
-interface RootState {
-  auth?: AuthState;
-}
-
 export default function CryptoSidebar({
-  user: userProp,
   ...props
-}: CryptoSidebarProps) {
+}: React.ComponentProps<typeof Sidebar>) {
   const history = useHistory();
-  const { user: authUser } = useSelector(
-    (state: RootState) => state.auth || {}
-  );
-
-  const user = userProp ||
-    authUser || { name: '使用者', email: 'user@example.com' };
 
   const handleNavigation = (url: string) => {
     history.push(url);
@@ -66,7 +37,7 @@ export default function CryptoSidebar({
   // 加密貨幣相關的團隊/組織數據
   const cryptoTeams = [
     {
-      name: 'EE39 - Crypto Place',
+      name: 'EE40 - Crypto Place',
       logo: () => (
         <img src={ENBGFavicon} alt='ENBG Logo' width={24} height={24} />
       ),
@@ -96,14 +67,14 @@ export default function CryptoSidebar({
           title: '加密貨幣市場',
           url: '/dashboard',
         },
-        {
-          title: '市場趨勢',
-          url: '/trends',
-        },
-        {
-          title: '熱門幣種',
-          url: '/trending',
-        },
+        // {
+        //   title: '市場趨勢',
+        //   url: '/trends',
+        // },
+        // {
+        //   title: '熱門幣種',
+        //   url: '/trending',
+        // },
       ],
     },
     {
@@ -115,14 +86,14 @@ export default function CryptoSidebar({
           title: '交易所列表',
           url: '/exchanges',
         },
-        {
-          title: '交易對分析',
-          url: '/trading-pairs',
-        },
-        {
-          title: '手續費比較',
-          url: '/fees-comparison',
-        },
+        // {
+        //   title: '交易對分析',
+        //   url: '/trading-pairs',
+        // },
+        // {
+        //   title: '手續費比較',
+        //   url: '/fees-comparison',
+        // },
       ],
     },
     {
@@ -134,14 +105,14 @@ export default function CryptoSidebar({
           title: 'NFT 總覽',
           url: '/NFTDashboard',
         },
-        {
-          title: '熱門收藏',
-          url: '/nft-collections',
-        },
-        {
-          title: '市場統計',
-          url: '/nft-stats',
-        },
+        // {
+        //   title: '熱門收藏',
+        //   url: '/nft-collections',
+        // },
+        // {
+        //   title: '市場統計',
+        //   url: '/nft-stats',
+        // },
       ],
     },
     {
@@ -152,10 +123,6 @@ export default function CryptoSidebar({
         {
           title: '加密貨幣新聞',
           url: '/CryptoNews',
-        },
-        {
-          title: '市場分析',
-          url: '/market-analysis',
         },
         {
           title: 'API 文檔',
@@ -210,13 +177,7 @@ export default function CryptoSidebar({
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser
-          user={{
-            name: user.name || '使用者',
-            email: user.email || 'user@example.com',
-            avatar: user.avatar || '',
-          }}
-        />
+        <NavUser />
       </SidebarFooter>
 
       <SidebarRail />

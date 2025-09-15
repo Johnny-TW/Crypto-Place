@@ -6,5 +6,4 @@ export { default as HomePageCard } from './HomePageCard';
 export { default as HomePageCards } from './HomePageCards';
 export { default as HomePageTitle } from './HomePageTitle';
 export { default as Navbar } from './Navbar';
-export { default as PrivateLayout } from './PrivateLayout';
-export { default as PublicLayout } from './PublicLayout';
+export { default as AuthLayout } from './AuthLayout';

@@ -9,8 +9,8 @@ import {
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import Input from '@/components/ui/input';
+import Label from '@/components/ui/label';
 
 // 定義選項卡類型
 type ActiveTab = 'user' | 'employee';
@@ -49,7 +49,6 @@ function Login(): JSX.Element {
   return (
     <div className='min-h-screen flex items-center justify-center bg-gradient-to-br to-slate-200 px-4'>
       <div className='w-full max-w-md'>
-        {/* Logo 和標題 */}
         <div className='text-center mb-8'>
           <div className='flex justify-center mb-4'>
             <img
@@ -64,7 +63,7 @@ function Login(): JSX.Element {
           <p className='text-gray-600'>登入您的帳戶以開始使用</p>
         </div>
 
-        <Card className='shadow-2xl border-0'>
+        <Card className='shadow-md border-0'>
           <CardHeader className='space-y-1'>
             <CardTitle className='text-2xl text-center'>登入</CardTitle>
             <CardDescription className='text-center'>
@@ -140,7 +139,7 @@ function Login(): JSX.Element {
                     <Input
                       id='employee-id'
                       type='text'
-                      placeholder='請輸入8位數字工號，例如：11003736'
+                      placeholder='請輸入8位數字工號例如:11003736'
                       value={employeeFormData.employeeId}
                       onChange={e =>
                         setEmployeeFormData({
@@ -153,7 +152,7 @@ function Login(): JSX.Element {
                       required
                     />
                     <p className='text-xs text-muted-foreground'>
-                      請輸入8位純數字工號（如：11003736）
+                      請輸入8位純數字工號(如:11003736)
                     </p>
                   </div>
                   {error ? (

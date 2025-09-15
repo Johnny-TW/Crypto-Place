@@ -20,12 +20,19 @@ module.exports = {
     },
     ecmaVersion: 12,
     sourceType: 'module',
-    project: require.resolve('./tsconfig.json'),
+    // 移除 project 選項，這樣就不需要 tsconfig
+    // project: require.resolve('./tsconfig.json'),
   },
-  plugins: ['react', 'react-hooks', 'jsx-a11y', 'prettier', '@typescript-eslint'],
+  plugins: [
+    'react',
+    'react-hooks',
+    'jsx-a11y',
+    'prettier',
+    '@typescript-eslint',
+  ],
   rules: {
+    '@typescript-eslint/no-explicit-any': 'off',
     'prettier/prettier': 'error',
-
     'react/jsx-props-no-spreading': 'off',
     'react/prop-types': 'off',
     'react/require-default-props': 'off',
@@ -37,7 +44,10 @@ module.exports = {
     'react/jsx-pascal-case': 'error',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-uses-react': 'off',
-    'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
+    'react/jsx-filename-extension': [
+      1,
+      { extensions: ['.js', '.jsx', '.ts', '.tsx'] },
+    ],
 
     'default-param-last': 'off',
     'no-param-reassign': [
@@ -65,7 +75,12 @@ module.exports = {
     // 'no-console': 'warn',
     'no-unused-vars': [
       'error',
-      { vars: 'all', args: 'after-used', ignoreRestSiblings: true, argsIgnorePattern: '^_' },
+      {
+        vars: 'all',
+        args: 'after-used',
+        ignoreRestSiblings: true,
+        argsIgnorePattern: '^_',
+      },
     ],
     'react/no-array-index-key': 'off',
     'react/no-unstable-nested-components': 'off',
@@ -115,4 +130,33 @@ module.exports = {
       },
     },
   },
+  overrides: [
+    {
+      files: ['*.tsx', '*.jsx'],
+      rules: {
+        'react/function-component-definition': [
+          'error',
+          {
+            namedComponents: ['arrow-function', 'function-declaration'],
+            unnamedComponents: ['arrow-function'],
+          },
+        ],
+      },
+    },
+    {
+      // 對於 JS 配置文件不使用 TypeScript 解析器
+      files: ['.eslintrc.js', '*.config.js', '*.setup.js'],
+      parserOptions: {
+        project: null, // 不要求 tsconfig
+      },
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+        '@typescript-eslint/restrict-template-expressions': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+      },
+    },
+  ],
 };

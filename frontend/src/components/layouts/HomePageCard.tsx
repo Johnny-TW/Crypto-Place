@@ -7,11 +7,11 @@ interface HomePageCardProps {
   description: string;
 }
 
-const HomePageCard: React.FC<HomePageCardProps> = ({
+function HomePageCard({
   image,
   title,
   description,
-}) => {
+}: HomePageCardProps): React.ReactElement {
   return (
     <li className='imageCard'>
       <img className='mx-auto mb-4' src={image} alt={title} />
@@ -19,6 +19,6 @@ const HomePageCard: React.FC<HomePageCardProps> = ({
       <p className='text-gray-700 text-center'>{description}</p>
     </li>
   );
-};
+}
 
 export default HomePageCard;

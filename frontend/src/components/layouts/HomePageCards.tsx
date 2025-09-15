@@ -11,7 +11,7 @@ interface ConceptItem {
   description: string;
 }
 
-const HomePageCards: React.FC = () => {
+function HomePageCards(): JSX.Element {
   return (
     <section id='core-concepts'>
       <ul>
@@ -32,6 +32,6 @@ const HomePageCards: React.FC = () => {
       </ul>
     </section>
   );
-};
+}
 
 export default HomePageCards;

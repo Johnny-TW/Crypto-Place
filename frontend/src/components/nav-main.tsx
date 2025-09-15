@@ -18,7 +18,7 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 
-export function NavMain({
+function NavMain({
   items,
   onItemClick,
 }: {
@@ -33,7 +33,7 @@ export function NavMain({
       onClick?: () => void;
     }[];
   }[];
-  onItemClick?: (url: string) => void;
+  onItemClick?: (_url: string) => void;
 }) {
   return (
     <SidebarGroup>
@@ -80,3 +80,5 @@ export function NavMain({
     </SidebarGroup>
   );
 }
+
+export default NavMain;

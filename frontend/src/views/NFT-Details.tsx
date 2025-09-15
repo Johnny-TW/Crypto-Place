@@ -15,30 +15,34 @@ import NFTInfoSection from '@components/nft/Info/NFTInfoSection';
 import NFTLinksSection from '@components/nft/Info/NFTLinksSection';
 
 function NFTDetails() {
-  const { name } = useParams();
+  const { name } = useParams<{ name: string }>();
   const dispatch = useDispatch();
 
-  const { nftData, newsData, loading, error } = useSelector(
-    state =>
+  const { data, loading, error } = useSelector(
+    (state: any) =>
       state.nftDetails || {
-        nftData: {},
-        newsData: [],
+        data: {
+          nftData: {},
+          newsData: [],
+          newsLoading: false,
+          newsError: null,
+        },
         loading: false,
-        newsLoading: false,
         error: null,
-        newsError: null,
       }
   );
+
+  const { nftData, newsData } = data;
 
   useEffect(() => {
     if (name) {
       dispatch({ type: 'FETCH_NFT_DETAILS', payload: { nftId: name } });
     }
-  }, [dispatch, name]);
+  }, [name]);
 
   useEffect(() => {
     dispatch({ type: 'FETCH_NFT_NEWS' });
-  }, [dispatch]);
+  }, []);
 
   if (loading) {
     return (

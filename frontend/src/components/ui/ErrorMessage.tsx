@@ -5,10 +5,7 @@ interface ErrorMessageProps {
   title?: string;
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = ({
-  message,
-  title = '錯誤',
-}) => {
+function ErrorMessage({ message, title = '錯誤' }: ErrorMessageProps) {
   if (!message) return null;
 
   return (
@@ -23,6 +20,6 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export default ErrorMessage;
