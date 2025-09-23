@@ -153,7 +153,7 @@ export class ApiService {
   async getNews(query: any) {
     try {
       this.logger.log('Fetching news with query:', JSON.stringify(query));
-      
+
       const response = await firstValueFrom(
         this.httpService.get(
           `${this.cryptocompareApiUrl}/news/v1/article/list`,
@@ -162,23 +162,23 @@ export class ApiService {
           },
         ),
       );
-      
+
       // 檢查響應數據結構
-      this.logger.log('CryptoCompare API response structure:', 
+      this.logger.log('CryptoCompare API response structure:',
         Object.keys(response.data));
-      
+
       if (response.data && response.data.Data && Array.isArray(response.data.Data)) {
         this.logger.log(`Found ${response.data.Data.length} news items`);
-        
+
         // 記錄第一個新聞項目的欄位，以確認圖片欄位
         if (response.data.Data.length > 0) {
-          this.logger.log('First news item fields:', 
+          this.logger.log('First news item fields:',
             Object.keys(response.data.Data[0]));
-          
+
           // 檢查所有可能的圖片欄位名稱
           const imageFields = ['imageurl', 'image_url', 'IMAGE_URL', 'image', 'thumbnail'];
           imageFields.forEach(field => {
-            this.logger.log(`Image field ${field} value:`, 
+            this.logger.log(`Image field ${field} value:`,
               response.data.Data[0][field]);
           });
 
@@ -303,6 +303,72 @@ export class ApiService {
         `Error fetching exchange tickers for ${id}:`,
         error.message,
       );
+      throw new HttpException(
+        { error: error.message },
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  // 第一優先級 API 方法
+
+  async getTrendingCoins() {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.coingeckoApiUrl}/search/trending`, {
+          headers: this.getCoingeckoHeaders(),
+        }),
+      );
+
+      this.logger.log('Successfully fetched trending coins');
+      return response.data;
+    } catch (error) {
+      this.logger.error('Error fetching trending coins:', error.message);
+      throw new HttpException(
+        { error: error.message },
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getSimplePrice(ids: string[], vs_currencies: string[] = ['usd']) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.coingeckoApiUrl}/simple/price`, {
+          params: {
+            ids: ids.join(','),
+            vs_currencies: vs_currencies.join(','),
+            include_24hr_change: true,
+            include_24hr_vol: true,
+            include_market_cap: true,
+          },
+          headers: this.getCoingeckoHeaders(),
+        }),
+      );
+
+      this.logger.log(`Successfully fetched simple prices for ${ids.length} coins`);
+      return response.data;
+    } catch (error) {
+      this.logger.error('Error fetching simple price:', error.message);
+      throw new HttpException(
+        { error: error.message },
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getGlobalMarketData() {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(`${this.coingeckoApiUrl}/global`, {
+          headers: this.getCoingeckoHeaders(),
+        }),
+      );
+
+      this.logger.log('Successfully fetched global market data');
+      return response.data;
+    } catch (error) {
+      this.logger.error('Error fetching global market data:', error.message);
       throw new HttpException(
         { error: error.message },
         error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,

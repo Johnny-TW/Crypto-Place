@@ -593,6 +593,219 @@ describe('ApiService', () => {
     });
   });
 
+  // 第一優先級新增方法的測試
+  describe('getTrendingCoins', () => {
+    it('should return trending coins data', async () => {
+      const mockTrendingData = {
+        coins: [
+          {
+            item: {
+              id: 'bitcoin',
+              name: 'Bitcoin',
+              symbol: 'BTC',
+              market_cap_rank: 1,
+              thumb: 'https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png',
+            },
+          },
+        ],
+        nfts: [],
+        categories: [],
+      };
+
+      const mockAxiosResponse: AxiosResponse = {
+        data: mockTrendingData,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {},
+      } as any;
+
+      mockHttpService.get.mockReturnValue(of(mockAxiosResponse));
+
+      const result = await service.getTrendingCoins();
+
+      expect(result).toEqual(mockTrendingData);
+      expect(mockHttpService.get).toHaveBeenCalledWith(
+        'https://api.coingecko.com/api/v3/search/trending',
+        {
+          headers: {
+            accept: 'application/json',
+            'x-cg-demo-api-key': 'test-api-key',
+          },
+        },
+      );
+    });
+
+    it('should throw HttpException when API call fails', async () => {
+      const mockError = {
+        message: 'Trending API Error',
+        response: { status: 500 },
+      };
+
+      mockHttpService.get.mockReturnValue(throwError(() => mockError));
+
+      await expect(service.getTrendingCoins()).rejects.toThrow(HttpException);
+    });
+  });
+
+  describe('getSimplePrice', () => {
+    it('should return simple price data for single coin', async () => {
+      const mockPriceData = {
+        bitcoin: {
+          usd: 50000,
+          usd_24h_change: 2.5,
+          usd_24h_vol: 20000000000,
+          usd_market_cap: 900000000000,
+        },
+      };
+
+      const mockAxiosResponse: AxiosResponse = {
+        data: mockPriceData,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {},
+      } as any;
+
+      mockHttpService.get.mockReturnValue(of(mockAxiosResponse));
+
+      const result = await service.getSimplePrice(['bitcoin'], ['usd']);
+
+      expect(result).toEqual(mockPriceData);
+      expect(mockHttpService.get).toHaveBeenCalledWith(
+        'https://api.coingecko.com/api/v3/simple/price',
+        {
+          params: {
+            ids: 'bitcoin',
+            vs_currencies: 'usd',
+            include_24hr_change: true,
+            include_24hr_vol: true,
+            include_market_cap: true,
+          },
+          headers: {
+            accept: 'application/json',
+            'x-cg-demo-api-key': 'test-api-key',
+          },
+        },
+      );
+    });
+
+    it('should handle multiple coins and currencies', async () => {
+      const mockPriceData = {
+        bitcoin: { usd: 50000, eur: 42000 },
+        ethereum: { usd: 3000, eur: 2500 },
+      };
+
+      const mockAxiosResponse: AxiosResponse = {
+        data: mockPriceData,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {},
+      } as any;
+
+      mockHttpService.get.mockReturnValue(of(mockAxiosResponse));
+
+      const result = await service.getSimplePrice(
+        ['bitcoin', 'ethereum'],
+        ['usd', 'eur'],
+      );
+
+      expect(result).toEqual(mockPriceData);
+      expect(mockHttpService.get).toHaveBeenCalledWith(
+        'https://api.coingecko.com/api/v3/simple/price',
+        {
+          params: {
+            ids: 'bitcoin,ethereum',
+            vs_currencies: 'usd,eur',
+            include_24hr_change: true,
+            include_24hr_vol: true,
+            include_market_cap: true,
+          },
+          headers: {
+            accept: 'application/json',
+            'x-cg-demo-api-key': 'test-api-key',
+          },
+        },
+      );
+    });
+
+    it('should throw HttpException when API call fails', async () => {
+      const mockError = {
+        message: 'Simple Price API Error',
+        response: { status: 400 },
+      };
+
+      mockHttpService.get.mockReturnValue(throwError(() => mockError));
+
+      await expect(
+        service.getSimplePrice(['bitcoin'], ['usd']),
+      ).rejects.toThrow(HttpException);
+    });
+  });
+
+  describe('getGlobalMarketData', () => {
+    it('should return global market data', async () => {
+      const mockGlobalData = {
+        data: {
+          active_cryptocurrencies: 8500,
+          upcoming_icos: 0,
+          ongoing_icos: 49,
+          ended_icos: 3376,
+          markets: 650,
+          total_market_cap: {
+            usd: 2000000000000,
+            eur: 1700000000000,
+          },
+          total_volume: {
+            usd: 50000000000,
+            eur: 42000000000,
+          },
+          market_cap_percentage: {
+            btc: 50.2,
+            eth: 18.5,
+          },
+        },
+      };
+
+      const mockAxiosResponse: AxiosResponse = {
+        data: mockGlobalData,
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: {},
+      } as any;
+
+      mockHttpService.get.mockReturnValue(of(mockAxiosResponse));
+
+      const result = await service.getGlobalMarketData();
+
+      expect(result).toEqual(mockGlobalData);
+      expect(mockHttpService.get).toHaveBeenCalledWith(
+        'https://api.coingecko.com/api/v3/global',
+        {
+          headers: {
+            accept: 'application/json',
+            'x-cg-demo-api-key': 'test-api-key',
+          },
+        },
+      );
+    });
+
+    it('should throw HttpException when API call fails', async () => {
+      const mockError = {
+        message: 'Global Market API Error',
+        response: { status: 503 },
+      };
+
+      mockHttpService.get.mockReturnValue(throwError(() => mockError));
+
+      await expect(service.getGlobalMarketData()).rejects.toThrow(
+        HttpException,
+      );
+    });
+  });
+
   describe('private getCoingeckoHeaders', () => {
     it('should return correct headers', () => {
       const headers = (service as any).getCoingeckoHeaders();

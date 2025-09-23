@@ -45,13 +45,17 @@ export class WatchlistController {
     @Req() req: any,
     @Body() createWatchlistDto: CreateWatchlistDto,
   ) {
-    // 確保 userId 是數字類型
+    // 確保 userId 存在且是數字類型
+    if (!req.user || !req.user.id) {
+      throw new Error('Invalid userId in request: must be a number');
+    }
+
     const userId = Number(req.user.id);
-    
+
     if (isNaN(userId)) {
       throw new Error('Invalid userId in request: must be a number');
     }
-    
+
     return this.watchlistService.addToWatchlist(userId, createWatchlistDto);
   }
 
@@ -74,13 +78,17 @@ export class WatchlistController {
     description: '在最愛列表中找不到此幣種',
   })
   async removeFromWatchlist(@Req() req: any, @Param('coinId') coinId: string) {
-    // 確保 userId 是數字類型
+    // 確保 userId 存在且是數字類型
+    if (!req.user || !req.user.id) {
+      throw new Error('Invalid userId in request: must be a number');
+    }
+
     const userId = Number(req.user.id);
-    
+
     if (isNaN(userId)) {
       throw new Error('Invalid userId in request: must be a number');
     }
-    
+
     return this.watchlistService.removeFromWatchlist(userId, coinId);
   }
 
@@ -95,13 +103,17 @@ export class WatchlistController {
     type: [WatchlistWithPriceDto],
   })
   async getUserWatchlist(@Req() req: any) {
-    // 確保 userId 是數字類型
+    // 確保 userId 存在且是數字類型
+    if (!req.user || !req.user.id) {
+      throw new Error('Invalid userId in request: must be a number');
+    }
+
     const userId = Number(req.user.id);
-    
+
     if (isNaN(userId)) {
       throw new Error('Invalid userId in request: must be a number');
     }
-    
+
     return this.watchlistService.getUserWatchlist(userId);
   }
 
@@ -125,13 +137,17 @@ export class WatchlistController {
     },
   })
   async checkIsInWatchlist(@Req() req: any, @Param('coinId') coinId: string) {
-    // 確保 userId 是數字類型
+    // 確保 userId 存在且是數字類型
+    if (!req.user || !req.user.id) {
+      throw new Error('Invalid userId in request: must be a number');
+    }
+
     const userId = Number(req.user.id);
-    
+
     if (isNaN(userId)) {
       throw new Error('Invalid userId in request: must be a number');
     }
-    
+
     const isInWatchlist = await this.watchlistService.isInWatchlist(userId, coinId);
     return { isInWatchlist };
   }
@@ -158,17 +174,21 @@ export class WatchlistController {
     @Req() req: any,
     @Body() body: { coinIds: string[] },
   ) {
-    // 確保 userId 是數字類型
+    // 確保 userId 存在且是數字類型
+    if (!req.user || !req.user.id) {
+      throw new Error('Invalid userId in request: must be a number');
+    }
+
     const userId = Number(req.user.id);
-    
+
     if (isNaN(userId)) {
       throw new Error('Invalid userId in request: must be a number');
     }
-    
+
     if (!Array.isArray(body.coinIds) || body.coinIds.length === 0) {
       return {};
     }
-    
+
     return this.watchlistService.checkBatchInWatchlist(userId, body.coinIds);
   }
 
@@ -187,13 +207,17 @@ export class WatchlistController {
     },
   })
   async getWatchlistCount(@Req() req: any) {
-    // 確保 userId 是數字類型
+    // 確保 userId 存在且是數字類型
+    if (!req.user || !req.user.id) {
+      throw new Error('Invalid userId in request: must be a number');
+    }
+
     const userId = Number(req.user.id);
-    
+
     if (isNaN(userId)) {
       throw new Error('Invalid userId in request: must be a number');
     }
-    
+
     const count = await this.watchlistService.getWatchlistCount(userId);
     return { count };
   }

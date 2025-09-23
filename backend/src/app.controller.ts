@@ -15,7 +15,7 @@ export class AppController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Welcome to Crypto Place API' },
+        message: { type: 'string', example: 'Welcome to EE40 - Crypto Place API' },
         endpoints: {
           type: 'object',
           description: '可用的 API 端點',
@@ -25,7 +25,7 @@ export class AppController {
   })
   getWelcome() {
     return {
-      message: 'Welcome to Crypto Place API',
+      message: 'Welcome to EE40 - Crypto Place API',
       version: '2.0.0',
       description: '提供加密貨幣、NFT、新聞等數據的 API 服務',
       documentation: '/api/docs',

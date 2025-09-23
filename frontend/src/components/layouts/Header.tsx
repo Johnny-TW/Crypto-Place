@@ -5,13 +5,6 @@ import { Bars3Icon } from '@heroicons/react/24/outline';
 
 import '../../styles/layouts/Navbar.scss';
 
-// interface LinkItem {
-//   name: string;
-//   href?: string;
-//   target?: '_blank' | '_self' | '_parent' | '_top';
-//   rel?: string;
-// }
-
 interface DrawerListProps {
   mainList: string[];
   informationList: string[];

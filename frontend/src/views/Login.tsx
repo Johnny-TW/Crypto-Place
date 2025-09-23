@@ -53,12 +53,12 @@ function Login(): JSX.Element {
           <div className='flex justify-center mb-4'>
             <img
               src='/src/images/svg/ENBG_logo.svg'
-              alt='Crypto Place'
+              alt='EE40 - Crypto Place'
               className='h-16 w-auto'
             />
           </div>
           <h1 className='text-3xl font-bold text-gray-900 mb-2'>
-            歡迎回到 Crypto Place
+            歡迎回到 EE40 - Crypto Place
           </h1>
           <p className='text-gray-600'>登入您的帳戶以開始使用</p>
         </div>

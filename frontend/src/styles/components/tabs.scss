@@ -1,4 +1,3 @@
-/* Custom Tab Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -14,7 +13,6 @@
   animation: fadeIn 0.3s ease-in-out forwards;
 }
 
-/* Enhanced badge animation */
 @keyframes badgePulse {
   0%,
   100% {
@@ -31,7 +29,6 @@
   animation: badgePulse 2s infinite;
 }
 
-/* Tab hover effects */
 @keyframes tabGlow {
   0% {
     box-shadow: 0 0 5px rgba(59, 130, 246, 0);

@@ -20,8 +20,6 @@ module.exports = {
     },
     ecmaVersion: 12,
     sourceType: 'module',
-    // 移除 project 選項，這樣就不需要 tsconfig
-    // project: require.resolve('./tsconfig.json'),
   },
   plugins: [
     'react',
@@ -72,7 +70,7 @@ module.exports = {
       { code: 200, ignoreComments: true, ignoreStrings: true },
     ],
     'jsx-a11y/anchor-is-valid': 'off',
-    // 'no-console': 'warn',
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
     'no-unused-vars': [
       'error',
       {
@@ -88,16 +86,16 @@ module.exports = {
       'error',
       {
         devDependencies: [
-          '**/*.test.{js,jsx}',
-          '**/*.spec.{js,jsx}',
-          '**/setupTests.{js,jsx}',
-          '**/src/**/*.{js,jsx}',
-          '**/*.config.{js,jsx}',
-          '**/*.setup.{js,jsx}',
-          '**/vite.config.{js,jsx}',
-          '**/webpack.config.{js,jsx}',
-          '**/rollup.config.{js,jsx}',
-          '**/jest.config.{js,jsx}',
+          '**/*.test.{js,jsx,ts,tsx}',
+          '**/*.spec.{js,jsx,ts,tsx}',
+          '**/setupTests.{js,jsx,ts,tsx}',
+          '**/src/**/*.{js,jsx,ts,tsx}',
+          '**/*.config.{js,jsx,ts,tsx}',
+          '**/*.setup.{js,jsx,ts,tsx}',
+          '**/vite.config.{js,jsx,ts,tsx}',
+          '**/webpack.config.{js,jsx,ts,tsx}',
+          '**/rollup.config.{js,jsx,ts,tsx}',
+          '**/jest.config.{js,jsx,ts,tsx}',
           '**/craco.config.{js,jsx}',
         ],
         optionalDependencies: false,

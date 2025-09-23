@@ -9,14 +9,12 @@ import {
   TrendingUp,
   Wallet,
   Activity,
-  Building,
+  BadgeDollarSign,
+  Building2,
+  Link,
 } from 'lucide-react';
 import ENBGFavicon from '@/images/svg/ENBG_favicon.svg';
 
-import NavMain from '@/components/nav-main';
-import NavProjects from '@/components/nav-projects';
-import NavUser from '@/components/nav-user';
-import TeamSwitcher from '@/components/team-switcher';
 import {
   Sidebar,
   SidebarContent,
@@ -24,14 +22,23 @@ import {
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { NavMain, NavProjects } from './navigation';
+import NavUser from './user';
+import TeamSwitcher from './team';
 
 export default function CryptoSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
   const history = useHistory();
 
-  const handleNavigation = (url: string) => {
-    history.push(url);
+  const handleNavigation = (url: string, isExternal?: boolean) => {
+    if (isExternal || url.startsWith('http://') || url.startsWith('https://')) {
+      // 對於外部連結，使用 window.open 在新分頁開啟
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      // 對於內部路由，使用 React Router
+      history.push(url);
+    }
   };
 
   // 加密貨幣相關的團隊/組織數據
@@ -42,91 +49,79 @@ export default function CryptoSidebar({
         <img src={ENBGFavicon} alt='ENBG Logo' width={24} height={24} />
       ),
       plan: 'DEV 1.0',
-    },
-    {
-      name: 'Trading Hub',
-      logo: TrendingUp,
-      plan: 'Premium',
-    },
-    {
-      name: 'Portfolio Tracker',
-      logo: Wallet,
-      plan: 'Free',
+      isExternal: true,
     },
   ];
 
   // 主要導航數據 - 針對加密貨幣市場
   const cryptoNavMain = [
     {
-      title: '市場概覽',
+      title: 'Cryptocurrencies',
       url: '/dashboard',
       icon: Home,
-      isActive: true,
       items: [
         {
-          title: '加密貨幣市場',
+          title: 'Crypto Market',
           url: '/dashboard',
         },
-        // {
-        //   title: '市場趨勢',
-        //   url: '/trends',
-        // },
-        // {
-        //   title: '熱門幣種',
-        //   url: '/trending',
-        // },
       ],
     },
     {
-      title: '交易所',
+      title: 'Exchanges',
       url: '/exchanges',
-      icon: Building,
+      icon: BadgeDollarSign,
       items: [
         {
-          title: '交易所列表',
+          title: 'Crypto Exchanges',
           url: '/exchanges',
         },
-        // {
-        //   title: '交易對分析',
-        //   url: '/trading-pairs',
-        // },
-        // {
-        //   title: '手續費比較',
-        //   url: '/fees-comparison',
-        // },
       ],
     },
     {
-      title: 'NFT 市場',
+      title: 'NFT',
       url: '/NFTDashboard',
       icon: Activity,
       items: [
         {
-          title: 'NFT 總覽',
+          title: 'NFT Floor Price',
           url: '/NFTDashboard',
         },
-        // {
-        //   title: '熱門收藏',
-        //   url: '/nft-collections',
-        // },
-        // {
-        //   title: '市場統計',
-        //   url: '/nft-stats',
-        // },
       ],
     },
     {
-      title: '資訊中心',
+      title: 'Learn',
       url: '/CryptoNews',
       icon: Newspaper,
       items: [
         {
-          title: '加密貨幣新聞',
+          title: 'Crypto News',
           url: '/CryptoNews',
         },
+      ],
+    },
+    {
+      title: 'API',
+      url: '/CryptoNews',
+      icon: Link,
+      items: [
         {
-          title: 'API 文檔',
+          title: 'Crypto API',
           url: '/api',
+        },
+      ],
+    },
+    {
+      title: 'Others',
+      url: '/CryptoNews',
+      icon: Building2,
+      items: [
+        {
+          title: 'Team Roaster',
+          url: 'http://10.32.48.118:50005/',
+        },
+        {
+          title: 'ENBG workplace',
+          url: 'https://enbgworkplace.wistron.com/',
         },
       ],
     },

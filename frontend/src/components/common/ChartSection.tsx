@@ -289,12 +289,8 @@ const ChartSection: React.FC<ChartSectionProps> = memo(
       return configWithInterval;
     }, [labels, timeRange]);
 
-    // 顯示加載狀態
-    if (
-      !coinChartData ||
-      !coinChartData.prices ||
-      coinChartData.prices.length === 0
-    ) {
+    // 顯示加載狀態 - 只有在 coinChartData 為 null 或 undefined 時才顯示
+    if (!coinChartData) {
       return (
         <Card
           elevation={0}

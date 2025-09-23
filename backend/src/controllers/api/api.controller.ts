@@ -282,4 +282,112 @@ export class ApiController {
   async getExchangeById(@Param('id') id: string) {
     return this.apiService.getExchangeById(id);
   }
+
+  // 第一優先級新增端點
+
+  @Get('trending')
+  @ApiTags('crypto')
+  @ApiOperation({
+    summary: '獲取熱門幣種',
+    description: '獲取最近7天熱門搜尋的加密貨幣',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '成功獲取熱門幣種',
+    schema: {
+      type: 'object',
+      properties: {
+        coins: {
+          type: 'array',
+          description: '熱門幣種列表',
+        },
+        nfts: {
+          type: 'array',
+          description: '熱門NFT列表',
+        },
+        categories: {
+          type: 'array',
+          description: '熱門分類',
+        },
+      },
+    },
+  })
+  async getTrendingCoins() {
+    return this.apiService.getTrendingCoins();
+  }
+
+  @Get('simple/price')
+  @ApiTags('crypto')
+  @ApiOperation({
+    summary: '獲取簡化價格數據',
+    description: '高效獲取多個幣種的價格、市值和24小時變化',
+  })
+  @ApiQuery({
+    name: 'ids',
+    required: true,
+    description: '幣種ID列表，用逗號分隔',
+    example: 'bitcoin,ethereum,solana',
+  })
+  @ApiQuery({
+    name: 'vs_currencies',
+    required: false,
+    description: '對標貨幣列表，用逗號分隔 (預設: usd)',
+    example: 'usd,eur,jpy',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '成功獲取價格數據',
+    schema: {
+      type: 'object',
+      additionalProperties: {
+        type: 'object',
+        properties: {
+          usd: { type: 'number' },
+          usd_24h_change: { type: 'number' },
+          usd_24h_vol: { type: 'number' },
+          usd_market_cap: { type: 'number' },
+        },
+      },
+    },
+  })
+  async getSimplePrice(@Query() query: { ids: string; vs_currencies?: string }) {
+    const ids = query.ids.split(',').map(id => id.trim());
+    const vsCurrencies = query.vs_currencies ?
+      query.vs_currencies.split(',').map(curr => curr.trim()) :
+      ['usd'];
+
+    return this.apiService.getSimplePrice(ids, vsCurrencies);
+  }
+
+  @Get('global')
+  @ApiTags('market')
+  @ApiOperation({
+    summary: '獲取全球市場數據',
+    description: '獲取全球加密貨幣市場的統計數據，包括總市值、24小時交易量等',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '成功獲取全球市場數據',
+    schema: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            total_market_cap: { type: 'object' },
+            total_volume: { type: 'object' },
+            market_cap_percentage: { type: 'object' },
+            active_cryptocurrencies: { type: 'number' },
+            upcoming_icos: { type: 'number' },
+            ongoing_icos: { type: 'number' },
+            ended_icos: { type: 'number' },
+            markets: { type: 'number' },
+          },
+        },
+      },
+    },
+  })
+  async getGlobalMarketData() {
+    return this.apiService.getGlobalMarketData();
+  }
 }

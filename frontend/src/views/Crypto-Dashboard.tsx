@@ -6,13 +6,20 @@ import {
   Typography,
   SelectChangeEvent,
 } from '@mui/material';
-import { FavoriteRounded, ShowChartRounded } from '@mui/icons-material';
+import {
+  FavoriteRounded,
+  ShowChartRounded,
+  TrendingUpRounded,
+} from '@mui/icons-material';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import FavoriteButton from '@components/common/FavoriteButton';
 import FavoriteListPanel from '@components/common/FavoriteListPanel';
 import CustomTabs from '@components/common/CustomTabs';
+import TrendingCoins from '../components/crypto/TrendingCoins';
+import GlobalMarketData from '../components/crypto/GlobalMarketData';
+import SimplePrice from '../components/crypto/SimplePrice';
 import { useWatchlist } from '../hooks/useWatchlist';
 import '@styleViews/dashboard.scss';
 import '../styles/components/tabs.scss';
@@ -335,14 +342,30 @@ function StickyHeadTable(): JSX.Element {
         </div>
       ),
     },
+    {
+      label: 'Market Analytics',
+      icon: <TrendingUpRounded className='w-5 h-5' />,
+      content: (
+        <div className='space-y-8'>
+          {/* Global Market Overview */}
+          <GlobalMarketData />
+
+          {/* Trending Coins and Price Tracker */}
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
+            <TrendingCoins />
+            <SimplePrice />
+          </div>
+        </div>
+      ),
+    },
   ];
 
   return (
-    <div className='min-h-screen py-8 px-4'>
-      <div className='max-w-7xl mx-auto'>
+    <div className='min-h-screen py-8'>
+      <div className='max-w-[95%] mx-auto'>
         {/* Header Section */}
-        <div className='text-center mb-8'>
-          <h1 className='text-4xl font-bold text-gray-900 mb-2'>
+        <div className='text-center mb-10'>
+          <h1 className='text-4xl font-bold text-gray-900 mt-20 mb-5'>
             Cryptocurrency Market
           </h1>
           <p className='text-lg text-gray-600'>

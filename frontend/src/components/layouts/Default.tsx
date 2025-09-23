@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import CryptoSidebar from '@/components/crypto-sidebar';
+import { CryptoSidebar } from '@/components/sidebar';
 import {
   SidebarProvider,
   SidebarInset,
@@ -94,7 +94,7 @@ function Default({ children }: DefaultProps) {
               <BreadcrumbList>
                 <BreadcrumbItem className='hidden md:block'>
                   <BreadcrumbLink href='/dashboard'>
-                    Crypto Place
+                    EE40 - Crypto Place
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className='hidden md:block' />
@@ -108,7 +108,9 @@ function Default({ children }: DefaultProps) {
           </header>
 
           {/* Main content */}
-          <div className='flex flex-1 flex-col gap-4 p-4'>{children}</div>
+          <div className='flex flex-1 flex-col gap-4 px-6 py-10'>
+            {children}
+          </div>
 
           {/* Footer */}
           <footer className='border-t p-4'>

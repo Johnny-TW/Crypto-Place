@@ -26,7 +26,7 @@ export class BaseApiService {
     error_message: default_error_message = null,
   }) => {
     let success = true;
-    let error_code = null;
+    let error_code: number | null = null;
     let error_message = null;
 
     const cache_data = cache_key
@@ -44,7 +44,7 @@ export class BaseApiService {
       params: query,
       data: body,
       // For development environment with self-signed certificates
-      httpsAgent: new https.Agent({  
+      httpsAgent: new https.Agent({
         rejectUnauthorized: process.env.NODE_ENV === 'production'
       })
     };
@@ -84,26 +84,26 @@ export class BaseApiService {
 
     if (!success) {
       if (error_backup_key) {
-        const error_backup_data = await this.cacheManager.get(error_backup_key);
+        const error_backup_data = await this.cacheManager.get(String(error_backup_key));
         if (error_backup_data) return error_backup_data;
       }
       throw new HttpException(
-        default_error_message ??
-          `[${this.systemCode}] Api Error Please Contact Developers - ${error_message}`,
-        error_code ?? 500,
+        (default_error_message as string | Record<string, any>) ??
+          `[${this.systemCode}] Api Error Please Contact Developers - ${String(error_message || '')}`,
+        Number(error_code ?? 500),
       );
     }
 
     if (cache_key && success) {
-      this.cacheManager.set(
-        cache_key,
+      await this.cacheManager.set(
+        String(cache_key),
         response.data,
         cache_expiration_time * 60 * 1000,
       );
     }
     if (error_backup_key && success) {
-      this.cacheManager.set(
-        error_backup_key,
+      await this.cacheManager.set(
+        String(error_backup_key),
         response.data,
         // 14 days
         14 * 24 * 60 * 60 * 1000,

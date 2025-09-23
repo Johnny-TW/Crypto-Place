@@ -5,9 +5,9 @@ import { AppModule } from '../src/app.module';
 import { HttpModule } from '@nestjs/axios';
 import { Server } from 'http';
 
-describe('Crypto Place API (e2e)', () => {
+describe('EE40 - Crypto Place API (e2e)', () => {
   let app: INestApplication;
-  
+
   const getServer = (): Server => app.getHttpServer() as Server;
 
   beforeAll(async () => {
@@ -32,7 +32,7 @@ describe('Crypto Place API (e2e)', () => {
         .expect((res) => {
           expect(res.body).toHaveProperty(
             'message',
-            'Welcome to Crypto Place API',
+            'EE40 - Welcome to Crypto Place API',
           );
           expect(res.body).toHaveProperty('version', '2.0.0');
           expect(res.body).toHaveProperty('endpoints');

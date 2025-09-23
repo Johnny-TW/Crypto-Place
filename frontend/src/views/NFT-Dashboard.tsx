@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,43 +26,46 @@ function StickyHeadTable() {
     { value: 'market_cap_usd_desc', label: 'Market Cap USD Desc' },
   ];
 
-  const columns: GridColDef[] = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      minWidth: 300,
-      align: 'left' as const,
-      type: 'string',
-    },
-    {
-      field: 'symbol',
-      headerName: 'Symbol',
-      minWidth: 300,
-      align: 'left' as const,
-      type: 'string',
-    },
-    {
-      field: 'name',
-      headerName: 'Name',
-      minWidth: 300,
-      align: 'left' as const,
-      type: 'string',
-    },
-    {
-      field: 'asset_platform_id',
-      headerName: 'Asset Platform ID',
-      minWidth: 200,
-      align: 'left' as const,
-      type: 'string',
-    },
-    {
-      field: 'contract_address',
-      headerName: 'Contract Address',
-      minWidth: 600,
-      align: 'left' as const,
-      type: 'string',
-    },
-  ];
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: 'id',
+        headerName: 'ID',
+        minWidth: 300,
+        align: 'left' as const,
+        type: 'string',
+      },
+      {
+        field: 'symbol',
+        headerName: 'Symbol',
+        minWidth: 300,
+        align: 'left' as const,
+        type: 'string',
+      },
+      {
+        field: 'name',
+        headerName: 'Name',
+        minWidth: 300,
+        align: 'left' as const,
+        type: 'string',
+      },
+      {
+        field: 'asset_platform_id',
+        headerName: 'Asset Platform ID',
+        minWidth: 200,
+        align: 'left' as const,
+        type: 'string',
+      },
+      {
+        field: 'contract_address',
+        headerName: 'Contract Address',
+        minWidth: 600,
+        align: 'left' as const,
+        type: 'string',
+      },
+    ],
+    []
+  );
 
   const [order, setOrder] = useState('market_cap_usd_desc');
   const history = useHistory();

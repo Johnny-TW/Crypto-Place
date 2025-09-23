@@ -1,5 +1,4 @@
 import HomePageTitle from '@components/layouts/HomePageTitle';
-import HomePageCards from '@components/layouts/HomePageCards';
 import MediaCard from '@components/common/MediaCard';
 import Dashboard from './Crypto-Dashboard';
 
@@ -10,7 +9,6 @@ function Home() {
         <div className='col-span-12 lg:col-span-12 xl:col-span-12'>
           <HomePageTitle />
           <MediaCard />
-          <HomePageCards />
           <Dashboard />
         </div>
       </div>

@@ -2,6 +2,7 @@ import { getApiBaseUrl } from '../../utils/apiConfig';
 
 const API_BASE_URL = getApiBaseUrl();
 
+// 現有的 API 端點 (包含 /api 前綴)
 export const COIN_LIST = `${API_BASE_URL}/api/coins/markets`;
 export const COIN_DATA_ID = `${API_BASE_URL}/api/coins/bitcoin`;
 export const COIN_MARKET_DATA = `${API_BASE_URL}/api/coins/bitcoin/market_chart`;
@@ -15,3 +16,8 @@ export const CRYPTO_NEWS = `${API_BASE_URL}/api/news`;
 export const EXCHANGE_DETAILS = `${API_BASE_URL}/api/exchanges`;
 export const EMPLOYEE_INFO = `${API_BASE_URL}/api/employee`;
 export const EMPLOYEES_LIST = `${API_BASE_URL}/api/employees`;
+
+// 第一優先級新增的 API 端點
+export const TRENDING_COINS = `${API_BASE_URL}/api/trending`;
+export const SIMPLE_PRICE = `${API_BASE_URL}/api/simple/price`;
+export const GLOBAL_MARKET_DATA = `${API_BASE_URL}/api/global`;

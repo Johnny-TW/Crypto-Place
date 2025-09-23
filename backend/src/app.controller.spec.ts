@@ -16,7 +16,7 @@ describe('AppController', () => {
     it('should return welcome message with correct structure', () => {
       const result = appController.getWelcome();
 
-      expect(result).toHaveProperty('message', 'Welcome to Crypto Place API');
+      expect(result).toHaveProperty('message', 'Welcome to EE40 - Crypto Place API');
       expect(result).toHaveProperty('version', '2.0.0');
       expect(result).toHaveProperty(
         'description',

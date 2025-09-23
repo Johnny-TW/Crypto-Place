@@ -14,11 +14,11 @@ export class WatchlistService {
   async addToWatchlist(userId: number, createWatchlistDto: CreateWatchlistDto) {
     // 確保 userId 是數字類型
     const userIdNum = Number(userId);
-    
+
     if (isNaN(userIdNum)) {
       throw new Error('Invalid userId: must be a number');
     }
-    
+
     // 檢查是否已經在最愛列表中
     const existingItem = await this.prisma.watchlist.findUnique({
       where: {
@@ -45,11 +45,11 @@ export class WatchlistService {
   async removeFromWatchlist(userId: number, coinId: string) {
     // 確保 userId 是數字類型
     const userIdNum = Number(userId);
-    
+
     if (isNaN(userIdNum)) {
       throw new Error('Invalid userId: must be a number');
     }
-    
+
     const watchlistItem = await this.prisma.watchlist.findUnique({
       where: {
         userId_coinId: {
@@ -76,11 +76,11 @@ export class WatchlistService {
   async getUserWatchlist(userId: number): Promise<WatchlistWithPriceDto[]> {
     // 確保 userId 是數字類型
     const userIdNum = Number(userId);
-    
+
     if (isNaN(userIdNum)) {
       throw new Error('Invalid userId: must be a number');
     }
-    
+
     // 獲取用戶的最愛列表
     const watchlist = await this.prisma.watchlist.findMany({
       where: { userId: userIdNum },
@@ -104,7 +104,7 @@ export class WatchlistService {
       // 合併最愛列表資料和市場資料
       const watchlistWithPrice: WatchlistWithPriceDto[] = watchlist.map(item => {
         const coinData = marketData.find((coin: any) => coin.id === item.coinId);
-        
+
         return {
           id: item.id,
           userId: item.userId,
@@ -130,11 +130,11 @@ export class WatchlistService {
   async isInWatchlist(userId: number, coinId: string): Promise<boolean> {
     // 確保 userId 是數字類型
     const userIdNum = Number(userId);
-    
+
     if (isNaN(userIdNum)) {
       throw new Error('Invalid userId: must be a number');
     }
-    
+
     const item = await this.prisma.watchlist.findUnique({
       where: {
         userId_coinId: {
@@ -150,11 +150,11 @@ export class WatchlistService {
   async checkBatchInWatchlist(userId: number, coinIds: string[]): Promise<Record<string, boolean>> {
     // 確保 userId 是數字類型
     const userIdNum = Number(userId);
-    
+
     if (isNaN(userIdNum)) {
       throw new Error('Invalid userId: must be a number');
     }
-    
+
     // 一次性查詢所有相關的收藏記錄
     const watchlistItems = await this.prisma.watchlist.findMany({
       where: {
@@ -165,10 +165,10 @@ export class WatchlistService {
         coinId: true,
       },
     });
-    
+
     // 建立收藏狀態對照表
     const watchlistMap = new Set(watchlistItems.map(item => item.coinId));
-    
+
     // 返回每個 coinId 的收藏狀態
     return coinIds.reduce((result, coinId) => {
       result[coinId] = watchlistMap.has(coinId);
@@ -179,11 +179,11 @@ export class WatchlistService {
   async getWatchlistCount(userId: number): Promise<number> {
     // 確保 userId 是數字類型
     const userIdNum = Number(userId);
-    
+
     if (isNaN(userIdNum)) {
       throw new Error('Invalid userId: must be a number');
     }
-    
+
     return this.prisma.watchlist.count({
       where: { userId: userIdNum },
     });

@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -29,7 +30,15 @@ import {
 } from '@/components/ui/sidebar';
 
 export default function NavUser() {
-  const { isMobile } = useSidebar();
+  // Safe sidebar context usage
+  let isMobile = false;
+  try {
+    const sidebarContext = useSidebar();
+    isMobile = sidebarContext.isMobile;
+  } catch (error) {
+    console.warn('NavUser: useSidebar hook failed, using fallback', error);
+  }
+
   const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
 

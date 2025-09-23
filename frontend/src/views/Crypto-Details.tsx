@@ -178,9 +178,6 @@ function CryptoDetails() {
   const { cryptoDetails, loading: detailsLoading } = useSelector(
     (state: RootState) => state.cryptoDetails
   );
-
-  // Debug: 檢查 cryptoDetails 資料結構
-  console.log('🐛 Debug cryptoDetails:', cryptoDetails);
   const { data: chartData, loading: chartLoading } = useSelector(
     (state: RootState) => state.cryptoDetailsChart
   );
@@ -195,11 +192,22 @@ function CryptoDetails() {
 
   useEffect(() => {
     if (coinId) {
+      // 滾動到頁面頂部
+      window.scrollTo(0, 0);
+
       dispatch({ type: 'FETCH_CRYPTO_DETAILS', payload: { coinId } });
+      dispatch({ type: 'FETCH_CRYPTO_CHART', payload: { coinId, timeRange } });
       dispatch({ type: 'FETCH_CRYPTO_MARKET_LIST' });
       dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: 'BTC' });
     }
-  }, [coinId]);
+  }, [coinId, dispatch, timeRange]);
+
+  // 當時間範圍改變時，重新獲取圖表數據
+  useEffect(() => {
+    if (coinId && timeRange) {
+      dispatch({ type: 'FETCH_CRYPTO_CHART', payload: { coinId, timeRange } });
+    }
+  }, [coinId, timeRange, dispatch]);
 
   if (isLoading) {
     return (

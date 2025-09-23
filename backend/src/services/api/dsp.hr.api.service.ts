@@ -4,6 +4,7 @@ import { BaseApiService } from './base.api.service';
 
 @Injectable()
 export class DspHrApiService extends BaseApiService {
+
   constructor(@Inject(CACHE_MANAGER) protected cacheManager: Cache) {
     const code = __filename.split('/').pop().split('.').shift().toUpperCase();
     super(cacheManager, code);
@@ -22,4 +23,5 @@ export class DspHrApiService extends BaseApiService {
     };
     return this.fetchApi(params);
   }
+
 }

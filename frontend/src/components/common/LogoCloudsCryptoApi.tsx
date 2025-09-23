@@ -3,7 +3,7 @@ function LogoCloudsCryptoApi() {
     <div className='py-20 sm:py-20'>
       <div className='mx-auto max-w-7xl px-6 lg:px-8'>
         <div className='relative isolate'>
-          <div className='mx-auto max-w-2xl py-32 sm:py-48 lg:py-30'>
+          <div className='mx-auto max-w-2xl sm:py-10'>
             <div className='text-center'>
               <h1 className='text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl'>
                 Data to enrich your online business
@@ -39,18 +39,14 @@ function LogoCloudsCryptoApi() {
           </div>
         </div>
 
-        <h2 className='font-bold text-gray-900 dark:text-moon-50 text-xl leading-7'>
+        <h2 className='font-bold text-gray-900 dark:text-moon-50 text-xl leading-7 mb-5 mt-32'>
           CoinGecko NFT Data API
         </h2>
         <p className='text-center'>
           Proudly powering over thousands of industry builders worldwide with
           accurate, live & independent data
         </p>
-        <div
-          className='mx-auto mt-10 grid max-w-lg grid-cols-2
-          items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-2
-          sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5'
-        >
+        <div className='mx-auto mt-10 grid max-w-lg grid-cols-2 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-2 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5'>
           <img
             alt='Metamask'
             height='50px'
@@ -126,6 +122,48 @@ function LogoCloudsCryptoApi() {
             className='tw-inline dark:tw-hidden tw-max-h-[65px]'
             loading='lazy'
             src='https://static.coingecko.com/s/api_partners/black_zerion-6cdd6050199f2d4222a66ce7e7adf6197e7f1b430ef217cfdb72f89214e7f80a.svg'
+          />
+        </div>
+
+        <div
+          className='mx-auto mt-10 grid max-w-lg grid-cols-2
+          items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-2
+          sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5'
+        >
+          <img
+            alt='Metamask'
+            height='50px'
+            className='tw-inline dark:tw-hidden'
+            loading='lazy'
+            src='https://static.coingecko.com/s/api_landing/industry_partners/new/coinbase-04efbd0a00224e043d429fd6cf907c8a324f2c5c741e9ca5c0cea57a321b4c61.svg'
+          />
+          <img
+            alt='Etherscan'
+            height='50px'
+            className='tw-inline dark:tw-hidden'
+            loading='lazy'
+            src='https://static.coingecko.com/s/api_landing/industry_partners/new/animoca-7c343a4ae8db034c831ec935b391193b9c00f1f748fed8b2f0d28fb47c6983ec.svg'
+          />
+          <img
+            alt='Trezor'
+            height='50px'
+            className='tw-inline dark:tw-hidden'
+            loading='lazy'
+            src='https://static.coingecko.com/s/api_landing/industry_partners/new/magic_eden-268e89ff7ce2070fe0015fdf6dabb670d8aca72f23b7c1fef2cdb64303728188.svg'
+          />
+          <img
+            alt='AAVE'
+            height='50px'
+            className='tw-inline dark:tw-hidden'
+            loading='lazy'
+            src='https://static.coingecko.com/s/api_landing/industry_partners/new/phantom-e42bbe6b8903a9e2bc0aa5f01dbb1c9395d5b058ff6358fc54f4f714830b82a1.svg'
+          />
+          <img
+            alt='Chainlink'
+            height='50px'
+            className='tw-inline dark:tw-hidden tw-max-h-[65px]'
+            loading='lazy'
+            src='https://static.coingecko.com/s/api_landing/industry_partners/new/statista-15a7c7356baaa2224d83fe013ee40cfdb537f1c0fca097eb482320eb2b7b4547.svg'
           />
         </div>
       </div>

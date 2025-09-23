@@ -20,8 +20,8 @@ function Footer() {
                 alt='Company Logo'
                 className='h-8 w-auto mr-3'
               />
-              <span className='self-center text-xl font-semibold whitespace-nowrap'>
-                Your Company
+              <span className='self-center text-xl font-semibold whitespace-nowrap text-gray-400'>
+                EE40 - Crypto Place
               </span>
             </div>
             <p className='text-gray-400 mb-4 text-sm'>
@@ -34,25 +34,28 @@ function Footer() {
             <ul className='space-y-2'>
               <li>
                 <a
-                  href='#'
+                  href='/dashboard'
                   className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
                 >
-                  Crypto coins
+                  Crypto Market
                 </a>
               </li>
-            </ul>
-          </div>
-
-          <div className='col-span-1'>
-            <ul className='space-y-2'>
               <li>
                 <a
-                  href='#'
+                  href='/exchanges'
                   className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
                 >
                   Crypto Exchanges
                 </a>
               </li>
+              <li>
+                <a
+                  href='/NFTDashboard'
+                  className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
+                >
+                  NFT Floor Price
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -60,18 +63,39 @@ function Footer() {
             <ul className='space-y-2'>
               <li>
                 <a
-                  href='#'
+                  href='/api'
                   className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
                 >
-                  Privacy Policy
+                  Crypto API
                 </a>
               </li>
               <li>
                 <a
-                  href='#'
+                  href='/CryptoNews'
                   className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
                 >
-                  Terms of Service
+                  Crypto News
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div className='col-span-1'>
+            <ul className='space-y-2'>
+              <li>
+                <a
+                  href='http://10.32.48.118:50005'
+                  className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
+                >
+                  Team Roaster
+                </a>
+              </li>
+              <li>
+                <a
+                  href='https://enbgworkplace.wistron.com/'
+                  className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
+                >
+                  ENBG workplace
                 </a>
               </li>
               <li>
@@ -87,7 +111,7 @@ function Footer() {
                   href='#'
                   className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
                 >
-                  Contact Us
+                  About Us
                 </a>
               </li>
             </ul>
@@ -120,8 +144,8 @@ function Footer() {
             </div>
             <div className='flex space-x-6 justify-center'>
               <p className='text-sm text-gray-400'>
-                &copy; {new Date().getFullYear()} Your Company. All rights
-                reserved.
+                &copy; {new Date().getFullYear()} EE40 - Crypto Place. All
+                rights reserved.
               </p>
             </div>
           </div>

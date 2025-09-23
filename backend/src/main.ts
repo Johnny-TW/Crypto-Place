@@ -16,23 +16,19 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  // CORS 配置 - 基於環境動態設定
+  const corsOrigins = process.env.NODE_ENV === 'production'
+    ? [
+        // 生產環境的實際域名
+        configService.get<string>('FRONTEND_URL'),
+      ].filter(Boolean)
+    : [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+      ];
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://localhost:3002',
-      'http://localhost:5173',
-      'http://localhost:8080',
-      'http://localhost:4200',
-      'http://10.33.29.200:5173',
-      'http://10.32.235.25:5173',
-      'http://192.168.1.104:5173',
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:3001',
-      'http://127.0.0.1:3002',
-    ],
+    origin: corsOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
@@ -48,9 +44,9 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
-    .setTitle('Crypto Place API')
+    .setTitle('EE40 - Crypto Place API')
     .setDescription(
-      'Crypto Place 應用程式的 API 文檔 - 提供加密貨幣、NFT、新聞等數據',
+      'EE40 - Crypto Place 應用程式的 API 文檔 - 提供加密貨幣、NFT、新聞等數據',
     )
     .setVersion('2.0.0')
     .addTag('auth', '認證相關 API')
@@ -86,10 +82,12 @@ async function bootstrap() {
   console.log(`🚀 Server is running on port ${port} and accessible externally`);
   console.log(`📋 API endpoints available at http://localhost:${port}/api`);
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
-  console.log(`🌐 CORS enabled for:`);
-  console.log(`   - http://localhost:5173 (Vite)`);
-  console.log(`   - http://localhost:3000 (Create React App)`);
-  console.log(`   - http://10.33.29.200:5173`);
+  console.log(`🌐 CORS enabled for ${process.env.NODE_ENV} environment:`);
+  corsOrigins.forEach((origin, index) => {
+    if (origin) {
+      console.log(`${index + 1}. ${origin}`);
+    }
+  });
 }
 
 void bootstrap();

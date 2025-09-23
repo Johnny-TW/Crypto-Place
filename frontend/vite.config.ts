@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { fileURLToPath, URL } from 'node:url';
@@ -13,7 +13,12 @@ export default defineConfig({
     css: true,
     server: {
       deps: {
-        inline: ['@mui/x-charts', '@mui/material', '@emotion/react', '@emotion/styled'],
+        inline: [
+          '@mui/x-charts',
+          '@mui/material',
+          '@emotion/react',
+          '@emotion/styled',
+        ],
       },
     },
   },
@@ -48,10 +53,9 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        // 修復 Sass 棄用警告 - 使用現代編譯器 API
+        // 修復 Sass 棄用警告
         silenceDeprecations: ['legacy-js-api'],
         quietDeps: true,
-        api: 'modern-compiler',
       },
     },
     devSourcemap: true, // 開發模式下啟用 CSS source map

@@ -10,7 +10,9 @@ const HomePageTitle: React.FC = () => {
         src={tradeCrypto}
         alt='Stylized atom'
       />
-      <h1 className='text-6xl font-bold mt-10'>Crypto Coin</h1>
+      <h1 className='text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-7xl'>
+        EE40 - Crypto Place
+      </h1>
       <p className='text-gray-900 mt-5'>
         Crypto Coin is the leading data platform for real-time cryptocurrency
         prices and market trends

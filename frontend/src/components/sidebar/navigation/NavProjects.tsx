@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -37,7 +38,13 @@ function NavProjects({
   }[];
   onItemClick?: (_url: string) => void;
 }) {
-  const { isMobile } = useSidebar();
+  let isMobile = false;
+  try {
+    const sidebarContext = useSidebar();
+    isMobile = sidebarContext.isMobile;
+  } catch (error) {
+    console.warn('NavProjects: useSidebar hook failed, using fallback', error);
+  }
 
   return (
     <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
