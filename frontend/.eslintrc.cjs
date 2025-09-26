@@ -99,7 +99,6 @@ module.exports = {
           '**/craco.config.{js,jsx}',
         ],
         optionalDependencies: false,
-        packageDir: __dirname,
       },
     ],
   },
@@ -108,23 +107,11 @@ module.exports = {
       version: 'detect',
     },
     'import/resolver': {
-      alias: {
-        map: [
-          ['@', `${__dirname}/src`],
-          ['@components', `${__dirname}/src/components`],
-          ['@constant', `${__dirname}/src/constant`],
-          ['@hooks', `${__dirname}/src/hooks`],
-          ['@images', `${__dirname}/src/images`],
-          ['@styleLayouts', `${__dirname}/src/styles/layouts`],
-          ['@styleViews', `${__dirname}/src/styles/views`],
-          ['@redux', `${__dirname}/src/redux`],
-          ['@utils', `${__dirname}/src/utils`],
-        ],
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      typescript: {
+        project: './tsconfig.json',
       },
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        paths: ['node_modules', `${__dirname}/node_modules`],
       },
     },
   },

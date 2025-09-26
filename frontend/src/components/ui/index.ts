@@ -1,4 +1,4 @@
-// UI Components
+// UI Components - Active Components Only
 export { Button, buttonVariants } from './button';
 
 export {
@@ -13,29 +13,8 @@ export {
 export { default as Input } from './input';
 export { default as Label } from './label';
 export { default as Separator } from './separator';
-
-export {
-  Sheet,
-  SheetPortal,
-  SheetOverlay,
-  SheetTrigger,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetFooter,
-  SheetTitle,
-  SheetDescription,
-} from './sheet';
-
 export { default as Skeleton } from './skeleton';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
-
-export {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from './tooltip';
 
 export {
   Collapsible,
@@ -43,7 +22,6 @@ export {
   CollapsibleContent,
 } from './collapsible';
 
-export { Badge, badgeVariants } from './badge';
 export { Avatar, AvatarImage, AvatarFallback } from './avatar';
 
 export {
@@ -101,4 +79,5 @@ export {
   useSidebar,
 } from './sidebar';
 
-export { default as ErrorMessage } from './ErrorMessage';
+export { ChartContainer } from './chart';
+export type { ChartConfig, ChartContainerProps } from './chart';

@@ -44,6 +44,15 @@ export class RegisterDto {
   @MinLength(6)
   @IsNotEmpty()
   password: string;
+
+  @ApiProperty({
+    example: 'password123',
+    description: '密碼確認(必須與密碼相符)',
+    required: false,
+  })
+  @IsString()
+  @IsNotEmpty()
+  password_confirmation?: string;
 }
 
 export class AuthResponseDto {

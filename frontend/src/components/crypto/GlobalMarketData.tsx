@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { APIKit } from '../../redux/api/apiService';
-import { GLOBAL_MARKET_DATA } from '../../redux/api/api';
+import React from 'react';
 
 interface GlobalMarketData {
   data: {
@@ -29,33 +27,17 @@ interface GlobalMarketData {
   };
 }
 
-const GlobalMarketData: React.FC = () => {
-  const [globalData, setGlobalData] = useState<GlobalMarketData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface GlobalMarketDataProps {
+  data: GlobalMarketData | null;
+  loading: boolean;
+  error: string | null;
+}
 
-  useEffect(() => {
-    const fetchGlobalData = async () => {
-      try {
-        setLoading(true);
-        const response = await APIKit.get(GLOBAL_MARKET_DATA);
-        setGlobalData(response.data);
-        setError(null);
-      } catch (err) {
-        setError('獲取全球市場數據失敗');
-        console.error('Error fetching global market data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGlobalData();
-    // 每5分鐘更新一次
-    const interval = setInterval(fetchGlobalData, 5 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
+const GlobalMarketData: React.FC<GlobalMarketDataProps> = ({
+  data: globalData,
+  loading,
+  error,
+}) => {
   const formatCurrency = (value: number, currency = 'USD') => {
     if (currency === 'USD') {
       return new Intl.NumberFormat('en-US', {
@@ -196,7 +178,7 @@ const GlobalMarketData: React.FC = () => {
                 </div>
                 <div className='w-full bg-gray-200 rounded-full h-2 mt-2'>
                   <div
-                    className='bg-blue-500 h-2 rounded-full transition-all duration-500'
+                    className='bg-blue-600 h-2 rounded-full transition-all duration-500'
                     style={{ width: `${Math.min(percentage, 100)}%` }}
                   />
                 </div>

@@ -13,6 +13,9 @@ import nftDetailsSaga from './nftDetails';
 import employeeInfoSaga from './employeeInfo';
 import authSaga from './auth';
 import { watchlistSaga } from './watchlist';
+import globalMarketDataSaga from './globalMarketData';
+import simplePriceSaga from './simplePrice';
+import trendingCoinsSaga from './trendingCoins';
 
 export function* setLoading(
   loading: boolean,
@@ -95,6 +98,9 @@ function* rootSaga() {
     employeeInfoSaga(),
     authSaga(),
     watchlistSaga(),
+    globalMarketDataSaga(),
+    simplePriceSaga(),
+    trendingCoinsSaga(),
   ]);
 }
 

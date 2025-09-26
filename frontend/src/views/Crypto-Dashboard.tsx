@@ -17,12 +17,12 @@ import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import FavoriteButton from '@components/common/FavoriteButton';
 import FavoriteListPanel from '@components/common/FavoriteListPanel';
 import CustomTabs from '@components/common/CustomTabs';
-import TrendingCoins from '../components/crypto/TrendingCoins';
-import GlobalMarketData from '../components/crypto/GlobalMarketData';
-import SimplePrice from '../components/crypto/SimplePrice';
-import { useWatchlist } from '../hooks/useWatchlist';
-import '@styleViews/dashboard.scss';
+import TrendingCoins from '@components/crypto/TrendingCoins';
+import GlobalMarketData from '@components/crypto/GlobalMarketData';
+import SimplePrice from '@components/crypto/SimplePrice';
+import { useWatchlist } from '@hooks/useWatchlist';
 import '../styles/components/tabs.scss';
+import '../styles/views/dashboard.scss';
 
 // 定義加密貨幣介面
 interface CoinData {
@@ -39,13 +39,48 @@ interface CoinData {
   market_cap: number;
 }
 
+// 定義 Global Market Data 介面
+interface GlobalMarketDataType {
+  data: {
+    active_cryptocurrencies: number;
+    upcoming_icos: number;
+    ongoing_icos: number;
+    ended_icos: number;
+    markets: number;
+    total_market_cap: {
+      usd: number;
+      btc: number;
+      eth: number;
+    };
+    total_volume: {
+      usd: number;
+      btc: number;
+      eth: number;
+    };
+    market_cap_percentage: {
+      btc: number;
+      eth: number;
+      [key: string]: number;
+    };
+    market_cap_change_percentage_24h_usd: number;
+    updated_at: number;
+  };
+}
+
 // 定義 Redux 狀態介面
 interface CoinListState {
   coinList: CoinData[];
 }
 
+interface GlobalMarketDataState {
+  data: GlobalMarketDataType | null;
+  loading: boolean;
+  error: string | null;
+}
+
 interface RootState {
   coinList: CoinListState;
+  globalMarketData: GlobalMarketDataState;
 }
 
 // 定義貨幣類型
@@ -63,6 +98,18 @@ interface FavoriteToggleData {
 function StickyHeadTable(): JSX.Element {
   const dispatch = useDispatch();
   const coinList = useSelector((state: RootState) => state.coinList.coinList);
+
+  // Global Market Data Redux state
+  const globalMarketData = useSelector(
+    (state: RootState) => state.globalMarketData.data
+  );
+  const globalMarketLoading = useSelector(
+    (state: RootState) => state.globalMarketData.loading
+  );
+  const globalMarketError = useSelector(
+    (state: RootState) => state.globalMarketData.error
+  );
+
   const [currency, setCurrency] = useState<Currency>('usd');
   const [currentTab, setCurrentTab] = useState<number>(0);
   const history = useHistory();
@@ -92,7 +139,7 @@ function StickyHeadTable(): JSX.Element {
     if (shouldLoadBatchStatus(coinIds)) {
       checkBatchStatus(coinIds);
     }
-  }, [coinList]);
+  }, [coinList, shouldLoadBatchStatus, checkBatchStatus]);
 
   // 取得當前的狀態映射
   const watchlistStatus = getFavoriteStatusMap();
@@ -262,9 +309,23 @@ function StickyHeadTable(): JSX.Element {
     [history]
   );
 
+  // 載入 Global Market Data
+  useEffect(() => {
+    dispatch({ type: 'FETCH_GLOBAL_MARKET_DATA' });
+    // 每5分鐘更新一次
+    // const interval = setInterval(
+    //   () => {
+    //     dispatch({ type: 'FETCH_GLOBAL_MARKET_DATA' });
+    //   },
+    //   5 * 60 * 1000
+    // );
+
+    // return () => clearInterval(interval);
+  }, [dispatch]);
+
   useEffect(() => {
     dispatch({ type: 'FETCH_COIN_LIST', payload: { currency } });
-  }, [currency]);
+  }, [currency, dispatch]);
 
   useEffect(() => {
     loadBatchWatchlistStatus();
@@ -274,15 +335,23 @@ function StickyHeadTable(): JSX.Element {
 
   const tabsData = [
     {
-      label: 'My Favorites',
-      icon: <FavoriteRounded className='w-5 h-5' />,
-      badge: watchlistCount,
+      label: 'Market Analytics',
+      icon: <TrendingUpRounded className='w-5 h-5' />,
       content: (
-        <FavoriteListPanel
-          watchlist={watchlistData}
-          isLoading={watchlistLoading}
-          error={watchlistError}
-        />
+        <div className='space-y-8'>
+          {/* Global Market Overview */}
+          <GlobalMarketData
+            data={globalMarketData}
+            loading={globalMarketLoading}
+            error={globalMarketError}
+          />
+
+          {/* Trending Coins and Price Tracker */}
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
+            <TrendingCoins />
+            <SimplePrice />
+          </div>
+        </div>
       ),
     },
     {
@@ -343,19 +412,15 @@ function StickyHeadTable(): JSX.Element {
       ),
     },
     {
-      label: 'Market Analytics',
-      icon: <TrendingUpRounded className='w-5 h-5' />,
+      label: 'My Favorites',
+      icon: <FavoriteRounded className='w-5 h-5' />,
+      badge: watchlistCount,
       content: (
-        <div className='space-y-8'>
-          {/* Global Market Overview */}
-          <GlobalMarketData />
-
-          {/* Trending Coins and Price Tracker */}
-          <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
-            <TrendingCoins />
-            <SimplePrice />
-          </div>
-        </div>
+        <FavoriteListPanel
+          watchlist={watchlistData}
+          isLoading={watchlistLoading}
+          error={watchlistError}
+        />
       ),
     },
   ];

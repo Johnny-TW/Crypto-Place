@@ -283,8 +283,6 @@ export class ApiController {
     return this.apiService.getExchangeById(id);
   }
 
-  // 第一優先級新增端點
-
   @Get('trending')
   @ApiTags('crypto')
   @ApiOperation({

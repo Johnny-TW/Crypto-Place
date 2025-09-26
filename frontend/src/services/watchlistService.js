@@ -50,7 +50,6 @@ export const watchlistService = {
       const response = await apiClient.get('/watchlist');
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('獲取最愛列表失敗:', error);
       throw error;
     }
@@ -62,7 +61,6 @@ export const watchlistService = {
       const response = await apiClient.post('/watchlist', coinData);
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('新增到最愛失敗:', error);
       throw error;
     }
@@ -74,7 +72,6 @@ export const watchlistService = {
       const response = await apiClient.delete(`/watchlist/${coinId}`);
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('從最愛移除失敗:', error);
       throw error;
     }
@@ -86,7 +83,6 @@ export const watchlistService = {
       const response = await apiClient.get(`/watchlist/check/${coinId}`);
       return response.data.isInWatchlist;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('檢查最愛狀態失敗:', error);
 
       // 如果是認證錯誤，返回 false 而不是拋出錯誤
@@ -112,7 +108,6 @@ export const watchlistService = {
       });
       return response.data;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('批量檢查最愛狀態失敗:', error);
 
       // 如果是認證錯誤，返回空對象而不是拋出錯誤
@@ -138,7 +133,6 @@ export const watchlistService = {
       const response = await apiClient.get('/watchlist/count');
       return response.data.count;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('獲取最愛數量失敗:', error);
       throw error;
     }

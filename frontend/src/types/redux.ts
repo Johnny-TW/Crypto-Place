@@ -190,6 +190,67 @@ export interface WatchlistState {
   statusMap?: Record<string, boolean>;
 }
 
+// SimplePrice 狀態
+export interface SimplePriceState {
+  loading: boolean;
+  data: {
+    [coinId: string]: {
+      usd: number;
+      usd_24h_change?: number;
+      usd_24h_vol?: number;
+      usd_market_cap?: number;
+    };
+  } | null;
+  error: string | null;
+}
+
+// TrendingCoins 狀態
+export interface TrendingCoinsState {
+  loading: boolean;
+  data: {
+    coins: Array<{
+      item: {
+        id: string;
+        name: string;
+        symbol: string;
+        market_cap_rank: number;
+        thumb: string;
+        price_btc: number;
+        score: number;
+      };
+      data?: {
+        sparkline: string;
+      };
+    }>;
+    nfts: Array<{
+      id: string;
+      name: string;
+      symbol: string;
+      thumb: string;
+      nft_contract_id?: number;
+      native_currency_symbol: string;
+      floor_price_in_native_currency?: number;
+      floor_price_24h_percentage_change?: number;
+    }>;
+    categories: Array<{
+      id: number;
+      name: string;
+      market_cap_1h_change: number;
+      slug: string;
+      coins_count: number;
+      data?: {
+        sparkline: string;
+        market_cap?: number;
+        market_cap_btc?: number;
+        total_volume?: number;
+        total_volume_btc?: number;
+        market_cap_change_percentage_24h?: Record<string, number>;
+      };
+    }>;
+  } | null;
+  error: string | null;
+}
+
 // 根狀態型別
 export interface RootState {
   auth: AuthState;
@@ -203,4 +264,6 @@ export interface RootState {
   nftDetails: NFTDetailsState;
   employeeInfo: EmployeeInfoState;
   watchlist: WatchlistState;
+  simplePrice: SimplePriceState;
+  trendingCoins: TrendingCoinsState;
 }

@@ -10,6 +10,9 @@ import nftDetailsReducer from './nftDetails';
 import employeeInfoReducer from './employeeInfo';
 import authReducer from './auth';
 import watchlistReducer from './watchlist';
+import globalMarketDataReducer from './globalMarketData';
+import simplePriceReducer from './simplePrice';
+import trendingCoinsReducer from './trendingCoins';
 
 const rootReducer = combineReducers({
   coinList: coinListReducer,
@@ -23,6 +26,9 @@ const rootReducer = combineReducers({
   employeeInfo: employeeInfoReducer,
   auth: authReducer,
   watchlist: watchlistReducer,
+  globalMarketData: globalMarketDataReducer,
+  simplePrice: simplePriceReducer,
+  trendingCoins: trendingCoinsReducer,
 });
 
 export default rootReducer;

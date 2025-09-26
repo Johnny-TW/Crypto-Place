@@ -2,20 +2,8 @@ import { PrismaClient } from '@prisma/client'
 import * as bcrypt from 'bcryptjs'
 import { users } from './seed-datas/user-data'
 import { cryptos } from './seed-datas/crypto-data'
-import { generatePostContent } from './seed-datas/post-data'
 
 const prisma = new PrismaClient()
-
-// Configuration
-const SEED_CONFIG = {
-  CLEAR_DATABASE: true,
-  GENERATE_ADDITIONAL_USERS: true,
-  ADDITIONAL_USER_COUNT: 20,
-  GENERATE_POSTS: true,
-  POST_COUNT: 25,
-  GENERATE_WATCHLISTS: true,
-  PRICE_VARIATION_ENABLED: true,
-}
 
 async function hashPassword(password: string): Promise<string> {
   const saltRounds = 10
@@ -23,39 +11,35 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 async function cleanDatabase() {
-  if (!SEED_CONFIG.CLEAR_DATABASE) return
-
   console.log('🧹 Cleaning existing database...')
 
-  // Delete in correct order due to foreign key constraints
   await prisma.watchlist.deleteMany()
   await prisma.post.deleteMany()
   await prisma.crypto.deleteMany()
   await prisma.user.deleteMany()
 
-  console.log('✅ Database cleaned successfully')
+  console.log('✅ Database cleaned')
 }
 
 async function seedUsers() {
   console.log('👥 Seeding users...')
 
-  const allUsers = [...users]
-
-  // Hash passwords for existing users
-  for (const user of allUsers) {
-    user.password = await hashPassword(user.password)
-  }
-
-  // Skip additional user generation for now
-
-  // Create users
   const createdUsers = []
-  for (const userData of allUsers) {
+
+  for (const userData of users) {
+    const hashedPassword = await hashPassword(userData.password)
+
     const user = await prisma.user.upsert({
       where: { email: userData.email },
       update: {},
-      create: userData as any,
+      create: {
+        ...userData,
+        password: hashedPassword,
+        isActive: userData.isActive ?? true,
+        role: userData.role ?? 'USER',
+      },
     })
+
     createdUsers.push(user)
   }
 
@@ -69,14 +53,10 @@ async function seedCryptos() {
   const createdCryptos = []
 
   for (const cryptoData of cryptos) {
-    let finalData = { ...cryptoData }
-
-    // Use original data without variation
-
     const crypto = await prisma.crypto.upsert({
       where: { id: cryptoData.id },
-      update: finalData,
-      create: finalData,
+      update: cryptoData,
+      create: cryptoData,
     })
 
     createdCryptos.push(crypto)
@@ -87,34 +67,28 @@ async function seedCryptos() {
 }
 
 async function seedPosts(users: any[]) {
-  if (!SEED_CONFIG.GENERATE_POSTS) return []
+  console.log('📝 Seeding posts...')
 
-  console.log(`📝 Seeding ${SEED_CONFIG.POST_COUNT} posts...`)
-
-  const posts = []
-
-  // Create a few basic posts
-  const basicPosts = [
+  const posts = [
     {
       title: 'Bitcoin Price Analysis 2024',
-      content: generatePostContent(),
+      content: 'Comprehensive analysis of Bitcoin price movements and market trends for 2024.',
       authorId: users[0].id,
       order: 1,
     },
     {
       title: 'Ethereum Staking Guide',
-      content: generatePostContent(),
+      content: 'Complete guide to Ethereum 2.0 staking rewards and validator requirements.',
       authorId: users[1].id,
       order: 2,
     },
     {
       title: 'DeFi Investment Strategies',
-      content: generatePostContent(),
+      content: 'Understanding decentralized finance protocols and yield farming opportunities.',
       authorId: users[2] ? users[2].id : users[0].id,
       order: 3,
     },
   ]
-  posts.push(...basicPosts)
 
   const createdPosts = await prisma.post.createMany({
     data: posts,
@@ -126,18 +100,20 @@ async function seedPosts(users: any[]) {
 }
 
 async function seedWatchlists(users: any[], cryptos: any[]) {
-  if (!SEED_CONFIG.GENERATE_WATCHLISTS) return []
-
   console.log('👀 Seeding watchlists...')
 
   const watchlists = []
 
-  // Add basic watchlist entries
-  if (users.length > 0) {
+  // Add some watchlist entries for the first few users
+  if (users.length > 0 && cryptos.length > 0) {
+    const user1 = users[0]
+    const user2 = users[1]
+
+    // User 1 watches Bitcoin, Ethereum, BNB
     const user1Cryptos = cryptos.slice(0, 3)
     for (const crypto of user1Cryptos) {
       watchlists.push({
-        userId: users[0].id,
+        userId: user1.id,
         coinId: crypto.id,
         coinName: crypto.name,
         symbol: crypto.symbol,
@@ -145,17 +121,16 @@ async function seedWatchlists(users: any[], cryptos: any[]) {
       })
     }
 
-    if (users.length > 1) {
-      const user2Cryptos = cryptos.slice(2, 6)
-      for (const crypto of user2Cryptos) {
-        watchlists.push({
-          userId: users[1].id,
-          coinId: crypto.id,
-          coinName: crypto.name,
-          symbol: crypto.symbol,
-          image: crypto.image,
-        })
-      }
+    // User 2 watches different coins
+    const user2Cryptos = cryptos.slice(2, 6)
+    for (const crypto of user2Cryptos) {
+      watchlists.push({
+        userId: user2.id,
+        coinId: crypto.id,
+        coinName: crypto.name,
+        symbol: crypto.symbol,
+        image: crypto.image,
+      })
     }
   }
 
@@ -178,56 +153,45 @@ async function displaySummary() {
     prisma.watchlist.count(),
   ])
 
-  console.log(`👥 Total Users: ${userCount}`)
-  console.log(`🪙 Total Cryptocurrencies: ${cryptoCount}`)
-  console.log(`📝 Total Posts: ${postCount}`)
-  console.log(`👀 Total Watchlist Entries: ${watchlistCount}`)
+  console.log(`👥 Users: ${userCount}`)
+  console.log(`🪙 Cryptocurrencies: ${cryptoCount}`)
+  console.log(`📝 Posts: ${postCount}`)
+  console.log(`👀 Watchlist entries: ${watchlistCount}`)
 
   console.log('\n🔐 Test Credentials:')
-  console.log('🔑 Admin: admin@cryptoplace.com / admin123')
-  console.log('🔑 Manager: manager@cryptoplace.com / admin123')
-  console.log('🔑 User: alice@cryptoplace.com / user123')
-  console.log('🔑 User: bob@cryptoplace.com / user123')
-  console.log('🔑 User: charlie@cryptoplace.com / user123')
-  console.log('🔑 Other Users: [generated emails] / user123')
+  console.log('Admin: admin@cryptoplace.com / admin123')
+  console.log('Manager: manager@cryptoplace.com / admin123')
+  console.log('User: alice@cryptoplace.com / user123')
+  console.log('User: bob@cryptoplace.com / user123')
+  console.log('User: charlie@cryptoplace.com / user123')
 }
 
 async function main() {
-  console.log('🌱 Starting comprehensive database seeding...')
-  console.log(`📋 Configuration:`)
-  console.log(`   - Clear Database: ${SEED_CONFIG.CLEAR_DATABASE}`)
-  console.log(`   - Generate Additional Users: ${SEED_CONFIG.GENERATE_ADDITIONAL_USERS} (${SEED_CONFIG.ADDITIONAL_USER_COUNT})`)
-  console.log(`   - Generate Posts: ${SEED_CONFIG.GENERATE_POSTS} (${SEED_CONFIG.POST_COUNT})`)
-  console.log(`   - Generate Watchlists: ${SEED_CONFIG.GENERATE_WATCHLISTS}`)
-  console.log(`   - Price Variation: ${SEED_CONFIG.PRICE_VARIATION_ENABLED}\n`)
+  console.log('🌱 Starting database seeding...')
 
   try {
-    // Clean database
     await cleanDatabase()
 
-    // Seed all entities
     const users = await seedUsers()
     const cryptos = await seedCryptos()
     await seedPosts(users)
     await seedWatchlists(users, cryptos)
 
-    // Display results
     await displaySummary()
 
     console.log('\n🎉 Database seeding completed successfully!')
 
   } catch (error) {
-    console.error('❌ Error during database seeding:', error)
+    console.error('❌ Error during seeding:', error)
     throw error
   }
 }
 
 main()
   .catch((e) => {
-    console.error('💥 Critical seeding error:', e)
+    console.error('💥 Critical error:', e)
     process.exit(1)
   })
   .finally(async () => {
-    console.log('🔌 Disconnecting from database...')
     await prisma.$disconnect()
   })

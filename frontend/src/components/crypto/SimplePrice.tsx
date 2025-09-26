@@ -1,15 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { APIKit } from '../../redux/api/apiService';
-import { SIMPLE_PRICE } from '../../redux/api/api';
-
-interface SimplePriceData {
-  [coinId: string]: {
-    usd: number;
-    usd_24h_change?: number;
-    usd_24h_vol?: number;
-    usd_market_cap?: number;
-  };
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../types/redux';
 
 interface CoinInfo {
   id: string;
@@ -18,15 +9,19 @@ interface CoinInfo {
 }
 
 const SimplePrice: React.FC = () => {
-  const [priceData, setPriceData] = useState<SimplePriceData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const {
+    data: priceData,
+    loading,
+    error,
+  } = useSelector((state: RootState) => state.simplePrice);
   const [selectedCoins, setSelectedCoins] = useState<string[]>([
     'bitcoin',
     'ethereum',
     'binancecoin',
     'cardano',
     'solana',
+    'ripple',
   ]);
 
   const coinOptions: CoinInfo[] = [
@@ -42,32 +37,27 @@ const SimplePrice: React.FC = () => {
     { id: 'chainlink', name: 'Chainlink', symbol: 'LINK' },
   ];
 
-  const fetchSimplePrice = useCallback(async () => {
-    try {
-      setLoading(true);
-      const queryParams = new URLSearchParams({
-        ids: selectedCoins.join(','),
-        vs_currencies: 'usd',
-        include_24hr_change: 'true',
-        include_24hr_vol: 'true',
-        include_market_cap: 'true',
-      });
+  const fetchSimplePrice = useCallback(() => {
+    dispatch({
+      type: 'FETCH_SIMPLE_PRICE',
+      payload: {
+        ids: selectedCoins,
+        vsCurrencies: 'usd',
+        include24hrChange: true,
+        include24hrVol: true,
+        includeMarketCap: true,
+      },
+    });
+  }, [dispatch, selectedCoins]);
 
-      const response = await APIKit.get(`${SIMPLE_PRICE}?${queryParams}`);
-      setPriceData(response.data);
-      setError(null);
-    } catch (err) {
-      setError('獲取價格數據失敗');
-      console.error('Error fetching simple price:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedCoins]);
+  // useEffect(() => {
+  //   fetchSimplePrice();
+  //   const interval = setInterval(fetchSimplePrice, 100000);
+  //   return () => clearInterval(interval);
+  // }, [fetchSimplePrice]);
 
   useEffect(() => {
     fetchSimplePrice();
-    const interval = setInterval(fetchSimplePrice, 30000);
-    return () => clearInterval(interval);
   }, [fetchSimplePrice]);
 
   const formatCurrency = (value: number) => {
@@ -177,7 +167,7 @@ const SimplePrice: React.FC = () => {
 
       {/* 價格數據展示 */}
       {priceData ? (
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+        <div className='grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-2 gap-4'>
           {Object.entries(priceData).map(([coinId, data]) => {
             const coinInfo = getCoinInfo(coinId);
             return (
