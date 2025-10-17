@@ -116,12 +116,6 @@ function Home() {
           <span>{parseFloat(String(params.value)).toFixed(2)}</span>
         ),
       },
-      {
-        field: 'trade_volume_24h_btc_normalized',
-        headerName: 'Trade volume 24h BTC normalized',
-        minWidth: 300,
-        align: 'left',
-      },
     ],
     []
   );

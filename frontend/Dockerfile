@@ -9,16 +9,21 @@ RUN corepack enable pnpm && \
 # Development stage
 FROM base AS development
 WORKDIR /app
-USER react
 
 # Copy package files
-COPY --chown=react:nodejs package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml ./
 
-# Install dependencies
+# Install dependencies as root user (needed for pnpm cache access)
 RUN pnpm install --frozen-lockfile
 
 # Copy source code
-COPY --chown=react:nodejs . .
+COPY . .
+
+# Change ownership of everything to react user AFTER setup
+RUN chown -R react:nodejs /app
+
+# Switch to react user for runtime
+USER react
 
 # Set environment variables
 ENV VITE_API_BASE_URL=http://localhost:5001

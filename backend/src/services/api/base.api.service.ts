@@ -44,8 +44,9 @@ export class BaseApiService {
       params: query,
       data: body,
       // For development environment with self-signed certificates
+      // Use explicit env var to control SSL verification (more reliable than NODE_ENV)
       httpsAgent: new https.Agent({
-        rejectUnauthorized: process.env.NODE_ENV === 'production'
+        rejectUnauthorized: process.env.REJECT_UNAUTHORIZED_CERTS !== 'false'
       })
     };
 

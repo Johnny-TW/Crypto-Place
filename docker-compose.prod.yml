@@ -1,60 +1,70 @@
 services:
   # Database Service
   postgres:
-    image: postgres:15
+    image: postgres:15-alpine
+    env_file:
+      - .env.prd
     environment:
-      POSTGRES_DB: crypto_place
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB:-crypto_place_prd}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     ports:
-      - "5433:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_prd_data:/var/lib/postgresql/data
     networks:
-      - crypto-network
+      - crypto-network-prd
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-crypto_place_prd}" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # Frontend Service (Production)
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
+      args:
+        - NODE_ENV=${NODE_ENV:-production}
     ports:
-      - "3001:80"
+      - "${FRONTEND_PORT:-3001}:80"
+    env_file:
+      - .env.prd
     networks:
-      - crypto-network
-    restart: on-failure
-    mem_limit: 256m
-    cpus: 0.25
+      - crypto-network-prd
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+    depends_on:
+      - backend
 
   # Backend Service (Production)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        - NODE_ENV=${NODE_ENV:-production}
     ports:
-      - "5001:5001"
-    environment:
-      - NODE_ENV=production
-      - PORT=5001
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/crypto_place?schema=public
+      - "${BACKEND_PORT:-5001}:5001"
+    env_file:
+      - .env.prd
     depends_on:
       postgres:
         condition: service_healthy
     networks:
-      - crypto-network
-    restart: on-failure
-    mem_limit: 512m
-    cpus: 0.5
+      - crypto-network-prd
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1.0
 
 networks:
-  crypto-network:
+  crypto-network-prd:
     driver: bridge
 
 volumes:
-  postgres_data:
+  postgres_prd_data:
     driver: local

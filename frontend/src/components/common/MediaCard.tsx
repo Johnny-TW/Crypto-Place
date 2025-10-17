@@ -20,7 +20,7 @@ interface MediaCardProps {
 
 function MediaCard({ newsData = [] }: MediaCardProps) {
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-12 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 mx-auto max-w-7xl mt-6'>
+    <div className='grid grid-cols-1 sm:grid-cols-12 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 mx-auto max-w-7xl mt-20'>
       {newsData.map(news => (
         <Card key={news.ID} sx={{ maxWidth: 'auto' }}>
           <CardMedia

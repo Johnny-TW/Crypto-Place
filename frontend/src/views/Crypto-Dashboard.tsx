@@ -267,14 +267,14 @@ function StickyHeadTable(): JSX.Element {
   const handleTabChange = (newValue: number): void => {
     setCurrentTab(newValue);
 
-    // 當切換到 My Favorites (tab 0) 時，重新撈取 watchlist API
-    if (newValue === 0) {
+    // 當切換到 Market Overview (tab 1) 時，重新撈取 watchlist 狀態
+    if (newValue === 1) {
+      loadBatchWatchlistStatus();
+    }
+    // 當切換到 My Favorites (tab 2) 時，重新撈取 watchlist 數據和計數
+    else if (newValue === 2) {
       fetchWatchlist();
       getCount();
-    }
-    // 當切換到 Market Overview (tab 1) 時，重新載入收藏狀態以確保同步
-    else if (newValue === 1) {
-      loadBatchWatchlistStatus();
     }
   };
 
@@ -312,6 +312,7 @@ function StickyHeadTable(): JSX.Element {
   // 載入 Global Market Data
   useEffect(() => {
     dispatch({ type: 'FETCH_GLOBAL_MARKET_DATA' });
+
     // 每5分鐘更新一次
     // const interval = setInterval(
     //   () => {
@@ -339,14 +340,14 @@ function StickyHeadTable(): JSX.Element {
       icon: <TrendingUpRounded className='w-5 h-5' />,
       content: (
         <div className='space-y-8'>
-          {/* Global Market Overview */}
+          {/* 全球市場數據 */}
           <GlobalMarketData
             data={globalMarketData}
             loading={globalMarketLoading}
             error={globalMarketError}
           />
 
-          {/* Trending Coins and Price Tracker */}
+          {/* 趨勢貨幣和簡單價格 */}
           <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
             <TrendingCoins />
             <SimplePrice />

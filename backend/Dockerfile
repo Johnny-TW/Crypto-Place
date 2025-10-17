@@ -15,54 +15,51 @@ WORKDIR /app
 COPY --chown=nestjs:nodejs package.json pnpm-lock.yaml ./
 COPY --chown=nestjs:nodejs prisma ./prisma
 
-# Install dependencies as root, then change ownership
-RUN pnpm install --frozen-lockfile && \
-    chown -R nestjs:nodejs /app
-
-# Switch to nestjs user for subsequent operations
-USER nestjs
+# Install dependencies as root
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
-COPY --chown=nestjs:nodejs . .
+COPY . .
 
-# Generate Prisma client
-RUN pnpm prisma:generate:prod
+# Build the application and generate Prisma client as root (needs write access)
+RUN pnpm build && pnpm prisma:generate:prod
+
+# Change ownership to nestjs user AFTER everything is set up
+RUN chown -R nestjs:nodejs /app
+
+# Switch to nestjs user for runtime
+USER nestjs
 
 # Expose port
 EXPOSE 5001
 
-# Start the application in development mode
-CMD ["dumb-init", "pnpm", "start:dev"]
+# Start the application in development mode (skip prisma generate since it's already done in build)
+CMD ["dumb-init", "pnpm", "exec", "nest", "start", "--watch"]
 
 # Production stage
 FROM base AS production
 WORKDIR /app
 
-# Copy package files and prisma schema with proper ownership
-COPY --chown=nestjs:nodejs package.json pnpm-lock.yaml ./
-COPY --chown=nestjs:nodejs prisma ./prisma
+# Copy package files and prisma schema
+COPY package.json pnpm-lock.yaml ./
+COPY prisma ./prisma
 
-# Install all dependencies for building (including devDependencies)
-RUN pnpm install --frozen-lockfile && \
-    chown -R nestjs:nodejs /app
-
-# Switch to nestjs user for subsequent operations
-USER nestjs
+# Install all dependencies (including devDependencies for building)
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
-COPY --chown=nestjs:nodejs . .
+COPY . .
 
-# Build the application
+# Build the application and generate Prisma client
 RUN pnpm build && pnpm prisma:generate:prod
 
-# Switch back to root to clean up dev dependencies
-USER root
-
 # Remove dev dependencies and reinstall only production dependencies
-RUN pnpm install --frozen-lockfile --prod && \
-    chown -R nestjs:nodejs /app
+RUN pnpm install --frozen-lockfile --prod
 
-# Switch back to nestjs user for runtime
+# Change ownership to nestjs user
+RUN chown -R nestjs:nodejs /app
+
+# Switch to nestjs user for runtime
 USER nestjs
 
 # Expose port

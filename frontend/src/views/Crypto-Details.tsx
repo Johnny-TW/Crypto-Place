@@ -161,12 +161,6 @@ function CryptoDetails() {
         align: 'left',
         renderCell: renderVolumeCell,
       },
-      {
-        field: 'trade_volume_24h_btc_normalized',
-        headerName: 'Trade volume 24h BTC normalized',
-        minWidth: 250,
-        align: 'left',
-      },
     ],
     []
   );

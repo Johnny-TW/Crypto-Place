@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout, catchError } from 'rxjs';
 
 @Injectable()
 export class ApiService {
@@ -24,19 +24,17 @@ export class ApiService {
   async getCoinById(id: string): Promise<any> {
     try {
       const response = await this.httpService.axiosRef.get(
-        `https://api.coingecko.com/api/v3/coins/${id}`,
+        `${this.coingeckoApiUrl}/coins/${id}`,
         {
-          headers: {
-            accept: 'application/json',
-            'x-cg-demo-api-key': process.env.API_KEY,
-          },
+          headers: this.getCoingeckoHeaders(),
         },
       );
       return response.data;
     } catch (error) {
+      this.logger.error(`Error fetching coin data for ${id}:`, error.message);
       throw new HttpException(
-        `Error fetching coin data for ${id}: ${error.message}`,
-        error.response?.status || 500,
+        { error: error.message },
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
@@ -55,15 +53,24 @@ export class ApiService {
         this.httpService.get(`${this.coingeckoApiUrl}/coins/markets`, {
           params,
           headers: this.getCoingeckoHeaders(),
-        }),
+        }).pipe(
+          timeout(25000), // 使用 RxJS timeout operator
+        ),
       );
 
+      this.logger.log(`Successfully fetched ${response.data.length} coins from markets`);
       return response.data;
     } catch (error) {
       this.logger.error('Error fetching coins markets:', error.message);
+      if (error.name === 'TimeoutError' || error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+        this.logger.error('Request timeout - CoinGecko API may be slow or rate limited');
+      }
       throw new HttpException(
-        { error: error.message },
-        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          error: error.message || 'Request timeout',
+          details: 'CoinGecko API 請求超時或速率限制，請稍後再試',
+        },
+        error.response?.status || HttpStatus.GATEWAY_TIMEOUT,
       );
     }
   }
@@ -311,7 +318,6 @@ export class ApiService {
   }
 
   // 第一優先級 API 方法
-
   async getTrendingCoins() {
     try {
       const response = await firstValueFrom(
@@ -343,16 +349,24 @@ export class ApiService {
             include_market_cap: true,
           },
           headers: this.getCoingeckoHeaders(),
-        }),
+        }).pipe(
+          timeout(25000), // 使用 RxJS timeout operator
+        ),
       );
 
       this.logger.log(`Successfully fetched simple prices for ${ids.length} coins`);
       return response.data;
     } catch (error) {
       this.logger.error('Error fetching simple price:', error.message);
+      if (error.name === 'TimeoutError' || error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+        this.logger.error('Request timeout - CoinGecko API may be slow or rate limited');
+      }
       throw new HttpException(
-        { error: error.message },
-        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          error: error.message || 'Request timeout',
+          details: 'CoinGecko API 請求超時或速率限制，請稍後再試',
+        },
+        error.response?.status || HttpStatus.GATEWAY_TIMEOUT,
       );
     }
   }
@@ -362,16 +376,24 @@ export class ApiService {
       const response = await firstValueFrom(
         this.httpService.get(`${this.coingeckoApiUrl}/global`, {
           headers: this.getCoingeckoHeaders(),
-        }),
+        }).pipe(
+          timeout(25000), // 使用 RxJS timeout operator
+        ),
       );
 
       this.logger.log('Successfully fetched global market data');
       return response.data;
     } catch (error) {
       this.logger.error('Error fetching global market data:', error.message);
+      if (error.name === 'TimeoutError' || error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+        this.logger.error('Request timeout - CoinGecko API may be slow or rate limited');
+      }
       throw new HttpException(
-        { error: error.message },
-        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          error: error.message || 'Request timeout',
+          details: 'CoinGecko API 請求超時或速率限制，請稍後再試',
+        },
+        error.response?.status || HttpStatus.GATEWAY_TIMEOUT,
       );
     }
   }

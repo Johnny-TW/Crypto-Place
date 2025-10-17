@@ -37,10 +37,17 @@ lerna-debug.log*
 
 # dotenv environment variable files
 .env
+.env.local
+.env.*.local
+
+# Environment-specific files (QAS, PRD should not be committed)
+.env.qas
+.env.prd
+
+# Legacy environment files
 .env.development.local
 .env.test.local
 .env.production.local
-.env.local
 
 # temp directory
 .temp

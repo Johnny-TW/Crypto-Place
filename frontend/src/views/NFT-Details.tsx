@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-max-depth */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -13,6 +13,82 @@ import MediaCard from '@components/common/MediaCard';
 import PerformanceTable from '@components/nft/performance/PerformanceTable';
 import NFTInfoSection from '@components/nft/Info/NFTInfoSection';
 import NFTLinksSection from '@components/nft/Info/NFTLinksSection';
+
+function ExpandableDescription({
+  html,
+  maxLength = 300,
+}: {
+  html: string;
+  maxLength?: number;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  // 讓文字不帶 HTML 標籤計算長度
+  const stripHtml = (htmlString: string): string => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = htmlString;
+    return tmp.textContent || tmp.innerText || '';
+  };
+
+  const plainText = stripHtml(html);
+  const shouldTruncate = plainText.length > maxLength;
+
+  // HTML 結構保持完整
+  const getTruncatedHtml = (): string => {
+    if (!shouldTruncate || isExpanded) return html;
+
+    let charCount = 0;
+    let htmlIndex = 0;
+    let inTag = false;
+
+    while (charCount < maxLength && htmlIndex < html.length) {
+      if (html[htmlIndex] === '<') {
+        inTag = true;
+      } else if (html[htmlIndex] === '>') {
+        inTag = false;
+        htmlIndex += 1;
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      if (!inTag && html[htmlIndex] !== '>') {
+        charCount += 1;
+      }
+      htmlIndex += 1;
+    }
+
+    return `${html.substring(0, htmlIndex)}...`;
+  };
+
+  return (
+    <div className='space-y-2'>
+      <div
+        className='text-sm prose prose-sm max-w-none prose-headings:font-bold prose-h3:text-base prose-h3:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed'
+        dangerouslySetInnerHTML={{ __html: getTruncatedHtml() }}
+      />
+
+      {shouldTruncate ? (
+        <button
+          type='button'
+          onClick={() => setIsExpanded(!isExpanded)}
+          className='text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1'
+        >
+          {isExpanded ? (
+            <>
+              Show less
+              <span className='text-xs'>↑</span>
+            </>
+          ) : (
+            <>
+              Read more
+              <span className='text-xs'>→</span>
+            </>
+          )}
+        </button>
+      ) : null}
+    </div>
+  );
+}
 
 function NFTDetails() {
   const { name } = useParams<{ name: string }>();
@@ -145,9 +221,27 @@ function NFTDetails() {
               />
             </div>
             <div className='w-full max-w-full mt-5'>
-              <p className='text-pretty text-2xl font-semibold tracking-tight text-gray-900 sm:text-1xl'>
-                {nftData?.name}
-              </p>
+              <div className='flex items-center gap-3 mb-2'>
+                <p className='text-pretty text-2xl font-semibold tracking-tight text-gray-900 sm:text-1xl'>
+                  {nftData?.name}
+                </p>
+                {nftData?.symbol ? (
+                  <span className='text-sm text-gray-500 font-medium'>
+                    ({nftData.symbol})
+                  </span>
+                ) : null}
+                {nftData?.market_cap_rank ? (
+                  <span className='inline-flex items-center rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-800 ring-1 ring-inset ring-yellow-600/20'>
+                    🏆 Rank #{nftData.market_cap_rank}
+                  </span>
+                ) : null}
+              </div>
+              {nftData?.user_favorites_count ? (
+                <p className='text-sm text-gray-600 mb-3'>
+                  ❤️ {nftData.user_favorites_count.toLocaleString()} users
+                  favorited this collection
+                </p>
+              ) : null}
               <div className='flex items-center space-x-4 mt-5'>
                 <img
                   className='w-20 h-20 rounded-2xl shadow-lg object-cover border-4 border-white'
@@ -159,6 +253,11 @@ function NFTDetails() {
                     {nftData?.floor_price?.native_currency}{' '}
                     {nftData?.native_currency_symbol}
                   </p>
+                  {nftData?.floor_price?.usd ? (
+                    <p className='text-sm text-gray-500 font-medium'>
+                      ${nftData.floor_price.usd.toLocaleString()}
+                    </p>
+                  ) : null}
                 </div>
                 <p
                   className={`text-3xl font-bold px-5 ${percentageChangeClass}`}
@@ -186,10 +285,12 @@ function NFTDetails() {
                 <h1 className='font-bold text-black text-lg mb-2'>
                   About {nftData?.name}
                 </h1>
-                <div
-                  className='text-sm'
-                  dangerouslySetInnerHTML={{ __html: nftData?.description }}
-                />
+                {nftData?.description ? (
+                  <ExpandableDescription
+                    html={nftData.description}
+                    maxLength={1200}
+                  />
+                ) : null}
               </div>
             </div>
           </div>

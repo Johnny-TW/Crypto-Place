@@ -28,13 +28,24 @@ out/
 .output/
 *.tsbuildinfo
 
+# Environment files (root directory - integrated config)
 .env
-.env.*
-!.env.example
 .env.local
+.env.*.local
+
+# Environment-specific files (should not be committed)
+.env.dev
+.env.qas
+.env.prd
+
+# Legacy environment files
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Always keep example files
+!.env.example
+!**/.env.example
 
 coverage/
 .nyc_output/

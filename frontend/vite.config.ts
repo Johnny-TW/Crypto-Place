@@ -75,6 +75,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: Number(process.env.VITE_FE_PORT) || 5173,
+    strictPort: false, // 允許自動選擇其他 port 如果當前 port 被佔用
   },
 
   define: {

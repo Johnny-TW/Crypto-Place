@@ -89,12 +89,15 @@ describe('ApiService', () => {
 
       mockHttpService.axiosRef.get.mockRejectedValue(mockError);
 
-      await expect(service.getCoinById('invalid-coin')).rejects.toThrow(
-        HttpException,
-      );
-      await expect(service.getCoinById('invalid-coin')).rejects.toThrow(
-        'Error fetching coin data for invalid-coin: Network Error',
-      );
+      try {
+        await service.getCoinById('invalid-coin');
+        // If we reach here, the test should fail
+        expect(true).toBe(false);
+      } catch (error) {
+        expect(error).toBeInstanceOf(HttpException);
+        expect(error.getStatus()).toBe(404);
+        expect(error.getResponse()).toEqual({ error: 'Network Error' });
+      }
     });
 
     it('should handle error without response status', async () => {

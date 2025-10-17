@@ -21,10 +21,17 @@ async function bootstrap() {
     ? [
         // 生產環境的實際域名
         configService.get<string>('FRONTEND_URL'),
+        // 開發時的本地端口支援
+        'http://localhost:5173',
+        'http://localhost:3001',
+        'http://127.0.0.1:5173',
       ].filter(Boolean)
     : [
         'http://localhost:5173',
+        'http://localhost:5174', // 本地開發專用 port
+        'http://localhost:3001', // Docker 前端 port
         'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174',
       ];
 
   app.enableCors({

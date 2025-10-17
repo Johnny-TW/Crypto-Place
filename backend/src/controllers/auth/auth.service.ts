@@ -278,7 +278,7 @@ export class AuthService {
 
   async create(createAuthDto: CreateAuthDto) {
     const result = await this.dspHrApiService.searchEmployee(createAuthDto);
-    const user = _.first(result?.body?.List ?? []) as any; // 加上 as any
+    const user = _.first(result?.body?.List ?? []) as any;
 
     if (!user) {
       throw new NotFoundException('在 DSP HR 系統中找不到該員工');

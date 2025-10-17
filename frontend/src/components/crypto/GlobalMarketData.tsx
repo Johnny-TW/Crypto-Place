@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useMemo, useCallback } from 'react';
+import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import { ChartContainer, ChartConfig } from '@/components/ui/chart';
 
 interface GlobalMarketData {
   data: {
@@ -38,6 +40,60 @@ const GlobalMarketData: React.FC<GlobalMarketDataProps> = ({
   loading,
   error,
 }) => {
+  // 定義圖表顏色配置 (移到頂層)
+  const COLORS = React.useMemo(
+    () => [
+      '#F7931A', // Bitcoin - Orange
+      '#627EEA', // Ethereum - Blue
+      '#26A17B', // Tether - Green
+      '#345D9D', // BNB - Yellow-Blue
+      '#2775CA', // Solana - Purple
+      '#7C3AED', // Others - Violet
+    ],
+    []
+  );
+
+  // 準備市場主導率圓餅圖數據 (移到頂層，使用可選鏈)
+  const dominanceData = useMemo(() => {
+    if (!globalData?.data?.market_cap_percentage) return [];
+
+    return Object.entries(globalData.data.market_cap_percentage)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 6)
+      .map(([symbol, percentage]) => ({
+        name: symbol.toUpperCase(),
+        value: parseFloat(percentage.toFixed(2)),
+      }));
+  }, [globalData?.data?.market_cap_percentage]);
+
+  // Chart 配置 (移到頂層)
+  const chartConfig: ChartConfig = useMemo(() => {
+    return dominanceData.reduce((accumulator, item, index) => {
+      return {
+        ...accumulator,
+        [item.name.toLowerCase()]: {
+          label: item.name,
+          color: COLORS[index] || '#6B7280',
+        },
+      };
+    }, {} as ChartConfig);
+  }, [dominanceData, COLORS]);
+
+  // 自定義 Tooltip (移到頂層)
+  const CustomTooltip = useCallback(({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className='bg-white p-3 rounded-lg shadow-lg border border-gray-200'>
+          <p className='font-bold text-gray-800'>{payload[0].name}</p>
+          <p className='text-blue-600 font-semibold'>
+            {payload[0].value.toFixed(2)}%
+          </p>
+        </div>
+      );
+    }
+    return null;
+  }, []);
+
   const formatCurrency = (value: number, currency = 'USD') => {
     if (currency === 'USD') {
       return new Intl.NumberFormat('en-US', {
@@ -162,28 +218,81 @@ const GlobalMarketData: React.FC<GlobalMarketDataProps> = ({
       </div>
 
       {/* 市場主導率 */}
-      <div className='rounded-lg p-6'>
-        <h3 className='text-lg font-semibold text-gray-800 mb-4'>市場主導率</h3>
-        <div className='grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4'>
-          {Object.entries(data.market_cap_percentage)
-            .sort(([, a], [, b]) => b - a)
-            .slice(0, 6)
-            .map(([symbol, percentage]) => (
-              <div key={symbol} className='text-center'>
-                <div className='text-lg font-bold text-gray-800 uppercase'>
-                  {symbol}
+      <div className='rounded-lg p-6 bg-gradient-to-br'>
+        <h3 className='text-lg font-semibold text-gray-800 mb-6'>
+          市場主導率分佈
+        </h3>
+
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+          {/* 圓餅圖 */}
+          <div className='flex items-center justify-center'>
+            <ChartContainer config={chartConfig} className='h-[300px] w-full'>
+              <PieChart>
+                <Pie
+                  data={dominanceData}
+                  cx='50%'
+                  cy='50%'
+                  labelLine={false}
+                  label={({ name, value }) => `${name} ${value}%`}
+                  outerRadius={100}
+                  fill='#8884d8'
+                  dataKey='value'
+                >
+                  {dominanceData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${entry.name}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+                <Legend
+                  verticalAlign='bottom'
+                  height={36}
+                  formatter={value => value.toUpperCase()}
+                />
+              </PieChart>
+            </ChartContainer>
+          </div>
+
+          {/* 列表顯示 */}
+          <div className='flex flex-col justify-center'>
+            <div className='space-y-4'>
+              {dominanceData.map((item, index) => (
+                <div
+                  key={item.name}
+                  className='flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow'
+                >
+                  <div className='flex items-center gap-3'>
+                    <div
+                      className='w-4 h-4 rounded-full'
+                      style={{ backgroundColor: COLORS[index] }}
+                    />
+                    <span className='font-semibold text-gray-800'>
+                      {item.name}
+                    </span>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <span
+                      className='text-xl font-bold'
+                      style={{ color: COLORS[index] }}
+                    >
+                      {item.value}%
+                    </span>
+                    <div className='w-24 bg-gray-200 rounded-full h-2'>
+                      <div
+                        className='h-2 rounded-full transition-all duration-500'
+                        style={{
+                          width: `${Math.min(item.value, 100)}%`,
+                          backgroundColor: COLORS[index],
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className='text-2xl font-bold text-blue-600'>
-                  {percentage.toFixed(1)}%
-                </div>
-                <div className='w-full bg-gray-200 rounded-full h-2 mt-2'>
-                  <div
-                    className='bg-blue-600 h-2 rounded-full transition-all duration-500'
-                    style={{ width: `${Math.min(percentage, 100)}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

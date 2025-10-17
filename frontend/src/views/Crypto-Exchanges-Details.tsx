@@ -104,8 +104,7 @@ function CryptoExchangesDetails() {
     (state: RootState) => state.cryptoExchangesDetails
   );
 
-  // eslint-disable-next-line no-console
-  console.log(exchangeId);
+  // console.log(exchangeId);
 
   useEffect(() => {
     if (exchangeId) {
@@ -583,7 +582,7 @@ function CryptoExchangesDetails() {
         {/* 交易對數據表格 */}
         <div className='mb-8'>
           <div className='mb-6'>
-            <h2 className='text-2xl font-bold text-gray-900 mb-2'>
+            <h2 className='text-2xl font-bold text-gray-900 mt-10 mb-2'>
               Trading Pairs
             </h2>
             <p className='text-gray-600'>

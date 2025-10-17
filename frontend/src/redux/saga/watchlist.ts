@@ -1,6 +1,19 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
-import { watchlistService } from '../../services/watchlistService';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { WATCHLIST, WATCHLIST_COUNT } from '../api/api';
 import { BaseAction } from '../../types/redux';
+
+// 創建認證配置的輔助函數
+const getAuthConfig = () => {
+  const token = Cookies.get('token');
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      accept: 'application/json',
+    },
+  };
+};
 
 // Action Types
 interface FetchWatchlistAction extends BaseAction {
@@ -71,11 +84,11 @@ function* fetchWatchlistSaga(): Generator {
   try {
     yield put({ type: 'SET_WATCHLIST_LOADING', payload: true });
 
-    const data = yield call(watchlistService.getUserWatchlist);
+    const response: any = yield call(axios.get, WATCHLIST, getAuthConfig());
 
     yield put({
       type: 'FETCH_WATCHLIST_SUCCESS',
-      payload: data,
+      payload: response.data,
     });
   } catch (error: any) {
     yield put({
@@ -91,11 +104,16 @@ function* addToWatchlistSaga(action: AddToWatchlistAction): Generator {
   try {
     yield put({ type: 'SET_WATCHLIST_LOADING', payload: true });
 
-    const result = yield call(watchlistService.addToWatchlist, action.payload);
+    const response: any = yield call(
+      axios.post,
+      WATCHLIST,
+      action.payload,
+      getAuthConfig()
+    );
 
     yield put({
       type: 'ADD_TO_WATCHLIST_SUCCESS',
-      payload: { coinData: action.payload, result },
+      payload: { coinData: action.payload, result: response.data },
     });
 
     // 移除重複請求，直接更新本地狀態即可
@@ -133,7 +151,7 @@ function* removeFromWatchlistSaga(
   try {
     yield put({ type: 'SET_WATCHLIST_LOADING', payload: true });
 
-    yield call(watchlistService.removeFromWatchlist, action.payload);
+    yield call(axios.delete, `${WATCHLIST}/${action.payload}`, getAuthConfig());
 
     yield put({
       type: 'REMOVE_FROM_WATCHLIST_SUCCESS',
@@ -155,20 +173,32 @@ function* checkWatchlistStatusSaga(
   action: CheckWatchlistStatusAction
 ): Generator {
   try {
-    const isInWatchlist = yield call(
-      watchlistService.checkIsInWatchlist,
-      action.payload
+    const response: any = yield call(
+      axios.get,
+      `${WATCHLIST}/check/${action.payload}`,
+      getAuthConfig()
     );
 
     yield put({
       type: 'CHECK_WATCHLIST_STATUS_SUCCESS',
-      payload: { coinId: action.payload, isInWatchlist },
+      payload: {
+        coinId: action.payload,
+        isInWatchlist: response.data.isInWatchlist,
+      },
     });
   } catch (error: any) {
-    yield put({
-      type: 'CHECK_WATCHLIST_STATUS_FAILURE',
-      payload: error.message || 'Failed to check watchlist status',
-    });
+    // 如果是認證錯誤，返回 false
+    if (error.response?.status === 401) {
+      yield put({
+        type: 'CHECK_WATCHLIST_STATUS_SUCCESS',
+        payload: { coinId: action.payload, isInWatchlist: false },
+      });
+    } else {
+      yield put({
+        type: 'CHECK_WATCHLIST_STATUS_FAILURE',
+        payload: error.message || 'Failed to check watchlist status',
+      });
+    }
   }
 }
 
@@ -176,30 +206,59 @@ function* checkBatchWatchlistStatusSaga(
   action: CheckBatchWatchlistStatusAction
 ): Generator {
   try {
-    const statusMap = yield call(
-      watchlistService.checkBatchInWatchlist,
-      action.payload
+    if (!Array.isArray(action.payload) || action.payload.length === 0) {
+      yield put({
+        type: 'CHECK_BATCH_WATCHLIST_STATUS_SUCCESS',
+        payload: {},
+      });
+      return;
+    }
+
+    const response: any = yield call(
+      axios.post,
+      `${WATCHLIST}/check-batch`,
+      { coinIds: action.payload },
+      getAuthConfig()
     );
 
     yield put({
       type: 'CHECK_BATCH_WATCHLIST_STATUS_SUCCESS',
-      payload: statusMap,
+      payload: response.data,
     });
   } catch (error: any) {
-    yield put({
-      type: 'CHECK_BATCH_WATCHLIST_STATUS_FAILURE',
-      payload: error.message || 'Failed to check batch watchlist status',
-    });
+    // 如果是認證錯誤，返回空對象
+    if (error.response?.status === 401) {
+      const emptyStatusMap = action.payload.reduce(
+        (acc: any, coinId: string) => ({
+          ...acc,
+          [coinId]: false,
+        }),
+        {}
+      );
+      yield put({
+        type: 'CHECK_BATCH_WATCHLIST_STATUS_SUCCESS',
+        payload: emptyStatusMap,
+      });
+    } else {
+      yield put({
+        type: 'CHECK_BATCH_WATCHLIST_STATUS_FAILURE',
+        payload: error.message || 'Failed to check batch watchlist status',
+      });
+    }
   }
 }
 
 function* getWatchlistCountSaga(): Generator {
   try {
-    const count = yield call(watchlistService.getWatchlistCount);
+    const response: any = yield call(
+      axios.get,
+      WATCHLIST_COUNT,
+      getAuthConfig()
+    );
 
     yield put({
       type: 'GET_WATCHLIST_COUNT_SUCCESS',
-      payload: count,
+      payload: response.data.count,
     });
   } catch (error: any) {
     yield put({
