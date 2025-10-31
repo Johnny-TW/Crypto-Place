@@ -17,25 +17,39 @@ async function bootstrap() {
     }),
   );
   // CORS 配置 - 基於環境動態設定
-  const corsOrigins = process.env.NODE_ENV === 'production'
-    ? [
-        // 生產環境的實際域名
-        configService.get<string>('FRONTEND_URL'),
-        // 開發時的本地端口支援
+  const corsOrigin = configService.get<string>('CORS_ORIGIN');
+  const frontendUrl = configService.get<string>('FRONTEND_URL');
+
+  // 解析 CORS_ORIGIN（支援逗號分隔的多個 origin）
+  const corsOrigins = corsOrigin
+    ? corsOrigin.split(',').map(origin => origin.trim()).filter(Boolean)
+    : [
+        frontendUrl,
         'http://localhost:5173',
         'http://localhost:3001',
         'http://127.0.0.1:5173',
-      ].filter(Boolean)
-    : [
-        'http://localhost:5173',
-        'http://localhost:5174', // 本地開發專用 port
-        'http://localhost:3001', // Docker 前端 port
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:5174',
-      ];
+      ].filter(Boolean);
+
+  // 開發環境下使用動態 CORS，允許內網 IP 訪問
+  const corsOriginHandler = process.env.NODE_ENV === 'production'
+    ? corsOrigins
+    : (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
+        const isWhitelisted = corsOrigins.includes(origin);
+        const isPrivateIP = /^https?:\/\/(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2[0-9]|3[0-1])\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3})(:\d+)?$/.test(origin);
+        // 這是為了允許 Postman 或其他沒有 origin header 的工具訪問 API
+        const isUndefined = !origin;
+        // 允許白名單域名、內網 IP 範圍及無 origin 的請求（如 Postman）
+
+        if (isWhitelisted || isPrivateIP || isUndefined) {
+          callback(null, true);
+        } else {
+          console.warn(`⚠️  CORS blocked origin: ${origin}`);
+          callback(new Error('Not allowed by CORS'));
+        }
+      };
 
   app.enableCors({
-    origin: corsOrigins,
+    origin: corsOriginHandler,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
       'Content-Type',
@@ -90,11 +104,21 @@ async function bootstrap() {
   console.log(`📋 API endpoints available at http://localhost:${port}/api`);
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
   console.log(`🌐 CORS enabled for ${process.env.NODE_ENV} environment:`);
-  corsOrigins.forEach((origin, index) => {
-    if (origin) {
-      console.log(`${index + 1}. ${origin}`);
-    }
-  });
+
+  if (process.env.NODE_ENV === 'production') {
+    corsOrigins.forEach((origin, index) => {
+      if (origin) {
+        console.log(`   ${index + 1}. ${origin}`);
+      }
+    });
+  } else {
+    console.log(`   ✓ Whitelisted origins:`);
+    corsOrigins.forEach((origin, index) => {
+      console.log(`     ${index + 1}. ${origin}`);
+    });
+    console.log(`   ✓ Private IP ranges (10.x.x.x, 172.16-31.x.x, 192.168.x.x)`);
+    console.log(`   ✓ Postman and other tools without origin header`);
+  }
 }
 
 void bootstrap();
