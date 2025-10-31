@@ -3,6 +3,7 @@ FROM node:18-alpine AS base
 
 # Install pnpm and add non-root user
 RUN corepack enable pnpm && \
+    apk add --no-cache wget && \
     addgroup -g 1001 -S nodejs && \
     adduser -S react -u 1001
 
@@ -25,9 +26,11 @@ RUN chown -R react:nodejs /app
 # Switch to react user for runtime
 USER react
 
-# Set environment variables
-ENV VITE_API_BASE_URL=http://localhost:5001
-ENV VITE_FE_PORT=5173
+# Set default environment variables (can be overridden by docker-compose or .env files)
+ARG VITE_API_BASE_URL=http://localhost:5001
+ARG VITE_FE_PORT=5173
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_FE_PORT=${VITE_FE_PORT}
 
 # Expose port
 EXPOSE 5173

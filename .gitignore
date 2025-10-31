@@ -28,15 +28,30 @@ out/
 .output/
 *.tsbuildinfo
 
-# Environment files (root directory - integrated config)
+# Environment files (root directory - Docker Compose config)
 .env
 .env.local
 .env.*.local
-
-# Environment-specific files (should not be committed)
 .env.dev
 .env.qas
 .env.prd
+!.env.example
+
+# Backend environment files
+backend/.env
+backend/.env.development
+backend/.env.qas
+backend/.env.production
+backend/.env.local
+backend/.env.*.local
+
+# Frontend environment files
+frontend/.env
+frontend/.env.development
+frontend/.env.qas
+frontend/.env.production
+frontend/.env.local
+frontend/.env.*.local
 
 # Legacy environment files
 .env.development.local
