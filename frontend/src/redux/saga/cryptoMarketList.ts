@@ -32,7 +32,6 @@ function* fetchMarketListSaga(): Generator {
     console.log('Market data response:', response.data);
     yield put({ type: 'FETCH_MARKET_LIST_SUCCESS', payload: response.data });
   } catch (error: any) {
-    // eslint-disable-next-line no-console
     console.error('Error fetching market data:', error);
     yield put({ type: 'FETCH_MARKET_LIST_FAILURE', error: error.message });
   }

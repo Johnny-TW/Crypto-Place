@@ -54,6 +54,7 @@ function CryptoNews() {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_CRYPTO_NEWS', payload: { category: 'BTC' } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Transform NewsArticle array to NewsItem array

@@ -10,7 +10,7 @@ interface Tab {
 interface CustomTabsProps {
   tabs: Tab[];
   activeTab: number;
-  // eslint-disable-next-line no-unused-vars
+
   onChange: (index: number) => void;
   className?: string;
 }

@@ -43,7 +43,6 @@ export function* fetchCryptoNewsSaga(action: FetchCryptoNewsAction): Generator {
       payload: newsData,
     });
   } catch (error: any) {
-    // eslint-disable-next-line no-console
     console.error('News API Error:', error);
     yield put({ type: 'FETCH_CRYPTO_NEWS_FAILURE', error: error.message });
   }

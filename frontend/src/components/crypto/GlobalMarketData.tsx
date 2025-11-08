@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 import { ChartContainer, ChartConfig } from '@/components/ui/chart';
 
@@ -28,6 +28,21 @@ interface GlobalMarketData {
     updated_at: number;
   };
 }
+
+// 自定義 Tooltip 組件 (移到組件外部避免重複渲染)
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className='bg-white p-3 rounded-lg shadow-lg border border-gray-200'>
+        <p className='font-bold text-gray-800'>{payload[0].name}</p>
+        <p className='text-blue-600 font-semibold'>
+          {payload[0].value.toFixed(2)}%
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
 
 interface GlobalMarketDataProps {
   data: GlobalMarketData | null;
@@ -64,7 +79,7 @@ const GlobalMarketData: React.FC<GlobalMarketDataProps> = ({
         name: symbol.toUpperCase(),
         value: parseFloat(percentage.toFixed(2)),
       }));
-  }, [globalData?.data?.market_cap_percentage]);
+  }, [globalData]);
 
   // Chart 配置 (移到頂層)
   const chartConfig: ChartConfig = useMemo(() => {
@@ -78,21 +93,6 @@ const GlobalMarketData: React.FC<GlobalMarketDataProps> = ({
       };
     }, {} as ChartConfig);
   }, [dominanceData, COLORS]);
-
-  // 自定義 Tooltip (移到頂層)
-  const CustomTooltip = useCallback(({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className='bg-white p-3 rounded-lg shadow-lg border border-gray-200'>
-          <p className='font-bold text-gray-800'>{payload[0].name}</p>
-          <p className='text-blue-600 font-semibold'>
-            {payload[0].value.toFixed(2)}%
-          </p>
-        </div>
-      );
-    }
-    return null;
-  }, []);
 
   const formatCurrency = (value: number, currency = 'USD') => {
     if (currency === 'USD') {

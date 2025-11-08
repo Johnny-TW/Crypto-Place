@@ -5,7 +5,6 @@ import FormControl from '@mui/material/FormControl';
 import NativeSelect from '@mui/material/NativeSelect';
 
 interface DropdownSelectProps {
-  // eslint-disable-next-line no-unused-vars
   onExcludeChange: (value: string) => void;
 }
 

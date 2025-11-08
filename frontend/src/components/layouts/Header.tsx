@@ -13,6 +13,60 @@ interface DrawerListProps {
   onClose: () => void;
 }
 
+// DrawerList 組件移到外部避免每次渲染都重新創建
+const DrawerList: React.FC<DrawerListProps> = ({
+  mainList: drawerMainList,
+  informationList: drawerInformationList,
+  mainLinks,
+  linkMap: drawerLinkMap,
+  onClose,
+}) => (
+  <MUI.Box
+    className='Sidebar'
+    sx={{ width: 250 }}
+    role='presentation'
+    onClick={onClose}
+  >
+    <MUI.List>
+      {drawerMainList.map((text, index) => (
+        <MUI.ListItem key={text} disablePadding>
+          <MUI.ListItemButton
+            component={mainLinks[text] ? 'a' : 'div'}
+            href={mainLinks[text] || undefined}
+          >
+            <MUI.ListItemIcon className='Sidebar_list_icon'>
+              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+            </MUI.ListItemIcon>
+            <MUI.ListItemText primary={text} />
+          </MUI.ListItemButton>
+        </MUI.ListItem>
+      ))}
+    </MUI.List>
+    <MUI.Divider />
+    <MUI.List>
+      {drawerInformationList.map((text, index) => (
+        <MUI.ListItem key={text} disablePadding>
+          <MUI.ListItemButton
+            component={text === 'Team Roster' ? 'a' : 'a'}
+            href={
+              text === 'Team Roster'
+                ? drawerLinkMap[text]
+                : drawerLinkMap[text] || '#'
+            }
+            target={text === 'Team Roster' ? '_blank' : undefined}
+            rel={text === 'Team Roster' ? 'noopener noreferrer' : undefined}
+          >
+            <MUI.ListItemIcon className='Sidebar_list_icon'>
+              {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+            </MUI.ListItemIcon>
+            <MUI.ListItemText primary={text} />
+          </MUI.ListItemButton>
+        </MUI.ListItem>
+      ))}
+    </MUI.List>
+  </MUI.Box>
+);
+
 interface ButtonAppBarState {
   open: boolean;
   anchorElUser: HTMLElement | null;
@@ -52,59 +106,6 @@ const ButtonAppBar: React.FC = () => {
     'NFT Dashboard': '/NFTDashboard',
     'Crypto News': '/CryptoNews',
   };
-
-  const DrawerList: React.FC<DrawerListProps> = ({
-    mainList: drawerMainList,
-    informationList: drawerInformationList,
-    mainLinks,
-    linkMap: drawerLinkMap,
-    onClose,
-  }) => (
-    <MUI.Box
-      className='Sidebar'
-      sx={{ width: 250 }}
-      role='presentation'
-      onClick={onClose}
-    >
-      <MUI.List>
-        {drawerMainList.map((text, index) => (
-          <MUI.ListItem key={text} disablePadding>
-            <MUI.ListItemButton
-              component={mainLinks[text] ? 'a' : 'div'}
-              href={mainLinks[text] || undefined}
-            >
-              <MUI.ListItemIcon className='Sidebar_list_icon'>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </MUI.ListItemIcon>
-              <MUI.ListItemText primary={text} />
-            </MUI.ListItemButton>
-          </MUI.ListItem>
-        ))}
-      </MUI.List>
-      <MUI.Divider />
-      <MUI.List>
-        {drawerInformationList.map((text, index) => (
-          <MUI.ListItem key={text} disablePadding>
-            <MUI.ListItemButton
-              component={text === 'Team Roster' ? 'a' : 'a'}
-              href={
-                text === 'Team Roster'
-                  ? drawerLinkMap[text]
-                  : drawerLinkMap[text] || '#'
-              }
-              target={text === 'Team Roster' ? '_blank' : undefined}
-              rel={text === 'Team Roster' ? 'noopener noreferrer' : undefined}
-            >
-              <MUI.ListItemIcon className='Sidebar_list_icon'>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </MUI.ListItemIcon>
-              <MUI.ListItemText primary={text} />
-            </MUI.ListItemButton>
-          </MUI.ListItem>
-        ))}
-      </MUI.List>
-    </MUI.Box>
-  );
 
   const handleCloseUserMenu = (): void => {
     setState(prevState => ({ ...prevState, anchorElUser: null }));

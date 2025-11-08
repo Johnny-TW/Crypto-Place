@@ -67,7 +67,7 @@ function ExchangeCharts({ exchangeDetails }: ExchangeChartsProps) {
         ),
       }))
       .sort((a, b) => b.volume - a.volume);
-  }, [exchangeDetails?.tickers]);
+  }, [exchangeDetails]);
 
   // 準備Spread分布數據
   const spreadData = useMemo((): SpreadDataItem[] => {
@@ -97,7 +97,7 @@ function ExchangeCharts({ exchangeDetails }: ExchangeChartsProps) {
       range,
       count,
     }));
-  }, [exchangeDetails?.tickers]);
+  }, [exchangeDetails]);
 
   if (!exchangeDetails?.tickers || exchangeDetails.tickers.length === 0) {
     return (

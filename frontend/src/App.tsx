@@ -13,6 +13,7 @@ function AppContent(): JSX.Element {
 
   useEffect(() => {
     dispatch({ type: 'CHECK_AUTH_STATUS' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

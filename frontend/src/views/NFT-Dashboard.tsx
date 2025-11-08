@@ -110,6 +110,7 @@ function StickyHeadTable() {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_NFT_LIST', payload: { order } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order]);
 
   return (

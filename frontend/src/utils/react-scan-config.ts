@@ -55,7 +55,6 @@ export const initReactScan = async (): Promise<void> => {
       // eslint-disable-next-line no-console
       console.log('💡 提示: 打開開發者工具查看重新渲染分析');
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.warn('React Scan 初始化失敗:', error);
     }
   }

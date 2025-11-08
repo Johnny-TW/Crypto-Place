@@ -37,7 +37,7 @@ function CardLists({ news }: CardListsProps): React.ReactElement {
         setHasError(true);
         setImgSrc(defaultImage);
         setIsLoading(false);
-        // eslint-disable-next-line no-console
+
         console.error('❌ Image failed to load:', src);
         // eslint-disable-next-line no-console
         console.log('🔄 Switching to fallback image:', defaultImage);

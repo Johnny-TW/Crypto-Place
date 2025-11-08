@@ -112,10 +112,12 @@ function NFTDetails() {
     if (name) {
       dispatch({ type: 'FETCH_NFT_DETAILS', payload: { nftId: name } });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
 
   useEffect(() => {
     dispatch({ type: 'FETCH_NFT_NEWS' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
