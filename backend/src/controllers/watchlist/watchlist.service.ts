@@ -81,10 +81,9 @@ export class WatchlistService {
       throw new Error('Invalid userId: must be a number');
     }
 
-    // 獲取用戶的最愛列表
+    // 獲取用戶的最愛列表（不排序，稍後會按市場排名排序）
     const watchlist = await this.prisma.watchlist.findMany({
       where: { userId: userIdNum },
-      orderBy: { createdAt: 'desc' },
     });
 
     if (watchlist.length === 0) {
@@ -99,6 +98,7 @@ export class WatchlistService {
         vs_currency: 'usd',
         per_page: watchlist.length,
         page: 1,
+        order: 'market_cap_desc', // 確保 API 也是按市值排序
       });
 
       // 合併最愛列表資料和市場資料
@@ -113,10 +113,23 @@ export class WatchlistService {
           symbol: item.symbol,
           image: item.image,
           createdAt: item.createdAt,
+          marketCapRank: coinData?.market_cap_rank,
           currentPrice: coinData?.current_price,
           priceChange24h: coinData?.price_change_percentage_24h,
           marketCap: coinData?.market_cap,
+          high24h: coinData?.high_24h,
+          low24h: coinData?.low_24h,
+          lastUpdated: coinData?.last_updated,
         };
+      });
+
+      // 按市場排名排序（排名小的在前）
+      watchlistWithPrice.sort((a, b) => {
+        // 沒有排名的放到最後
+        if (!a.marketCapRank && !b.marketCapRank) return 0;
+        if (!a.marketCapRank) return 1;
+        if (!b.marketCapRank) return -1;
+        return a.marketCapRank - b.marketCapRank;
       });
 
       return watchlistWithPrice;

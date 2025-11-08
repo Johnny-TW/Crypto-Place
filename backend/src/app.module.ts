@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
+import { CacheModule } from '@nestjs/cache-manager';
 import configuration from './config/configuration';
 import { AppController } from './app.controller';
 import { ApiModule } from './controllers/api/api.module';
@@ -28,6 +29,11 @@ import { WatchlistModule } from './controllers/watchlist/watchlist.module';
         '.env.local',
         '.env',
       ],
+    }),
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 60000, // 快取 60 秒 (預設值,可被個別覆寫)
+      max: 100, // 最多快取 100 個項目
     }),
     HttpModule.register({
       timeout: 30000, // 增加到 30 秒以應對外部 API 延遲

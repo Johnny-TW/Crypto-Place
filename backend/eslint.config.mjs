@@ -6,7 +6,15 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['eslint.config.mjs', 'node_modules/**', 'dist/**'],
+    ignores: [
+      'eslint.config.mjs',
+      '.eslintrc.js',
+      'node_modules/**',
+      'dist/**',
+      'coverage/**',
+      'prisma/migrations/**',
+      '*.config.js',
+    ],
   },
   js.configs.recommended,
   {
@@ -41,12 +49,20 @@ export default [
     },
     rules: {
       ...tseslint.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
       '@typescript-eslint/interface-name-prefix': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+      '@typescript-eslint/no-empty-interface': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 ];

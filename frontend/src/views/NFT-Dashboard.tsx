@@ -1,16 +1,27 @@
 import { useState, useEffect, useMemo } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useHistory } from 'react-router-dom';
+import { ColumnDef } from '@tanstack/react-table';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { ChevronDown } from 'lucide-react';
+import { DataTable } from '@components/common/DataTable';
+import { Button } from '@components/ui/button';
 import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Paper,
-} from '@mui/material';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@components/ui/dropdown-menu';
 
 import '../styles/views/nft-dashboard.scss';
+
+interface NFTData {
+  id: string;
+  symbol: string;
+  name: string;
+  asset_platform_id: string;
+  contract_address: string;
+}
 
 function StickyHeadTable() {
   const orderOptions = [
@@ -26,49 +37,47 @@ function StickyHeadTable() {
     { value: 'market_cap_usd_desc', label: 'Market Cap USD Desc' },
   ];
 
-  const columns: GridColDef[] = useMemo(
+  const columns: ColumnDef<NFTData>[] = useMemo(
     () => [
       {
-        field: 'id',
-        headerName: 'ID',
-        minWidth: 300,
-        align: 'left' as const,
-        type: 'string',
+        accessorKey: 'id',
+        header: 'ID',
+        cell: ({ getValue }) => (
+          <div className='truncate'>{getValue() as string}</div>
+        ),
       },
       {
-        field: 'symbol',
-        headerName: 'Symbol',
-        minWidth: 300,
-        align: 'left' as const,
-        type: 'string',
+        accessorKey: 'symbol',
+        header: 'Symbol',
+        cell: ({ getValue }) => (
+          <div className='uppercase'>{getValue() as string}</div>
+        ),
       },
       {
-        field: 'name',
-        headerName: 'Name',
-        minWidth: 300,
-        align: 'left' as const,
-        type: 'string',
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ getValue }) => <div>{getValue() as string}</div>,
       },
       {
-        field: 'asset_platform_id',
-        headerName: 'Asset Platform ID',
-        minWidth: 200,
-        align: 'left' as const,
-        type: 'string',
+        accessorKey: 'asset_platform_id',
+        header: 'Platform ID',
+        cell: ({ getValue }) => <div>{getValue() as string}</div>,
       },
       {
-        field: 'contract_address',
-        headerName: 'Contract Address',
-        minWidth: 600,
-        align: 'left' as const,
-        type: 'string',
+        accessorKey: 'contract_address',
+        header: 'Contract Address',
+        cell: ({ getValue }) => (
+          <div className='font-mono text-xs truncate max-w-md'>
+            {getValue() as string}
+          </div>
+        ),
       },
     ],
     []
   );
 
   const [order, setOrder] = useState('market_cap_usd_desc');
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   interface RootState {
@@ -91,31 +100,17 @@ function StickyHeadTable() {
   // eslint-disable-next-line no-console
   console.log('NFT Dashboard Redux State:', { nftList, loading, error });
 
-  const handleChange = (event: {
-    target: {
-      value: string;
-      name?: string;
-    };
-  }): void => {
-    setOrder(event.target.value);
+  const handleChange = (value: string): void => {
+    setOrder(value);
   };
 
-  interface GridRowParams {
-    row: {
-      id: string;
-      [key: string]: any;
-    };
-  }
-
-  const handleRowClick = (params: GridRowParams): void => {
-    history.push(`/NFT-details/${params.row.id}`);
+  const handleRowClick = (row: NFTData): void => {
+    navigate(`/NFT-details/${row.id}`);
   };
 
   useEffect(() => {
     dispatch({ type: 'FETCH_NFT_LIST', payload: { order } });
   }, [order]);
-
-  const paginationModel = { page: 0, pageSize: 20 };
 
   return (
     <div className='mt-10 container mx-auto'>
@@ -124,22 +119,33 @@ function StickyHeadTable() {
           <div className='col-span-12 md:col-span-2'>
             <div className='min-w-full'>
               <div className='w-full'>
-                <FormControl fullWidth>
-                  <InputLabel id='demo-simple-select-label'>Order</InputLabel>
-                  <Select
-                    labelId='demo-simple-select-label'
-                    id='demo-simple-select'
-                    value={order}
-                    label='Order'
-                    onChange={handleChange}
-                  >
-                    {orderOptions.map(option => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant='outline'
+                      className='w-full justify-between'
+                    >
+                      {orderOptions.find(opt => opt.value === order)?.label ||
+                        'Select Order'}
+                      <ChevronDown className='ml-2 h-4 w-4 opacity-50' />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className='w-full min-w-[250px]'>
+                    <DropdownMenuRadioGroup
+                      value={order}
+                      onValueChange={handleChange}
+                    >
+                      {orderOptions.map(option => (
+                        <DropdownMenuRadioItem
+                          key={option.value}
+                          value={option.value}
+                        >
+                          {option.label}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
@@ -149,23 +155,14 @@ function StickyHeadTable() {
           <div className='col-span-12 md:col-span-2'>{/* 空的區域 */}</div>
         </div>
 
-        <Paper
-          className='mt-5 mb-20'
-          sx={{ height: '100%', width: '100%' }}
-          elevation={0}
-        >
-          <DataGrid
-            rows={nftList || []}
+        <div className='mt-5 mb-20'>
+          <DataTable
             columns={columns}
-            initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[20, 30, 40, 50]}
-            sx={{
-              cursor: 'pointer',
-              backgroundColor: '#FFFFFF',
-            }}
+            data={nftList || []}
             onRowClick={handleRowClick}
+            pageSize={20}
           />
-        </Paper>
+        </div>
       </div>
     </div>
   );

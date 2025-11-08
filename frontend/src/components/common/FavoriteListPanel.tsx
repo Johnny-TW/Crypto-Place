@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import { Typography, Skeleton, Alert, Box } from '@mui/material';
 import { FavoriteRounded } from '@mui/icons-material';
-import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { DataTable } from './DataTable';
 
 interface WatchlistItem {
   coinId: string;
   coinName: string;
   symbol?: string;
   image: string;
+  marketCapRank?: number;
   currentPrice?: number;
   priceChange24h?: number;
   high24h?: number | string;
@@ -40,13 +42,13 @@ function FavoriteListPanel({
   isLoading = false,
   error = null,
 }: FavoriteListPanelProps) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   // 格式化 watchlist 資料給 DataGrid 使用
   const formattedWatchlist = useMemo((): FormattedWatchlistItem[] => {
-    return watchlist.map((item, index) => ({
+    return watchlist.map(item => ({
       id: item.coinId,
-      market_cap_rank: index + 1,
+      market_cap_rank: item.marketCapRank || 0, // 使用真實的市場排名
       image: item.image,
       symbol: item.symbol?.toUpperCase(),
       name: item.coinName,
@@ -58,102 +60,104 @@ function FavoriteListPanel({
       last_updated: item.lastUpdated || new Date().toISOString(),
       coinId: item.coinId,
       coinName: item.coinName,
+      marketCapRank: item.marketCapRank,
     }));
   }, [watchlist]);
 
-  const handleRowClick = (params: GridRowParams): void => {
-    history.push(`/Crypto-details/${params.row.id}`);
+  const handleRowClick = (row: FormattedWatchlistItem): void => {
+    navigate(`/Crypto-details/${row.id}`);
   };
 
   const columns = useMemo(
-    (): GridColDef[] => [
+    (): ColumnDef<FormattedWatchlistItem>[] => [
       {
-        field: 'market_cap_rank',
-        headerName: 'ID',
-        minWidth: 80,
-        align: 'left',
+        accessorKey: 'market_cap_rank',
+        header: 'Rank',
+        cell: ({ getValue }) => {
+          const rank = getValue() as number;
+          return <div className='text-left'>{rank || 'N/A'}</div>;
+        },
       },
       {
-        field: 'image',
-        headerName: 'Coin',
-        minWidth: 100,
-        align: 'left',
-        renderCell: params => (
+        accessorKey: 'image',
+        header: 'Coin',
+        cell: ({ row }) => (
           <img
-            src={params.value as string}
-            alt={`${params.row.name} logo`}
-            style={{ width: '30px', height: '30px', margin: '10px' }}
+            src={row.original.image}
+            alt={`${row.original.name} logo`}
+            className='w-[30px] h-[30px] my-2'
           />
         ),
       },
       {
-        field: 'symbol',
-        headerName: 'Symbol',
-        minWidth: 100,
-        align: 'left',
+        accessorKey: 'symbol',
+        header: 'Symbol',
+        cell: ({ getValue }) => (
+          <div className='text-left'>{getValue() as string}</div>
+        ),
       },
-      { field: 'name', headerName: 'Name', minWidth: 150 },
       {
-        field: 'price_change_percentage_24h',
-        headerName: 'Price 24H',
-        minWidth: 150,
-        align: 'left',
-        renderCell: params => {
-          if (params.value === null || params.value === undefined) return 'N/A';
-          const value = parseFloat(params.value as string).toFixed(2);
-          const color =
-            parseFloat(value) >= 0 ? 'text-green-500' : 'text-red-500';
-          return <span className={color}>{value}%</span>;
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ getValue }) => (
+          <div className='text-left'>{getValue() as string}</div>
+        ),
+      },
+      {
+        accessorKey: 'price_change_percentage_24h',
+        header: 'Price 24H',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (value === null || value === undefined) return <span>N/A</span>;
+          const numValue = parseFloat(value as string).toFixed(2);
+          const colorClass =
+            parseFloat(numValue) >= 0 ? 'text-green-500' : 'text-red-500';
+          return <span className={colorClass}>{numValue}%</span>;
         },
       },
       {
-        field: 'current_price',
-        headerName: 'Price',
-        minWidth: 150,
-        align: 'left',
-        renderCell: params => {
-          if (!params.value) return 'N/A';
-          return `$${(params.value as number).toLocaleString()}`;
+        accessorKey: 'current_price',
+        header: 'Price',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value) return <span>N/A</span>;
+          return <span>${(value as number).toLocaleString()}</span>;
         },
       },
       {
-        field: 'high_24h',
-        headerName: 'Price High 24H',
-        minWidth: 150,
-        align: 'left',
-        renderCell: params => {
-          if (!params.value || params.value === 'N/A') return 'N/A';
-          return `$${(params.value as number).toLocaleString()}`;
+        accessorKey: 'high_24h',
+        header: 'Price High 24H',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value || value === 'N/A') return <span>N/A</span>;
+          return <span>${(value as number).toLocaleString()}</span>;
         },
       },
       {
-        field: 'low_24h',
-        headerName: 'Price Low 24H',
-        minWidth: 200,
-        align: 'left',
-        renderCell: params => {
-          if (!params.value || params.value === 'N/A') return 'N/A';
-          return `$${(params.value as number).toLocaleString()}`;
+        accessorKey: 'low_24h',
+        header: 'Price Low 24H',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value || value === 'N/A') return <span>N/A</span>;
+          return <span>${(value as number).toLocaleString()}</span>;
         },
       },
       {
-        field: 'last_updated',
-        headerName: 'Last Update Date',
-        minWidth: 250,
-        align: 'left',
-        renderCell: params => {
-          if (!params.value) return 'N/A';
-          return new Date(params.value as string).toLocaleString();
+        accessorKey: 'last_updated',
+        header: 'Last Update Date',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value) return <span>N/A</span>;
+          return <span>{new Date(value as string).toLocaleString()}</span>;
         },
       },
       {
-        field: 'market_cap',
-        headerName: 'Market Cap',
-        minWidth: 250,
-        align: 'left',
-        renderCell: params => {
-          if (!params.value || params.value === 'N/A') return 'N/A';
-          return `$${(params.value as number).toLocaleString()}`;
+        accessorKey: 'market_cap',
+        header: 'Market Cap',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value || value === 'N/A') return <span>N/A</span>;
+          return <span>${(value as number).toLocaleString()}</span>;
         },
       },
     ],
@@ -213,8 +217,6 @@ function FavoriteListPanel({
     );
   }
 
-  const paginationModel = { page: 0, pageSize: 10 };
-
   return (
     <Box sx={{ minHeight: 400 }}>
       {/* Header */}
@@ -232,42 +234,13 @@ function FavoriteListPanel({
         </Typography>
       </Box>
 
-      {/* DataGrid with same styling as Market Overview */}
-      <div className='bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden'>
-        <DataGrid
-          rows={formattedWatchlist}
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[5, 10, 20]}
-          sx={{
-            height: 500,
-            cursor: 'pointer',
-            backgroundColor: '#FFFFFF',
-            border: 'none',
-            '& .MuiDataGrid-cell:focus': {
-              outline: 'none',
-            },
-            '& .MuiDataGrid-row:hover': {
-              backgroundColor: 'rgba(59, 130, 246, 0.04)',
-            },
-            '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: '#FFFFFF',
-              fontWeight: 600,
-              borderBottom: '1px solid #e2e8f0',
-            },
-            '& .MuiDataGrid-cell': {
-              borderBottom: '1px solid #f1f5f9',
-            },
-            '& .MuiDataGrid-footerContainer': {
-              borderTop: '1px solid #e2e8f0',
-              backgroundColor: '#FFFFFF',
-            },
-          }}
-          onRowClick={handleRowClick}
-          disableColumnMenu
-          disableRowSelectionOnClick
-        />
-      </div>
+      {/* DataTable with shadcn/ui components */}
+      <DataTable
+        columns={columns}
+        data={formattedWatchlist}
+        onRowClick={handleRowClick}
+        pageSize={10}
+      />
     </Box>
   );
 }

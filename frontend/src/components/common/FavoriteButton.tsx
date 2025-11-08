@@ -20,7 +20,6 @@ interface FavoriteButtonProps {
   symbol: string;
   image: string;
   size?: 'small' | 'medium' | 'large';
-  // eslint-disable-next-line no-unused-vars
   onToggle?: (data: ToggleData) => void;
   disabled?: boolean;
   isFavorite?: boolean;

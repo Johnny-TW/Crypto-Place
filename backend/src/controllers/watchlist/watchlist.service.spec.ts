@@ -7,8 +7,8 @@ import { CreateWatchlistDto } from './dto/create-watchlist.dto';
 
 describe('WatchlistService', () => {
   let service: WatchlistService;
-  let prismaService: PrismaService;
-  let apiService: ApiService;
+  let _prismaService: PrismaService;
+  let _apiService: ApiService;
 
   const mockPrismaService = {
     watchlist: {
@@ -66,8 +66,8 @@ describe('WatchlistService', () => {
     }).compile();
 
     service = module.get<WatchlistService>(WatchlistService);
-    prismaService = module.get<PrismaService>(PrismaService);
-    apiService = module.get<ApiService>(ApiService);
+    _prismaService = module.get<PrismaService>(PrismaService);
+    _apiService = module.get<ApiService>(ApiService);
   });
 
   afterEach(() => {
@@ -128,8 +128,8 @@ describe('WatchlistService', () => {
       mockPrismaService.watchlist.findUnique.mockResolvedValue(null);
       mockPrismaService.watchlist.create.mockResolvedValue(mockWatchlistItem);
 
-      const stringUserId = '1' as any;
-      const result = await service.addToWatchlist(stringUserId, mockCreateWatchlistDto);
+      const stringUserId = '1';
+      const result = await service.addToWatchlist(stringUserId as unknown as number, mockCreateWatchlistDto);
 
       expect(result).toEqual(mockWatchlistItem);
       expect(mockPrismaService.watchlist.findUnique).toHaveBeenCalledWith({
@@ -243,13 +243,13 @@ describe('WatchlistService', () => {
 
       expect(mockPrismaService.watchlist.findMany).toHaveBeenCalledWith({
         where: { userId: userId },
-        orderBy: { createdAt: 'desc' },
       });
       expect(mockApiService.getCoinsMarkets).toHaveBeenCalledWith({
         ids: 'bitcoin',
         vs_currency: 'usd',
         per_page: 1,
         page: 1,
+        order: 'market_cap_desc',
       });
     });
 
@@ -261,7 +261,6 @@ describe('WatchlistService', () => {
       expect(result).toEqual([]);
       expect(mockPrismaService.watchlist.findMany).toHaveBeenCalledWith({
         where: { userId: userId },
-        orderBy: { createdAt: 'desc' },
       });
       expect(mockApiService.getCoinsMarkets).not.toHaveBeenCalled();
     });
@@ -320,6 +319,7 @@ describe('WatchlistService', () => {
         vs_currency: 'usd',
         per_page: 2,
         page: 1,
+        order: 'market_cap_desc',
       });
     });
   });

@@ -1,6 +1,6 @@
 import React, { useEffect, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthState {
   isAuthenticated?: boolean;
@@ -19,13 +19,13 @@ function LoginRedirect({ children }: LoginRedirectProps) {
   const { isAuthenticated = false, isLoading = false } = useSelector(
     (state: RootState) => state.auth || {}
   );
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      history.replace('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, isLoading, history]);
+  }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
     return <div>Loading...</div>;

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Home,
   BarChart3,
@@ -29,7 +29,7 @@ import TeamSwitcher from './team';
 export default function CryptoSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleNavigation = (url: string, isExternal?: boolean) => {
     if (isExternal || url.startsWith('http://') || url.startsWith('https://')) {
@@ -37,7 +37,7 @@ export default function CryptoSidebar({
       window.open(url, '_blank', 'noopener,noreferrer');
     } else {
       // 對於內部路由，使用 React Router
-      history.push(url);
+      navigate(url);
     }
   };
 

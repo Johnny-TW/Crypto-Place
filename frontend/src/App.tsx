@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider as ReduxProvider, useDispatch } from 'react-redux';
 import { DialogProvider } from '@components/layouts';
 import ProtectedRoute from '@components/common/ProtectedRoute';
 import LoginRedirect from '@components/common/LoginRedirect';
+import type { RouteConfig } from './types/routes';
 import store from './redux/store';
 import routes from './routes';
-import type { RouteConfig } from './types/routes';
 
 function AppContent(): JSX.Element {
   const dispatch = useDispatch();
@@ -18,36 +18,40 @@ function AppContent(): JSX.Element {
   return (
     <Router>
       <DialogProvider>
-        <Switch>
+        <Routes>
           {routes.map((route: RouteConfig, index: number) => {
             const Layout = route.layout;
             const Component = route.component;
 
             return (
-              <Route key={index} path={route.path} exact={route.exact}>
-                <Layout>
-                  {(() => {
-                    if (route.protected) {
-                      return (
-                        <ProtectedRoute>
-                          <Component />
-                        </ProtectedRoute>
-                      );
-                    }
-                    if (route.redirectIfAuthenticated) {
-                      return (
-                        <LoginRedirect>
-                          <Component />
-                        </LoginRedirect>
-                      );
-                    }
-                    return <Component />;
-                  })()}
-                </Layout>
-              </Route>
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  <Layout>
+                    {(() => {
+                      if (route.protected) {
+                        return (
+                          <ProtectedRoute>
+                            <Component />
+                          </ProtectedRoute>
+                        );
+                      }
+                      if (route.redirectIfAuthenticated) {
+                        return (
+                          <LoginRedirect>
+                            <Component />
+                          </LoginRedirect>
+                        );
+                      }
+                      return <Component />;
+                    })()}
+                  </Layout>
+                }
+              />
             );
           })}
-        </Switch>
+        </Routes>
       </DialogProvider>
     </Router>
   );

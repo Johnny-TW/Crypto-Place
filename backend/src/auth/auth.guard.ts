@@ -14,17 +14,16 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
-      // Try to retrieve the JWT from request's cookies
-      //--------------------------------------------------------------------------
+      // 從請求中取得 header
       const request: Request = context.switchToHttp().getRequest();
 
       // token 等於 header的Authorization 的值
       const token: string = request.headers.authorization.split(' ')[1];
 
+      // 如果沒有 token，直接拒絕
       if (!token) throw new UnauthorizedException();
 
-      // Verify the JWT and check if it has been revoked
-      //--------------------------------------------------------------------------
+      // 這是解碼 token 的部分
       const payload: UserPayload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });

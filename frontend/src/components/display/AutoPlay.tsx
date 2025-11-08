@@ -1,8 +1,12 @@
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import '../../styles/components/autoPlay.scss';
-import { Button } from '@mui/material';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import { Button } from '@/components/ui/button';
+import Autoplay from 'embla-carousel-autoplay';
 
 interface NewsItem {
   ID: string;
@@ -18,14 +22,6 @@ interface AutoPlayProps {
 }
 
 function AutoPlay({ news, isLoading }: AutoPlayProps) {
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-  };
-
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-screen'>
@@ -39,51 +35,65 @@ function AutoPlay({ news, isLoading }: AutoPlayProps) {
   }
 
   return (
-    <div className='slider-container mb-20 relative'>
-      <Slider {...settings}>
-        {news.map((item: NewsItem) => (
-          <div key={item.ID} className='p-2'>
-            <div className='bg-white border border-gray-300 rounded-lg p-4 h-200 flex flex-col justify-between'>
-              <img
-                src={item.IMAGE_URL}
-                alt={item.TITLE}
-                className='w-full h-64 object-cover rounded-t-lg'
-                onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-                  const target = e.target as HTMLImageElement;
-                  target.onerror = null;
-                  target.src = 'default-image-url';
-                }}
-              />
-              <div className='flex-grow'>
-                <h3 className='text-lg font-bold mt-2 mb-1 text-gray-700'>
-                  {item.TITLE}
-                </h3>
-                <p className='text-gray-600 text-xs mb-2'>
-                  {item.BODY.length > 200
-                    ? `${item.BODY.substring(0, 200)}...`
-                    : item.BODY}
-                </p>
-              </div>
-              <div className='text-left'>
-                <Button
-                  href={item.URL}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  variant='contained'
-                  size='small'
-                  style={{
-                    width: '120px',
-                    backgroundColor: '#4f46e5',
-                    color: 'white',
+    <div className='mb-20 px-4 md:px-12'>
+      <Carousel
+        opts={{
+          align: 'start',
+          loop: true,
+        }}
+        plugins={[
+          Autoplay({
+            delay: 4000,
+          }),
+        ]}
+        className='w-full'
+      >
+        <CarouselContent className='-ml-2 md:-ml-4'>
+          {news.map((item: NewsItem) => (
+            <CarouselItem
+              key={item.ID}
+              className='pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3'
+            >
+              <div className='bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow h-full flex flex-col'>
+                <img
+                  src={item.IMAGE_URL}
+                  alt={item.TITLE}
+                  className='w-full h-64 object-cover'
+                  onError={(
+                    e: React.SyntheticEvent<HTMLImageElement, Event>
+                  ) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = 'default-image-url';
                   }}
-                >
-                  Read More
-                </Button>
+                />
+                <div className='p-4 flex-grow flex flex-col'>
+                  <h3 className='text-lg font-bold mb-2 text-gray-700 line-clamp-2'>
+                    {item.TITLE}
+                  </h3>
+                  <p className='text-gray-600 text-sm mb-4 flex-grow line-clamp-3'>
+                    {item.BODY}
+                  </p>
+                  <Button
+                    asChild
+                    className='w-full bg-indigo-600 hover:bg-indigo-700'
+                  >
+                    <a
+                      href={item.URL}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      Read More
+                    </a>
+                  </Button>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
-      </Slider>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className='left-0 md:-left-12' />
+        <CarouselNext className='right-0 md:-right-12' />
+      </Carousel>
     </div>
   );
 }

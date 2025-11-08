@@ -63,7 +63,7 @@ export class AuthController {
   @Post('employee-login')
   @ApiOperation({
     summary: '員工登入',
-    description: '使用員工工號登入，自動從 HR 系統撈取員工資料',
+    description: '使用員工工號 + Email 登入，自動從 HR 系統撈取員工資料並驗證身份',
   })
   @ApiBody({ type: EmployeeLoginDto })
   @ApiResponse({
@@ -73,11 +73,11 @@ export class AuthController {
   })
   @ApiResponse({
     status: 404,
-    description: '找不到該員工',
+    description: '找不到該員工或員工資料不完整',
   })
   @ApiResponse({
     status: 401,
-    description: '員工帳戶未啟用',
+    description: '員工工號或 Email 不正確',
   })
   async employeeLogin(@Body() employeeLoginDto: EmployeeLoginDto) {
     return this.authService.employeeLogin(employeeLoginDto);

@@ -1,13 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  DataGrid,
-  GridCellParams,
-  GridRowParams,
-  GridColDef,
-} from '@mui/x-data-grid';
-import { Paper } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { ColumnDef } from '@tanstack/react-table';
+import { useNavigate } from 'react-router-dom';
+import { DataTable } from '@components/common/DataTable';
 
 interface ExchangeData {
   id: string;
@@ -34,86 +29,99 @@ interface RootState {
 }
 
 function Home() {
-  const paginationModel = { page: 0, pageSize: 20 };
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: marketListData, loading: marketListLoading } = useSelector(
     (state: RootState) => state.cryptoMarketList
   );
 
-  const handleRowClick = (params: GridRowParams<ExchangeData>) => {
-    history.push(`/exchanges-details/${params.row.id}`);
+  const handleRowClick = (row: ExchangeData) => {
+    navigate(`/exchanges-details/${row.id}`);
   };
 
   const columns = useMemo(
-    (): GridColDef<ExchangeData>[] => [
+    (): ColumnDef<ExchangeData>[] => [
       {
-        field: 'trust_score_rank',
-        headerName: '#',
-        minWidth: 100,
-        align: 'left',
+        accessorKey: 'trust_score_rank',
+        header: '#',
+        cell: ({ getValue }) => (
+          <div className='text-left'>{getValue() as number}</div>
+        ),
       },
       {
-        field: 'image',
-        headerName: 'Exchange',
-        minWidth: 100,
-        align: 'left',
-        renderCell: (params: GridCellParams<ExchangeData, string>) => (
+        accessorKey: 'image',
+        header: 'Exchange',
+        cell: ({ row }) => (
           <img
-            src={params.value}
-            alt={`${params.row.name} logo`}
-            style={{ width: '30px', height: '30px', margin: '10px' }}
+            src={row.original.image}
+            alt={`${row.original.name} logo`}
+            className='w-[30px] h-[30px] my-2'
           />
         ),
       },
       {
-        field: 'id',
-        headerName: 'ID',
-        minWidth: 150,
-        align: 'left',
+        accessorKey: 'id',
+        header: 'ID',
+        cell: ({ getValue }) => (
+          <div className='text-left'>{getValue() as string}</div>
+        ),
       },
       {
-        field: 'year_established',
-        headerName: 'Symbol',
-        minWidth: 100,
-        align: 'left',
+        accessorKey: 'year_established',
+        header: 'Year Established',
+        cell: ({ getValue }) => (
+          <div className='text-left'>{(getValue() as number) || 'N/A'}</div>
+        ),
       },
-      { field: 'country', headerName: 'Name', minWidth: 250 },
       {
-        field: 'url',
-        headerName: 'URL',
-        minWidth: 250,
-        align: 'left',
-        renderCell: (params: GridCellParams<ExchangeData, string>) => (
-          <a href={params.value} target='_blank' rel='noopener noreferrer'>
-            {params.value}
+        accessorKey: 'country',
+        header: 'Country',
+        cell: ({ getValue }) => (
+          <div className='text-left'>{getValue() as string}</div>
+        ),
+      },
+      {
+        accessorKey: 'url',
+        header: 'URL',
+        cell: ({ getValue }) => (
+          <a
+            href={getValue() as string}
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-blue-600 hover:underline'
+            onClick={e => e.stopPropagation()}
+          >
+            {getValue() as string}
           </a>
         ),
       },
       {
-        field: 'has_trading_incentive',
-        headerName: 'Trading incentive',
-        minWidth: 200,
-        align: 'center',
-        renderCell: (params: GridCellParams<ExchangeData, boolean>) => (
-          <span>
-            {params.value ? '✅' : <span style={{ color: 'red' }}>⬤</span>}
-          </span>
+        accessorKey: 'has_trading_incentive',
+        header: 'Trading Incentive',
+        cell: ({ getValue }) => (
+          <div className='flex justify-center'>
+            {getValue() ? (
+              <span>✅</span>
+            ) : (
+              <span className='text-red-500'>⬤</span>
+            )}
+          </div>
         ),
       },
       {
-        field: 'trust_score',
-        headerName: 'Trust score',
-        minWidth: 100,
-        align: 'left',
+        accessorKey: 'trust_score',
+        header: 'Trust Score',
+        cell: ({ getValue }) => (
+          <div className='text-left'>{getValue() as number}</div>
+        ),
       },
       {
-        field: 'trade_volume_24h_btc',
-        headerName: 'Trade volume 24h BTC',
-        minWidth: 200,
-        align: 'left',
-        renderCell: (params: GridCellParams<ExchangeData, number>) => (
-          <span>{parseFloat(String(params.value)).toFixed(2)}</span>
+        accessorKey: 'trade_volume_24h_btc',
+        header: 'Trade Volume 24h BTC',
+        cell: ({ getValue }) => (
+          <div className='text-left'>
+            {parseFloat(String(getValue())).toFixed(2)}
+          </div>
         ),
       },
     ],
@@ -122,9 +130,8 @@ function Home() {
 
   useEffect(() => {
     dispatch({ type: 'FETCH_CRYPTO_MARKET_LIST' });
-  }, []);
+  }, [dispatch]);
 
-  // eslint-disable-next-line no-console
   // console.log(marketListData);
 
   const isLoading = marketListLoading || !marketListData;
@@ -138,22 +145,28 @@ function Home() {
   }
 
   return (
-    <div className='dashboard-container z-0 mb-8 rounded-lg'>
-      <div className='dashboard-area'>
-        <Paper sx={{ height: '100%', width: '100%' }} elevation={0}>
-          <DataGrid
-            rows={marketListData}
-            columns={columns}
-            loading={isLoading}
-            initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[10, 20, 30, 40, 50, 100]}
-            sx={{
-              cursor: 'pointer',
-              backgroundColor: '#FFFFFF',
-            }}
-            onRowClick={handleRowClick}
-          />
-        </Paper>
+    <div className='min-h-screen py-8'>
+      <div className='max-w-[95%] mx-auto'>
+        {/* Header Section */}
+        <div className='text-center mb-10'>
+          <h1 className='text-4xl font-bold text-gray-900 mt-5 mb-5'>
+            Cryptocurrency Exchanges
+          </h1>
+          <p className='text-lg text-gray-600'>
+            Explore top cryptocurrency exchanges and their trading volumes
+          </p>
+        </div>
+
+        {/* DataTable */}
+        <DataTable
+          columns={columns}
+          data={marketListData}
+          onRowClick={handleRowClick}
+          pageSize={20}
+        />
+
+        {/* Bottom Spacing */}
+        <div className='mb-16' />
       </div>
     </div>
   );

@@ -1,5 +1,3 @@
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import LogoCloudsCryptoApi from '@components/common/LogoCloudsCryptoApi';
 
 function CryptoApi(): JSX.Element {

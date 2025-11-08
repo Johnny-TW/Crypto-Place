@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { CryptoSidebar } from '@/components/sidebar';
 import {
   SidebarProvider,
@@ -35,7 +35,7 @@ interface RootState {
 }
 
 function Default({ children }: DefaultProps) {
-  const history = useHistory();
+  const location = useLocation();
   const { isAuthenticated } = useSelector(
     (state: RootState) => state.auth || {}
   );
@@ -100,7 +100,7 @@ function Default({ children }: DefaultProps) {
                 <BreadcrumbSeparator className='hidden md:block' />
                 <BreadcrumbItem>
                   <BreadcrumbPage>
-                    {getCurrentPageTitle(history.location.pathname)}
+                    {getCurrentPageTitle(location.pathname)}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>

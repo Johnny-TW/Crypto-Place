@@ -1,7 +1,9 @@
-import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger, Inject } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { firstValueFrom, timeout, catchError } from 'rxjs';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { firstValueFrom, timeout } from 'rxjs';
 
 @Injectable()
 export class ApiService {
@@ -13,6 +15,7 @@ export class ApiService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     this.coingeckoApiUrl = this.configService.get<string>('coingeckoApiUrl');
     this.cryptocompareApiUrl = this.configService.get<string>(
@@ -40,15 +43,24 @@ export class ApiService {
   }
 
   async getCoinsMarkets(query: any) {
-    try {
-      const params = {
-        vs_currency: query.vs_currency || 'usd',
-        order: query.order || 'market_cap_desc',
-        per_page: query.per_page || 100,
-        page: query.page || 1,
-        ...query,
-      };
+    const params = {
+      vs_currency: query.vs_currency || 'usd',
+      order: query.order || 'market_cap_desc',
+      per_page: query.per_page || 100,
+      page: query.page || 1,
+      ...query,
+    };
+    const cacheKey = `coins_markets:${JSON.stringify(params)}`;
 
+    try {
+      // 檢查快取
+      const cachedData = await this.cacheManager.get(cacheKey);
+      if (cachedData) {
+        this.logger.log(`✓ Cache hit for coins markets (page ${params.page})`);
+        return cachedData;
+      }
+
+      this.logger.log(`→ Fetching coins markets from CoinGecko API (page ${params.page})`);
       const response = await firstValueFrom(
         this.httpService.get(`${this.coingeckoApiUrl}/coins/markets`, {
           params,
@@ -58,7 +70,9 @@ export class ApiService {
         ),
       );
 
-      this.logger.log(`Successfully fetched ${response.data.length} coins from markets`);
+      // 儲存到快取 (45秒)
+      await this.cacheManager.set(cacheKey, response.data, 45000);
+      this.logger.log(`✓ Successfully fetched and cached ${response.data.length} coins from markets`);
       return response.data;
     } catch (error) {
       this.logger.error('Error fetching coins markets:', error.message);
@@ -94,12 +108,22 @@ export class ApiService {
   }
 
   async getNftsList(query: any = {}) {
+    const cacheKey = `nfts_list_${JSON.stringify(query)}`;
+
     try {
+      // 檢查快取
+      const cachedData = await this.cacheManager.get(cacheKey);
+      if (cachedData) {
+        this.logger.log('🎯 Returning cached NFT list data');
+        return cachedData;
+      }
+
       const params = {
         order: query.order || 'market_cap_usd_desc',
         ...query,
       };
 
+      this.logger.log('📡 Fetching NFT list from CoinGecko API...');
       const response = await firstValueFrom(
         this.httpService.get(`${this.coingeckoApiUrl}/nfts/list`, {
           params,
@@ -107,9 +131,26 @@ export class ApiService {
         }),
       );
 
+      // 快取 10 分鐘（NFT 資料更新較慢，減少 API 請求）
+      await this.cacheManager.set(cacheKey, response.data, 600000);
+      this.logger.log('✅ NFT list data cached for 10 minutes');
+
       return response.data;
     } catch (error) {
       this.logger.error('Error fetching NFT list:', error.message);
+
+      // 如果是 429 錯誤，提供更友善的錯誤訊息
+      if (error.response?.status === 429) {
+        throw new HttpException(
+          {
+            error: 'API rate limit exceeded',
+            message: 'CoinGecko API 請求過於頻繁，請稍後再試',
+            retryAfter: error.response?.headers?.['retry-after'] || 60,
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
+      }
+
       throw new HttpException(
         { error: error.message },
         error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR,
@@ -319,14 +360,26 @@ export class ApiService {
 
   // 第一優先級 API 方法
   async getTrendingCoins() {
+    const cacheKey = 'trending_coins';
+
     try {
+      // 檢查快取
+      const cachedData = await this.cacheManager.get(cacheKey);
+      if (cachedData) {
+        this.logger.log('✓ Cache hit for trending coins');
+        return cachedData;
+      }
+
+      this.logger.log('→ Fetching trending coins from CoinGecko API');
       const response = await firstValueFrom(
         this.httpService.get(`${this.coingeckoApiUrl}/search/trending`, {
           headers: this.getCoingeckoHeaders(),
         }),
       );
 
-      this.logger.log('Successfully fetched trending coins');
+      // 儲存到快取 (120秒 - 熱門幣種變化較慢)
+      await this.cacheManager.set(cacheKey, response.data, 120000);
+      this.logger.log('✓ Successfully fetched and cached trending coins');
       return response.data;
     } catch (error) {
       this.logger.error('Error fetching trending coins:', error.message);
@@ -338,7 +391,17 @@ export class ApiService {
   }
 
   async getSimplePrice(ids: string[], vs_currencies: string[] = ['usd']) {
+    const cacheKey = `simple_price:${ids.sort().join(',')}:${vs_currencies.join(',')}`;
+
     try {
+      // 檢查快取
+      const cachedData = await this.cacheManager.get(cacheKey);
+      if (cachedData) {
+        this.logger.log(`✓ Cache hit for simple price: ${ids.length} coins`);
+        return cachedData;
+      }
+
+      this.logger.log(`→ Fetching simple price from CoinGecko API: ${ids.length} coins`);
       const response = await firstValueFrom(
         this.httpService.get(`${this.coingeckoApiUrl}/simple/price`, {
           params: {
@@ -354,7 +417,9 @@ export class ApiService {
         ),
       );
 
-      this.logger.log(`Successfully fetched simple prices for ${ids.length} coins`);
+      // 儲存到快取 (30秒)
+      await this.cacheManager.set(cacheKey, response.data, 30000);
+      this.logger.log(`✓ Successfully fetched and cached simple prices for ${ids.length} coins`);
       return response.data;
     } catch (error) {
       this.logger.error('Error fetching simple price:', error.message);
@@ -372,7 +437,17 @@ export class ApiService {
   }
 
   async getGlobalMarketData() {
+    const cacheKey = 'global_market_data';
+
     try {
+      // 檢查快取
+      const cachedData = await this.cacheManager.get(cacheKey);
+      if (cachedData) {
+        this.logger.log('✓ Cache hit for global market data');
+        return cachedData;
+      }
+
+      this.logger.log('→ Fetching global market data from CoinGecko API');
       const response = await firstValueFrom(
         this.httpService.get(`${this.coingeckoApiUrl}/global`, {
           headers: this.getCoingeckoHeaders(),
@@ -381,7 +456,9 @@ export class ApiService {
         ),
       );
 
-      this.logger.log('Successfully fetched global market data');
+      // 儲存到快取 (60秒)
+      await this.cacheManager.set(cacheKey, response.data, 60000);
+      this.logger.log('✓ Successfully fetched and cached global market data');
       return response.data;
     } catch (error) {
       this.logger.error('Error fetching global market data:', error.message);
@@ -399,9 +476,19 @@ export class ApiService {
   }
 
   private getCoingeckoHeaders() {
-    return {
+    const headers: any = {
       accept: 'application/json',
-      'x-cg-demo-api-key': this.apiKey,
     };
+
+    // 使用 API Key 提高速率限制
+    const apiKey = this.configService.get<string>('COINGECKO_API_KEY') || this.apiKey;
+    if (apiKey && apiKey !== 'your_coingecko_api_key') {
+      headers['x-cg-demo-api-key'] = apiKey;
+      this.logger.debug('✓ Using CoinGecko API Key for authenticated requests');
+    } else {
+      this.logger.warn('⚠️ No valid CoinGecko API Key found, using public endpoint (stricter rate limits)');
+    }
+
+    return headers;
   }
 }

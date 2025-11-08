@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Card,
   CardContent,
@@ -24,7 +24,7 @@ interface RootState {
 
 function Register() {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { isLoading, error, isAuthenticated } = useSelector(
     (state: RootState) => state.auth || {}
   );
@@ -39,9 +39,9 @@ function Register() {
   // 如果已經登入，重導向到 dashboard
   useEffect(() => {
     if (isAuthenticated) {
-      history.replace('/dashboard');
+      navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, history]);
+  }, [isAuthenticated, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -157,7 +157,7 @@ function Register() {
               已經有帳戶了？{' '}
               <button
                 type='button'
-                onClick={() => history.push('/login')}
+                onClick={() => navigate('/login')}
                 className='text-blue-600 hover:text-blue-800 font-medium'
               >
                 立即登入

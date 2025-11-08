@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
+// PrismaService 負責管理 Prisma 客戶端的生命週期
 @Injectable()
 export class PrismaService
   extends PrismaClient

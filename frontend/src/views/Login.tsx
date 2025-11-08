@@ -34,6 +34,7 @@ function Login(): JSX.Element {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
   const [employeeFormData, setEmployeeFormData] = useState({
     employeeId: '',
+    email: '',
   });
 
   const handleUserLogin = (e: React.FormEvent): void => {
@@ -143,6 +144,7 @@ function Login(): JSX.Element {
                       value={employeeFormData.employeeId}
                       onChange={e =>
                         setEmployeeFormData({
+                          ...employeeFormData,
                           employeeId: e.target.value.replace(/\D/g, ''),
                         })
                       }
@@ -155,6 +157,25 @@ function Login(): JSX.Element {
                       請輸入8位純數字工號(如:11003736)
                     </p>
                   </div>
+                  <div className='space-y-2'>
+                    <Label htmlFor='employee-email'>公司 Email</Label>
+                    <Input
+                      id='employee-email'
+                      type='email'
+                      placeholder='請輸入公司 Email (例如: johnny_yeh@wistron.com)'
+                      value={employeeFormData.email}
+                      onChange={e =>
+                        setEmployeeFormData({
+                          ...employeeFormData,
+                          email: e.target.value,
+                        })
+                      }
+                      required
+                    />
+                    <p className='text-xs text-muted-foreground'>
+                      需與 HR 系統中的 Email 一致
+                    </p>
+                  </div>
                   {error ? (
                     <div className='text-sm text-destructive bg-destructive/10 p-3 rounded-md'>
                       {error}
@@ -164,14 +185,16 @@ function Login(): JSX.Element {
                     type='submit'
                     className='w-full'
                     disabled={
-                      isLoading || employeeFormData.employeeId.length !== 8
+                      isLoading ||
+                      employeeFormData.employeeId.length !== 8 ||
+                      !employeeFormData.email
                     }
                   >
                     {isLoading ? '登入中...' : '員工登入'}
                   </Button>
                   <div className='text-center'>
                     <p className='text-xs text-muted-foreground'>
-                      輸入工號即可直接登入，無需密碼
+                      使用工號 + Email 驗證身份 🔒
                     </p>
                   </div>
                 </form>

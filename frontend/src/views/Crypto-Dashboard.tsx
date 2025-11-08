@@ -1,26 +1,31 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-  FormControl,
-  MenuItem,
-  Select,
-  Typography,
-  SelectChangeEvent,
-} from '@mui/material';
+import { Typography } from '@mui/material';
 import {
   FavoriteRounded,
   ShowChartRounded,
   TrendingUpRounded,
 } from '@mui/icons-material';
-import { useHistory } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
+import { ColumnDef } from '@tanstack/react-table';
 import FavoriteButton from '@components/common/FavoriteButton';
 import FavoriteListPanel from '@components/common/FavoriteListPanel';
-import CustomTabs from '@components/common/CustomTabs';
+import { DataTable } from '@components/common/DataTable';
 import TrendingCoins from '@components/crypto/TrendingCoins';
 import GlobalMarketData from '@components/crypto/GlobalMarketData';
 import SimplePrice from '@components/crypto/SimplePrice';
 import { useWatchlist } from '@hooks/useWatchlist';
+import { Button } from '@components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs';
+import { Badge } from '@components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@components/ui/dropdown-menu';
 import '../styles/components/tabs.scss';
 import '../styles/views/dashboard.scss';
 
@@ -95,6 +100,48 @@ interface FavoriteToggleData {
   image?: string;
 }
 
+// CurrencySelect 組件 - 移到外部避免重新創建
+interface CurrencySelectProps {
+  currency: Currency;
+  onChange: (value: Currency) => void;
+}
+
+const currencyOptions = [
+  { value: 'usd', label: 'USD' },
+  { value: 'eur', label: 'EUR' },
+  { value: 'jpy', label: 'JPY' },
+  { value: 'twd', label: 'TWD' },
+] as const;
+
+function CurrencySelect({
+  currency,
+  onChange,
+}: CurrencySelectProps): JSX.Element {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant='outline' className='w-full justify-between'>
+          {currencyOptions.find(opt => opt.value === currency)?.label ||
+            'Select Currency'}
+          <ChevronDown className='ml-2 h-4 w-4 opacity-50' />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className='w-full'>
+        <DropdownMenuRadioGroup
+          value={currency}
+          onValueChange={value => onChange(value as Currency)}
+        >
+          {currencyOptions.map(option => (
+            <DropdownMenuRadioItem key={option.value} value={option.value}>
+              {option.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 function StickyHeadTable(): JSX.Element {
   const dispatch = useDispatch();
   const coinList = useSelector((state: RootState) => state.coinList.coinList);
@@ -111,8 +158,8 @@ function StickyHeadTable(): JSX.Element {
   );
 
   const [currency, setCurrency] = useState<Currency>('usd');
-  const [currentTab, setCurrentTab] = useState<number>(0);
-  const history = useHistory();
+  const [currentTab, setCurrentTab] = useState<string>('analytics');
+  const navigate = useNavigate();
 
   // 使用 watchlist hook 管理所有 watchlist 相關邏輯
   const {
@@ -162,26 +209,21 @@ function StickyHeadTable(): JSX.Element {
     [addToWatchlist, removeFromWatchlist]
   );
 
-  const columns: GridColDef[] = useMemo(
+  const columns: ColumnDef<CoinData>[] = useMemo(
     () => [
       {
-        field: 'favorite',
-        headerName: 'Favorite',
-        minWidth: 100,
-        align: 'center',
-        headerAlign: 'center',
-        sortable: false,
-        renderCell: params => (
-          <div
-            style={{ display: 'flex', justifyContent: 'center', width: '100%' }}
-          >
+        accessorKey: 'favorite',
+        header: 'Favorite',
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className='flex justify-center'>
             <FavoriteButton
-              coinId={params.row.id}
-              coinName={params.row.name}
-              symbol={params.row.symbol}
-              image={params.row.image}
+              coinId={row.original.id}
+              coinName={row.original.name}
+              symbol={row.original.symbol}
+              image={row.original.image}
               size='small'
-              isFavorite={watchlistStatus[params.row.id] || false}
+              isFavorite={watchlistStatus[row.original.id] || false}
               isLoading={watchlistLoading}
               onToggle={handleFavoriteToggle}
             />
@@ -189,90 +231,109 @@ function StickyHeadTable(): JSX.Element {
         ),
       },
       {
-        field: 'market_cap_rank',
-        headerName: 'ID',
-        minWidth: 80,
-        align: 'left',
+        accessorKey: 'market_cap_rank',
+        header: 'Rank',
+        cell: ({ getValue }) => <div>{getValue() as number}</div>,
       },
       {
-        field: 'image',
-        headerName: 'Coin',
-        minWidth: 100,
-        align: 'left',
-        renderCell: params => (
+        accessorKey: 'image',
+        header: 'Image',
+        enableSorting: false,
+        cell: ({ getValue, row }) => (
           <img
-            src={params.value}
-            alt={`${params.row.name} logo`}
-            style={{ width: '30px', height: '30px', margin: '10px' }}
+            src={getValue() as string}
+            alt={`${row.original.name} logo`}
+            className='w-8 h-8 my-2'
           />
         ),
       },
       {
-        field: 'symbol',
-        headerName: 'Symbol',
-        minWidth: 100,
-        align: 'left',
+        accessorKey: 'symbol',
+        header: 'Symbol',
+        cell: ({ getValue }) => (
+          <div className='uppercase'>{getValue() as string}</div>
+        ),
       },
-      { field: 'name', headerName: 'Name', minWidth: 200 },
       {
-        field: 'price_change_percentage_24h',
-        headerName: 'Price 24H',
-        minWidth: 150,
-        align: 'left',
-        renderCell: params => {
-          const value = parseFloat(params.value).toFixed(2);
-          const color =
-            parseFloat(value) >= 0 ? 'text-green-500' : 'text-red-500';
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ getValue }) => <div>{getValue() as string}</div>,
+      },
+      {
+        accessorKey: 'price_change_percentage_24h',
+        header: '24h Price Change',
+        cell: ({ getValue }) => {
+          const rawValue = getValue();
+          if (rawValue === null || rawValue === undefined) {
+            return <span>N/A</span>;
+          }
+          const value = parseFloat((rawValue as number).toFixed(2));
+          const color = value >= 0 ? 'text-green-500' : 'text-red-500';
           return <span className={color}>{value}%</span>;
         },
       },
       {
-        field: 'current_price',
-        headerName: 'Price',
-        minWidth: 150,
-        align: 'left',
+        accessorKey: 'current_price',
+        header: 'Current Price',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value) return <div>N/A</div>;
+          return <div>${(value as number).toLocaleString()}</div>;
+        },
       },
       {
-        field: 'high_24h',
-        headerName: 'Price High 24H',
-        minWidth: 150,
-        align: 'left',
+        accessorKey: 'high_24h',
+        header: '24h High',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value) return <div>N/A</div>;
+          return <div>${(value as number).toLocaleString()}</div>;
+        },
       },
       {
-        field: 'low_24h',
-        headerName: 'Price Low 24H',
-        minWidth: 200,
-        align: 'left',
+        accessorKey: 'low_24h',
+        header: '24h Low',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value) return <div>N/A</div>;
+          return <div>${(value as number).toLocaleString()}</div>;
+        },
       },
       {
-        field: 'last_updated',
-        headerName: 'Last Update Date',
-        minWidth: 250,
-        align: 'left',
+        accessorKey: 'last_updated',
+        header: 'Last Updated',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value) return <div>N/A</div>;
+          return <div>{value as string}</div>;
+        },
       },
       {
-        field: 'market_cap',
-        headerName: 'Market Cap',
-        minWidth: 250,
-        align: 'left',
+        accessorKey: 'market_cap',
+        header: 'Market Cap',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (!value) return <div>N/A</div>;
+          return <div>${(value as number).toLocaleString()}</div>;
+        },
       },
     ],
     [watchlistStatus, handleFavoriteToggle, watchlistLoading]
   );
 
-  const handleChange = (event: SelectChangeEvent<Currency>): void => {
-    setCurrency(event.target.value as Currency);
+  const handleChange = (value: Currency): void => {
+    setCurrency(value);
   };
 
-  const handleTabChange = (newValue: number): void => {
+  const handleTabChange = (newValue: string): void => {
     setCurrentTab(newValue);
 
-    // 當切換到 Market Overview (tab 1) 時，重新撈取 watchlist 狀態
-    if (newValue === 1) {
+    // 當切換到 Market Overview 時，重新撈取 watchlist 狀態
+    if (newValue === 'overview') {
       loadBatchWatchlistStatus();
     }
-    // 當切換到 My Favorites (tab 2) 時，重新撈取 watchlist 數據和計數
-    else if (newValue === 2) {
+    // 當切換到 My Favorites 時，重新撈取 watchlist 數據和計數
+    else if (newValue === 'favorites') {
       fetchWatchlist();
       getCount();
     }
@@ -284,29 +345,11 @@ function StickyHeadTable(): JSX.Element {
     getCount();
   }, [fetchWatchlist, getCount]);
 
-  function CurrencySelect(): JSX.Element {
-    return (
-      <FormControl className='w-full'>
-        <Select
-          labelId='demo-simple-select-label'
-          id='demo-simple-select'
-          value={currency}
-          onChange={handleChange}
-        >
-          <MenuItem value='usd'>USD</MenuItem>
-          <MenuItem value='eur'>EUR</MenuItem>
-          <MenuItem value='jpy'>JPY</MenuItem>
-          <MenuItem value='twd'>TWD</MenuItem>
-        </Select>
-      </FormControl>
-    );
-  }
-
   const handleRowClick = useCallback(
-    (params: GridRowParams) => {
-      history.push(`/Crypto-details/${params.row.id}`);
+    (row: CoinData) => {
+      navigate(`/Crypto-details/${row.id}`);
     },
-    [history]
+    [navigate]
   );
 
   // 載入 Global Market Data
@@ -332,97 +375,22 @@ function StickyHeadTable(): JSX.Element {
     loadBatchWatchlistStatus();
   }, [loadBatchWatchlistStatus]);
 
-  const paginationModel = { page: 0, pageSize: 20 };
-
   const tabsData = [
     {
+      value: 'analytics',
       label: 'Market Analytics',
       icon: <TrendingUpRounded className='w-5 h-5' />,
-      content: (
-        <div className='space-y-8'>
-          {/* 全球市場數據 */}
-          <GlobalMarketData
-            data={globalMarketData}
-            loading={globalMarketLoading}
-            error={globalMarketError}
-          />
-
-          {/* 趨勢貨幣和簡單價格 */}
-          <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
-            <TrendingCoins />
-            <SimplePrice />
-          </div>
-        </div>
-      ),
     },
     {
+      value: 'overview',
       label: 'Market Overview',
       icon: <ShowChartRounded className='w-5 h-5' />,
-      content: (
-        <div className='space-y-6'>
-          {/* Currency Selector */}
-          <div className='flex items-center gap-4'>
-            <Typography
-              variant='subtitle2'
-              className='text-gray-700 font-medium'
-            >
-              Currency :
-            </Typography>
-            <div className='min-w-[120px]'>
-              <CurrencySelect />
-            </div>
-          </div>
-
-          {/* Market Data Grid */}
-          <div className='bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden'>
-            <DataGrid
-              rows={coinList}
-              columns={columns}
-              initialState={{ pagination: { paginationModel } }}
-              pageSizeOptions={[10, 20, 30, 40, 50]}
-              sx={{
-                height: 600,
-                cursor: 'pointer',
-                backgroundColor: '#FFFFFF',
-                border: 'none',
-                '& .MuiDataGrid-cell:focus': {
-                  outline: 'none',
-                },
-                '& .MuiDataGrid-row:hover': {
-                  backgroundColor: 'rgba(59, 130, 246, 0.04)',
-                },
-                '& .MuiDataGrid-columnHeaders': {
-                  backgroundColor: '#f8fafc',
-                  fontWeight: 600,
-                  borderBottom: '1px solid #e2e8f0',
-                },
-                '& .MuiDataGrid-cell': {
-                  borderBottom: '1px solid #f1f5f9',
-                },
-                '& .MuiDataGrid-footerContainer': {
-                  borderTop: '1px solid #e2e8f0',
-                  backgroundColor: '#f8fafc',
-                },
-              }}
-              onRowClick={handleRowClick}
-              disableColumnMenu
-              disableRowSelectionOnClick
-            />
-          </div>
-        </div>
-      ),
     },
     {
+      value: 'favorites',
       label: 'My Favorites',
       icon: <FavoriteRounded className='w-5 h-5' />,
       badge: watchlistCount,
-      content: (
-        <FavoriteListPanel
-          watchlist={watchlistData}
-          isLoading={watchlistLoading}
-          error={watchlistError}
-        />
-      ),
     },
   ];
 
@@ -431,7 +399,7 @@ function StickyHeadTable(): JSX.Element {
       <div className='max-w-[95%] mx-auto'>
         {/* Header Section */}
         <div className='text-center mb-10'>
-          <h1 className='text-4xl font-bold text-gray-900 mt-20 mb-5'>
+          <h1 className='text-4xl font-bold text-gray-900 mt-10 mb-5'>
             Cryptocurrency Market
           </h1>
           <p className='text-lg text-gray-600'>
@@ -439,13 +407,88 @@ function StickyHeadTable(): JSX.Element {
           </p>
         </div>
 
-        {/* Custom Tailwind Tabs */}
-        <CustomTabs
-          tabs={tabsData}
-          activeTab={currentTab}
-          onChange={handleTabChange}
-          className='max-w-full'
-        />
+        {/* Shadcn Tabs */}
+        <Tabs
+          value={currentTab}
+          onValueChange={handleTabChange}
+          className='w-full'
+        >
+          <TabsList className='mb-8'>
+            {tabsData.map(tab => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className='flex items-center gap-2'
+              >
+                <div className='relative flex items-center'>
+                  {tab.icon}
+                  {tab.badge && tab.badge > 0 && (
+                    <Badge
+                      variant='destructive'
+                      className='absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs'
+                    >
+                      {tab.badge > 99 ? '99+' : tab.badge}
+                    </Badge>
+                  )}
+                </div>
+                <span className='font-medium'>{tab.label}</span>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {/* Market Analytics Tab */}
+          <TabsContent value='analytics' className='mt-6'>
+            <div className='space-y-8'>
+              {/* 全球市場數據 */}
+              <GlobalMarketData
+                data={globalMarketData}
+                loading={globalMarketLoading}
+                error={globalMarketError}
+              />
+
+              {/* 趨勢貨幣和簡單價格 */}
+              <div className='grid grid-cols-1 xl:grid-cols-2 gap-8'>
+                <TrendingCoins />
+                <SimplePrice />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Market Overview Tab */}
+          <TabsContent value='overview' className='mt-6'>
+            <div className='space-y-6'>
+              {/* Currency Selector */}
+              <div className='flex items-center gap-4'>
+                <Typography
+                  variant='subtitle2'
+                  className='text-gray-700 font-medium'
+                >
+                  Currency :
+                </Typography>
+                <div className='min-w-[120px]'>
+                  <CurrencySelect currency={currency} onChange={handleChange} />
+                </div>
+              </div>
+
+              {/* Market Data Grid */}
+              <DataTable
+                columns={columns}
+                data={coinList}
+                onRowClick={handleRowClick}
+                pageSize={20}
+              />
+            </div>
+          </TabsContent>
+
+          {/* My Favorites Tab */}
+          <TabsContent value='favorites' className='mt-6'>
+            <FavoriteListPanel
+              watchlist={watchlistData}
+              isLoading={watchlistLoading}
+              error={watchlistError}
+            />
+          </TabsContent>
+        </Tabs>
 
         {/* Bottom Spacing */}
         <div className='mb-16' />

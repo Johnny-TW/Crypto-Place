@@ -1,4 +1,6 @@
 import React from 'react';
+import { AlertTriangle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface MarketCapData {
   native_currency?: number;
@@ -57,18 +59,18 @@ interface InfoRowProps {
   value: React.ReactNode;
 }
 
-const NFTInfoSection: React.FC<NFTInfoSectionProps> = ({ nftData }) => {
-  const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
-    return (
-      <div className='px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
-        <dt className='text-sm/6 font-semibold text-gray-900'>{label}</dt>
-        <dd className='mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0'>
-          {value}
-        </dd>
-      </div>
-    );
-  };
+const InfoRow: React.FC<InfoRowProps> = ({ label, value }) => {
+  return (
+    <div className='px-2 py-2 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0'>
+      <dt className='text-sm/6 font-semibold text-gray-900'>{label}</dt>
+      <dd className='mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0'>
+        {value}
+      </dd>
+    </div>
+  );
+};
 
+const NFTInfoSection: React.FC<NFTInfoSectionProps> = ({ nftData }) => {
   // Helper function to format date
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A';
@@ -145,9 +147,13 @@ const NFTInfoSection: React.FC<NFTInfoSectionProps> = ({ nftData }) => {
                   {volumeChange !== undefined &&
                   volumeChange !== null &&
                   Math.abs(volumeChange) > 50 ? (
-                    <span className='text-xs text-red-600 font-semibold'>
-                      ⚠️ {formatPercentage(volumeChange)}
-                    </span>
+                    <Badge
+                      variant='destructive'
+                      className='bg-red-100 text-red-800 hover:bg-red-200 dark:bg-red-900 dark:text-red-100'
+                    >
+                      <AlertTriangle className='w-3 h-3 mr-1' />
+                      {formatPercentage(volumeChange)}
+                    </Badge>
                   ) : (
                     formatPercentage(volumeChange)
                   )}

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from './prisma.service';
 
-// Mock the entire PrismaService
+// 測試檔案用於測試 PrismaService 的基本功能
 const mockPrismaService = {
   $connect: jest.fn().mockResolvedValue(undefined),
   $disconnect: jest.fn().mockResolvedValue(undefined),
@@ -9,6 +9,7 @@ const mockPrismaService = {
   onModuleDestroy: jest.fn().mockResolvedValue(undefined),
 };
 
+// 單元測試 PrismaService
 describe('PrismaService', () => {
   let service: PrismaService;
 

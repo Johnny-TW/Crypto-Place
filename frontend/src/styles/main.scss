@@ -75,5 +75,11 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family:
+      'Roboto',
+      'Quicksand',
+      system-ui,
+      -apple-system,
+      sans-serif;
   }
 }

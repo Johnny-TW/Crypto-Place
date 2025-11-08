@@ -1,7 +1,4 @@
-/* eslint-disable react/jsx-max-depth */
 import { useEffect } from 'react';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import CardLists from '@components/common/CardLists';
 import DropdownSelect from '@components/common/DropdownSelect';
 import { useDispatch, useSelector } from 'react-redux';
@@ -67,7 +64,7 @@ function CryptoNews() {
         (article.URL || article.url) &&
         (article.TITLE || article.title)
     )
-    .map(article => {
+    .map((article, index) => {
       // Get image URL with fallback
       let imageUrl =
         article.IMAGE_URL ||
@@ -85,14 +82,14 @@ function CryptoNews() {
         }
       }
 
+      // Generate stable ID based on article content or index
+      const title = article.TITLE || article.title || '';
+      const fallbackId = `news-${index}-${title.slice(0, 20).replace(/\s+/g, '-')}`;
+
       return {
         ID:
-          article.URL ||
-          article.url ||
-          article.ID ||
-          article.id ||
-          Math.random().toString(),
-        TITLE: article.TITLE || article.title || '',
+          article.URL || article.url || article.ID || article.id || fallbackId,
+        TITLE: title,
         IMAGE_URL: imageUrl,
         GUID: article.URL || article.url || article.GUID || article.guid || '',
         SOURCE_DATA: {

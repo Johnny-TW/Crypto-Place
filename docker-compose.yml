@@ -36,6 +36,7 @@ services:
     env_file:
       - .env.dev
     volumes:
+      - ./frontend:/app
       - frontend_node_modules:/app/node_modules
     networks:
       - crypto-network
@@ -44,6 +45,12 @@ services:
     cpus: 1.0
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5173/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   # Backend Service
   backend:
@@ -58,6 +65,7 @@ services:
     env_file:
       - .env.dev
     volumes:
+      - ./backend:/app
       - backend_node_modules:/app/node_modules
     depends_on:
       postgres:
@@ -67,6 +75,39 @@ services:
     restart: unless-stopped
     mem_limit: 2g
     cpus: 2.0
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Chainlit AI Service (Optional - 需要時啟用)
+  chainlit:
+    build:
+      context: ./chainlit-service
+      dockerfile: Dockerfile
+    ports:
+      - "${CHAINLIT_PORT:-8000}:8000"
+    environment:
+      - NESTJS_API_URL=http://backend:5001
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - CHAINLIT_HOST=0.0.0.0
+      - CHAINLIT_PORT=8000
+    volumes:
+      - ./chainlit-service:/app
+    depends_on:
+      - backend
+    networks:
+      - crypto-network
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1.0
+    # 註解: 如果不需要 AI 功能，可以註解掉此服務
+    # profiles:
+    #   - ai
 
 networks:
   crypto-network:

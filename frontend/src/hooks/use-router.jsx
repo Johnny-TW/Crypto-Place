@@ -1,16 +1,10 @@
 import { useMemo, useEffect } from 'react';
-import {
-  useParams,
-  useLocation,
-  useHistory,
-  useRouteMatch,
-} from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import queryString from 'query-string';
 
 const useRouter = () => {
   const params = useParams();
-  const history = useHistory();
-  const match = useRouteMatch();
+  const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
@@ -19,15 +13,16 @@ const useRouter = () => {
 
   return useMemo(
     () => ({
-      push: history.push,
-      replace: history.replace,
+      navigate,
       pathname: location.pathname,
-      query: { ...queryString.parse(location.search), ...params },
-      match,
+      query: {
+        ...queryString.parse(location.search),
+        ...queryString.parse(location.hash),
+        ...params,
+      },
       location,
-      history,
     }),
-    [params, history, match, location]
+    [params, navigate, location]
   );
 };
 

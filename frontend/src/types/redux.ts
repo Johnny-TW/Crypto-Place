@@ -48,7 +48,7 @@ export interface RegisterData {
 
 export interface EmployeeLoginData {
   employeeId: string;
-  password: string;
+  email: string;
 }
 
 export interface APIResponse<T = any> {

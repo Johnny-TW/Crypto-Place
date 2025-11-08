@@ -1,16 +1,14 @@
-/* eslint-disable react/jsx-max-depth */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  GlobeAltIcon,
-  LockClosedIcon,
-  ServerIcon,
-} from '@heroicons/react/20/solid';
+import { GlobeAltIcon } from '@heroicons/react/20/solid';
+import { FaDiscord, FaXTwitter } from 'react-icons/fa6';
+import { Heart, Trophy } from 'lucide-react';
 
 import LogoClouds from '@components/common/LogoClouds';
 import MediaCard from '@components/common/MediaCard';
 import PerformanceTable from '@components/nft/performance/PerformanceTable';
+import { Badge } from '@/components/ui/badge';
 import NFTInfoSection from '@components/nft/Info/NFTInfoSection';
 import NFTLinksSection from '@components/nft/Info/NFTLinksSection';
 
@@ -47,7 +45,7 @@ function ExpandableDescription({
       } else if (html[htmlIndex] === '>') {
         inTag = false;
         htmlIndex += 1;
-        // eslint-disable-next-line no-continue
+
         continue;
       }
 
@@ -194,12 +192,12 @@ function NFTDetails() {
     {
       name: 'Discord',
       link: nftData?.links?.discord || '#',
-      icon: LockClosedIcon,
+      icon: FaDiscord,
     },
     {
       name: 'Twitter',
       link: nftData?.links?.twitter || '#',
-      icon: ServerIcon,
+      icon: FaXTwitter,
     },
   ];
 
@@ -230,18 +228,28 @@ function NFTDetails() {
                     ({nftData.symbol})
                   </span>
                 ) : null}
+              </div>
+              <div className='flex items-center gap-2 flex-wrap'>
                 {nftData?.market_cap_rank ? (
-                  <span className='inline-flex items-center rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-800 ring-1 ring-inset ring-yellow-600/20'>
-                    🏆 Rank #{nftData.market_cap_rank}
-                  </span>
+                  <Badge
+                    variant='secondary'
+                    className='bg-yellow-50 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-100 ring-1 ring-inset ring-yellow-600/20'
+                  >
+                    <Trophy className='w-3.5 h-3.5 mr-1 fill-yellow-500 text-yellow-600' />
+                    Rank #{nftData.market_cap_rank}
+                  </Badge>
+                ) : null}
+                {nftData?.user_favorites_count ? (
+                  <Badge
+                    variant='secondary'
+                    className='bg-pink-100 text-pink-800 hover:bg-pink-200 dark:bg-pink-900 dark:text-pink-100'
+                  >
+                    <Heart className='w-4 h-4 mr-1 fill-pink-500 text-pink-500' />
+                    {nftData.user_favorites_count.toLocaleString()} users
+                    favorited this collection
+                  </Badge>
                 ) : null}
               </div>
-              {nftData?.user_favorites_count ? (
-                <p className='text-sm text-gray-600 mb-3'>
-                  ❤️ {nftData.user_favorites_count.toLocaleString()} users
-                  favorited this collection
-                </p>
-              ) : null}
               <div className='flex items-center space-x-4 mt-5'>
                 <img
                   className='w-20 h-20 rounded-2xl shadow-lg object-cover border-4 border-white'
@@ -288,7 +296,7 @@ function NFTDetails() {
                 {nftData?.description ? (
                   <ExpandableDescription
                     html={nftData.description}
-                    maxLength={1200}
+                    maxLength={3200}
                   />
                 ) : null}
               </div>

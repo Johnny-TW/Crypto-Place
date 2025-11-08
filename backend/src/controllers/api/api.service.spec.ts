@@ -2,15 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { HttpException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { of, throwError } from 'rxjs';
 import { AxiosResponse } from 'axios';
 import { ApiService } from './api.service';
 
 describe('ApiService', () => {
   let service: ApiService;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let httpService: HttpService;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let configService: ConfigService;
 
   const mockHttpService = {
@@ -31,6 +30,13 @@ describe('ApiService', () => {
     }),
   };
 
+  const mockCacheManager = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+    reset: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -42,6 +48,10 @@ describe('ApiService', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
         },
       ],
     }).compile();

@@ -120,7 +120,7 @@ export class AuthService {
     const access_token = this.jwtService.sign(payload);
 
     const { password, ...userWithoutPassword } = user;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
     const _password = password;
 
     return {
@@ -154,7 +154,7 @@ export class AuthService {
   }
 
   async employeeLogin(employeeLoginDto: EmployeeLoginDto) {
-    const { employeeId } = employeeLoginDto;
+    const { employeeId, email: inputEmail } = employeeLoginDto;
 
     try {
       // 從 HR API 撈取員工資料
@@ -174,6 +174,11 @@ export class AuthService {
 
       if (!email) {
         throw new NotFoundException('員工資料不完整，缺少電子郵件');
+      }
+
+      // 🔐 驗證 Email 是否匹配 (不區分大小寫)
+      if (email.toLowerCase() !== inputEmail.toLowerCase()) {
+        throw new UnauthorizedException('員工工號或 Email 不正確');
       }
 
       // 構建虛擬用戶物件（不存入資料庫）- 根據實際 HR API 欄位對應

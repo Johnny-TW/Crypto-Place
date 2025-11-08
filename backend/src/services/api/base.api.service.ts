@@ -11,6 +11,7 @@ export class BaseApiService {
     protected systemCode: string,
   ) {}
 
+  // 通用的API請求方法
   fetchApi = async ({
     url = '',
     method = 'get',
@@ -18,7 +19,7 @@ export class BaseApiService {
     query = {},
     body = {},
     cache_key = null,
-    cache_expiration_time = 5, //minutes
+    cache_expiration_time = 5,
     full_response = false,
     responseType = null,
     error_code: default_error_code = null,
@@ -36,15 +37,14 @@ export class BaseApiService {
       return cache_data;
     }
 
-    // Configure secure HTTPS options with proper certificate validation
+    // 設定axios的options
     const options = {
       method: method,
       url: url,
       headers: header,
       params: query,
       data: body,
-      // For development environment with self-signed certificates
-      // Use explicit env var to control SSL verification (more reliable than NODE_ENV)
+      // 設定HTTPS代理，允許自簽名憑證
       httpsAgent: new https.Agent({
         rejectUnauthorized: process.env.REJECT_UNAUTHORIZED_CERTS !== 'false'
       })
@@ -52,7 +52,6 @@ export class BaseApiService {
 
     if (body instanceof FormData) {
       options['headers']['Content-Type'] = 'multipart/form-data';
-      // options['data'] = this.convertFormdata(body);
     }
     if (responseType) options['responseType'] = responseType;
 
@@ -60,9 +59,8 @@ export class BaseApiService {
     const response: any = await axios(options).catch((error) => {
       success = false;
       console.log(error);
+      //
       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
         let message = '';
         if (error.response.data.message) message = error.response.data.message;
         else if (error.response.data.error) message = error.response.data.error;
@@ -72,14 +70,8 @@ export class BaseApiService {
 
         error_message = message;
         error_code = default_error_code ?? error.response.status;
-        // throw new HttpException(
-        //   `[${this.systemCode}] Api Error Please Contact Developers - ${message}`,
-        //   error.response.status,
-        // );
       } else {
         error_message = error.message;
-        // Something happened in setting up the request that triggered an Error
-        // throw new Error(error.message);
       }
     });
 
@@ -114,6 +106,7 @@ export class BaseApiService {
     return response.data;
   };
 
+  // 將物件轉成formdata格式
   convertFormdata = (variables: object) => {
     const data = new FormData();
     for (const key in variables) {

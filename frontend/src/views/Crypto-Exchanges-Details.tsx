@@ -1,7 +1,4 @@
-/* eslint-disable react/jsx-max-depth */
 import { useEffect, useMemo } from 'react';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Paper } from '@mui/material';
@@ -67,7 +64,7 @@ interface ExchangeDetails {
   tickers?: TickerData[];
 }
 
-interface RouteParams {
+interface RouteParams extends Record<string, string | undefined> {
   exchangeId: string;
 }
 
@@ -364,10 +361,11 @@ function CryptoExchangesDetails() {
         target_coin_id: ticker.target_coin_id,
 
         // 假設性數據 - 實際應用中需要根據歷史數據計算
-        volume_change_24h: Math.random() * 40 - 20, // 模擬 -20% 到 +20% 的變化
+        // 使用 ticker 的屬性來產生穩定的值，而不是 Math.random()
+        volume_change_24h: ((ticker.volume || 0) % 40) - 20,
       };
     });
-  }, [exchangeDetails?.tickers]);
+  }, [exchangeDetails]);
 
   if (isLoading) {
     return (

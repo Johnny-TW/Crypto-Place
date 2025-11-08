@@ -306,6 +306,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Create production environment file
+      run: |
+        echo "📝 創建生產環境設定檔..."
+        cat > .env.prd << EOF
+        NODE_ENV=production
+        POSTGRES_DB=crypto_place_prd
+        POSTGRES_USER=postgres
+        POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD || 'temp_password' }}
+        POSTGRES_PORT=5432
+        FRONTEND_PORT=3001
+        BACKEND_PORT=5001
+        VITE_API_BASE_URL=http://backend:5001
+        VITE_API_HOST=/api
+        VITE_COINGECKO_API_KEY=${{ secrets.COINGECKO_API_KEY || 'CG-nrJXAB28gG2xbfsdLieGcxWB' }}
+        EOF
+        echo "✅ 環境檔案已建立"
+
     - name: Deploy to production
       run: |
         echo "🚀 Deploying to production..."

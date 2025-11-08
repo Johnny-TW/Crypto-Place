@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { GridCellParams, GridColDef } from '@mui/x-data-grid';
+import { ColumnDef } from '@tanstack/react-table';
 
 import DescriptionSection from '@components/common/DescriptionSection';
 import ChartSection from '@components/common/ChartSection';
@@ -10,8 +10,12 @@ import PriceOverviewSection from '@components/common/PriceOverviewSection';
 import CryptoNews from '@components/common/CryptoNews';
 import AutoPlay from '@components/display/AutoPlay';
 import PerformanceTable from '@components/nft/performance/PerformanceTable';
+import PriceMilestones from '@components/common/PriceMilestones';
+import SupplyStats from '@components/common/SupplyStats';
+import PriceRangeBar from '@components/common/PriceRangeBar';
+import QuickStats from '@components/common/QuickStats';
 
-interface RouteParams {
+interface RouteParams extends Record<string, string | undefined> {
   coinId: string;
 }
 
@@ -83,83 +87,101 @@ interface RootState {
 }
 
 function CryptoDetails() {
-  const renderVolumeCell = (
-    params: GridCellParams<CryptoExchangeRow, number | null | undefined>
-  ) => {
-    if (params.value == null) return <span>N/A</span>;
-    return <span>{parseFloat(params.value.toString()).toFixed(2)}</span>;
-  };
-  const columns: GridColDef[] = useMemo(
+  const columns: ColumnDef<CryptoExchangeRow>[] = useMemo(
     () => [
       {
-        field: 'trust_score_rank',
-        headerName: '#',
-        minWidth: 100,
-        align: 'left',
+        accessorKey: 'trust_score_rank',
+        id: 'rank',
+        header: '#',
+        size: 100,
       },
       {
-        field: 'image',
-        headerName: 'Exchange',
-        minWidth: 150,
-        align: 'center',
-        headerAlign: 'center',
-        renderCell: (params: GridCellParams<CryptoExchangeRow, string>) => (
-          <img
-            src={params.value}
-            alt={`${params.row.name} logo`}
-            style={{ width: '30px', height: '30px', margin: '10px' }}
-          />
+        accessorKey: 'image',
+        id: 'image',
+        header: 'Exchange',
+        size: 150,
+        cell: ({ getValue, row }) => (
+          <div className='flex justify-center'>
+            <img
+              src={getValue() as string}
+              alt={`${row.original.name} logo`}
+              className='w-8 h-8 rounded-full'
+            />
+          </div>
         ),
       },
       {
-        field: 'id',
-        headerName: 'ID',
-        minWidth: 150,
-        align: 'left',
+        accessorKey: 'id',
+        id: 'id',
+        header: 'ID',
+        size: 150,
       },
       {
-        field: 'year_established',
-        headerName: 'Symbol',
-        minWidth: 150,
-        headerAlign: 'center',
-        align: 'left',
+        accessorKey: 'year_established',
+        id: 'year',
+        header: 'Year',
+        size: 150,
+        cell: ({ getValue }) => {
+          const value = getValue() as number | null;
+          return <span>{value != null ? String(value) : 'N/A'}</span>;
+        },
       },
-      { field: 'country', headerName: 'Name', minWidth: 250 },
       {
-        field: 'url',
-        headerName: 'URL',
-        minWidth: 200,
-        align: 'left',
-        renderCell: (params: GridCellParams<CryptoExchangeRow, string>) => (
-          <a href={params.value} target='_blank' rel='noopener noreferrer'>
-            {params.value}
-          </a>
+        accessorKey: 'country',
+        id: 'country',
+        header: 'Country',
+        size: 250,
+      },
+      {
+        accessorKey: 'url',
+        id: 'url',
+        header: 'URL',
+        size: 200,
+        cell: ({ getValue }) => {
+          const url = getValue() as string;
+          return (
+            <a
+              href={url}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-blue-600 hover:underline truncate block max-w-[180px]'
+            >
+              {url}
+            </a>
+          );
+        },
+      },
+      {
+        accessorKey: 'has_trading_incentive',
+        id: 'trading_incentive',
+        header: 'Trading Incentive',
+        size: 150,
+        cell: ({ getValue }) => (
+          <div className='flex justify-center'>
+            {getValue() ? (
+              <span>✅</span>
+            ) : (
+              <span className='text-red-500'>⬤</span>
+            )}
+          </div>
         ),
       },
       {
-        field: 'has_trading_incentive',
-        headerName: 'Trading incentive',
-        minWidth: 150,
-        align: 'center',
-        headerAlign: 'center',
-        renderCell: (params: GridCellParams<CryptoExchangeRow, boolean>) => (
-          <span>
-            {params.value ? '✅' : <span style={{ color: 'red' }}>⬤</span>}
-          </span>
-        ),
+        accessorKey: 'trust_score',
+        id: 'trust_score',
+        header: 'Trust Score',
+        size: 100,
       },
       {
-        field: 'trust_score',
-        headerName: 'Trust score',
-        minWidth: 100,
-        align: 'left',
-      },
-      {
-        field: 'trade_volume_24h_btc',
-        headerName: 'Trade volume 24h BTC',
-        minWidth: 200,
-        align: 'left',
-        renderCell: renderVolumeCell,
+        accessorKey: 'trade_volume_24h_btc',
+        id: 'volume',
+        header: 'Trade Volume 24h BTC',
+        size: 200,
+        cell: ({ getValue }) => {
+          const value = getValue();
+          if (value == null) return <span>N/A</span>;
+          return <span>{parseFloat(value.toString()).toFixed(2)}</span>;
+        },
       },
     ],
     []
@@ -229,6 +251,18 @@ function CryptoDetails() {
       <PriceOverviewSection
         data={cryptoDetails as unknown as CryptoData | null}
       />
+
+      {/* Quick Stats: Rank, FDV, Genesis Date, Algorithm */}
+      <QuickStats data={cryptoDetails as any} />
+
+      {/* Price Milestones: ATH and ATL */}
+      <PriceMilestones data={cryptoDetails as any} />
+
+      {/* 24h Price Range Bar & Supply Statistics - Side by Side */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5'>
+        <PriceRangeBar data={cryptoDetails as any} />
+        <SupplyStats data={cryptoDetails as any} />
+      </div>
 
       <PerformanceTable cryptoData={cryptoDetails as any} />
       <ChartSection

@@ -1,15 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
-
 const prisma = new PrismaClient();
-
-// 新增測試員工資料
-// 如果已存在則更新資料
-// 使用 bcrypt 加密密碼
-// 使用 Prisma ORM 進行資料庫操作
-// 確保在執行此腳本前已經配置好 Prisma
-// 並且已經有一個名為 'user' 的模型
-// 在 Prisma schema 中定義了相應的欄位
 
 async function addEmployee() {
   try {

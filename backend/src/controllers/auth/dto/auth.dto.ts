@@ -87,6 +87,14 @@ export class EmployeeLoginDto {
   @IsString()
   @IsNotEmpty()
   employeeId: string;
+
+  @ApiProperty({
+    example: 'johnny_yeh@wistron.com',
+    description: '員工 Email (用於驗證身份)',
+  })
+  @IsEmail({}, { message: 'Email 格式不正確' })
+  @IsNotEmpty({ message: 'Email 為必填欄位' })
+  email: string;
 }
 
 export class UserProfileDto {

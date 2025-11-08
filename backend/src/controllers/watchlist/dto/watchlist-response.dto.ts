@@ -27,6 +27,9 @@ export class WatchlistResponseDto {
 }
 
 export class WatchlistWithPriceDto extends WatchlistResponseDto {
+  @ApiProperty({ example: 1, description: '市值排名' })
+  marketCapRank?: number;
+
   @ApiProperty({ example: 45000, description: '當前價格 (USD)' })
   currentPrice?: number;
 
@@ -35,4 +38,13 @@ export class WatchlistWithPriceDto extends WatchlistResponseDto {
 
   @ApiProperty({ example: 850000000000, description: '市值' })
   marketCap?: number;
+
+  @ApiProperty({ example: 46000, description: '24小時最高價 (USD)' })
+  high24h?: number;
+
+  @ApiProperty({ example: 44000, description: '24小時最低價 (USD)' })
+  low24h?: number;
+
+  @ApiProperty({ example: '2024-01-01T12:00:00Z', description: '最後更新時間' })
+  lastUpdated?: string;
 }
