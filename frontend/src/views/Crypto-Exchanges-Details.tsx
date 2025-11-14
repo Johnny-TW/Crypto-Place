@@ -3,16 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Paper } from '@mui/material';
 import { DataGrid, GridCellParams, GridColDef } from '@mui/x-data-grid';
-import {
-  BsFacebook,
-  BsReddit,
-  BsTelegram,
-  BsTwitter,
-  BsGlobe,
-} from 'react-icons/bs';
 
 import LogoClouds from '@components/common/LogoClouds';
 import ExchangeCharts from '@components/exchange/ExchangeCharts';
+import ExchangeSocialLinks from '@components/exchange/ExchangeSocialLinks';
+import ExchangeAnnouncements from '@components/exchange/ExchangeAnnouncements';
 
 // Define types for exchange and ticker data
 interface TickerData {
@@ -39,6 +34,25 @@ interface TickerData {
   target_coin_id: string;
 }
 
+interface StatusUpdate {
+  description: string;
+  category: string;
+  created_at: string;
+  user: string;
+  user_title: string;
+  pin: boolean;
+  project: {
+    type: string;
+    id: string;
+    name: string;
+    image: {
+      thumb: string;
+      small: string;
+      large: string;
+    };
+  };
+}
+
 interface ExchangeDetails {
   id: string;
   name: string;
@@ -58,10 +72,12 @@ interface ExchangeDetails {
   facebook_url?: string;
   reddit_url?: string;
   telegram_url?: string;
+  slack_url?: string;
   twitter_handle?: string;
   other_url_1?: string;
   other_url_2?: string;
   tickers?: TickerData[];
+  status_updates?: StatusUpdate[];
 }
 
 interface RouteParams extends Record<string, string | undefined> {
@@ -375,36 +391,6 @@ function CryptoExchangesDetails() {
     );
   }
 
-  const links = [
-    {
-      name: 'Website',
-      link: exchangeDetails?.url,
-      icon: BsGlobe,
-    },
-    {
-      name: 'Facebook',
-      link: exchangeDetails?.facebook_url,
-      icon: BsFacebook,
-    },
-    {
-      name: 'Reddit',
-      link: exchangeDetails?.reddit_url,
-      icon: BsReddit,
-    },
-    {
-      name: 'Twitter',
-      link: exchangeDetails?.twitter_handle
-        ? `https://twitter.com/${exchangeDetails.twitter_handle}`
-        : null,
-      icon: BsTwitter,
-    },
-    {
-      name: 'Telegram',
-      link: exchangeDetails?.telegram_url,
-      icon: BsTelegram,
-    },
-  ].filter(link => link.link && link.link !== '' && link.link !== '#');
-
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (
@@ -543,30 +529,34 @@ function CryptoExchangesDetails() {
                   </div>
                 </div>
               </div>
-              <dl className='mt-10 max-w-xl space-y-8 text-base/7 text-gray-600 lg:max-w-none'>
-                {links.map(link => (
-                  <div key={link.name} className='relative pl-9'>
-                    <dt className='inline font-semibold text-gray-900'>
-                      <link.icon
-                        aria-hidden='true'
-                        className='absolute left-1 top-1 h-5 w-5'
-                      />
-                      <a
-                        href={link.link || '#'}
-                        className='inline-flex items-center px-4 py-2 text-black text-sm font-medium rounded-md border border-gray'
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        aria-label={link.name}
-                      >
-                        {link.name}
-                      </a>
-                    </dt>
-                  </div>
-                ))}
-              </dl>
             </div>
           </div>
         </div>
+
+        {/* Social Links Section */}
+        <div className='mt-8 mb-8'>
+          <ExchangeSocialLinks
+            url={exchangeDetails?.url}
+            facebook_url={exchangeDetails?.facebook_url}
+            reddit_url={exchangeDetails?.reddit_url}
+            telegram_url={exchangeDetails?.telegram_url}
+            twitter_handle={exchangeDetails?.twitter_handle}
+            slack_url={exchangeDetails?.slack_url}
+            other_url_1={exchangeDetails?.other_url_1}
+            other_url_2={exchangeDetails?.other_url_2}
+          />
+        </div>
+
+        {/* Announcements Section */}
+        {exchangeDetails?.status_updates &&
+          exchangeDetails.status_updates.length > 0 && (
+            <div className='mt-8 mb-8'>
+              <ExchangeAnnouncements
+                status_updates={exchangeDetails.status_updates}
+                exchangeName={exchangeDetails.name}
+              />
+            </div>
+          )}
         {/* 圖表統計區域 */}
         <div className='mt-8 mb-8'>
           <div className='mb-6'>

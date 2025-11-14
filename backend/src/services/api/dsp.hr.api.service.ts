@@ -23,5 +23,4 @@ export class DspHrApiService extends BaseApiService {
     };
     return this.fetchApi(params);
   }
-
 }
