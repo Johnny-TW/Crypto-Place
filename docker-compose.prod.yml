@@ -9,8 +9,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+    # ports:
+    #   - "${POSTGRES_PORT:-5432}:5432"
+    # Note: PostgreSQL is not exposed to host for security. Backend connects via internal network.
     volumes:
       - postgres_prd_data:/var/lib/postgresql/data
     networks:
