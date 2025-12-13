@@ -5,8 +5,8 @@ import { GlobeAltIcon } from '@heroicons/react/20/solid';
 import { FaDiscord, FaXTwitter } from 'react-icons/fa6';
 import { Heart, Trophy } from 'lucide-react';
 
-import LogoClouds from '@components/common/LogoClouds';
-import MediaCard from '@components/common/MediaCard';
+import { LogoClouds } from '@components/shared/branding';
+import { MediaCard } from '@components/shared/content';
 import PerformanceTable from '@components/nft/performance/PerformanceTable';
 import { Badge } from '@/components/ui/badge';
 import NFTInfoSection from '@components/nft/Info/NFTInfoSection';

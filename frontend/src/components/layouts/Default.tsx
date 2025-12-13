@@ -82,7 +82,7 @@ function Default({ children }: DefaultProps) {
 
   return (
     <SidebarProvider>
-      <div className='flex min-h-screen w-full bg-background'>
+      <div className='flex min-h-screen w-full bg-gray-50/50'>
         <CryptoSidebar />
 
         <SidebarInset className='flex flex-col flex-1'>
@@ -113,9 +113,7 @@ function Default({ children }: DefaultProps) {
           </div>
 
           {/* Footer */}
-          <footer className='border-t p-4'>
-            <Footer />
-          </footer>
+          <Footer />
         </SidebarInset>
       </div>
     </SidebarProvider>

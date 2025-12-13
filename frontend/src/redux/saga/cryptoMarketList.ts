@@ -1,6 +1,5 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
-import axios from 'axios';
-import { API_METHOD } from '../api/apiService';
+import { call as apiCall, API_METHOD } from '../api/apiService';
 import { CRYPTO_MARKET_LIST } from '../api/api';
 import { BaseAction } from '../../types/redux';
 
@@ -16,22 +15,26 @@ function* fetchMarketListSaga(): Generator {
   try {
     yield put({ type: 'FETCH_MARKET_LIST_REQUEST' });
 
-    const options = {
+    const response: any = yield call(apiCall, {
       method: API_METHOD.GET,
-      url: CRYPTO_MARKET_LIST,
+      path: CRYPTO_MARKET_LIST,
       params: {
-        per_page: '250',
+        params: {
+          per_page: '250',
+        },
+        headers: {
+          accept: 'application/json',
+        },
       },
-      headers: {
-        accept: 'application/json',
-      },
-    };
-
-    const response = yield call(axios.request, options);
+    });
     // eslint-disable-next-line no-console
     console.log('Market data response:', response.data);
     yield put({ type: 'FETCH_MARKET_LIST_SUCCESS', payload: response.data });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
     console.error('Error fetching market data:', error);
     yield put({ type: 'FETCH_MARKET_LIST_FAILURE', error: error.message });
   }

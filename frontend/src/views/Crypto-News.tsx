@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import CardLists from '@components/common/CardLists';
-import DropdownSelect from '@components/common/DropdownSelect';
+import { CardLists } from '@components/shared/data-display';
+import { DropdownSelect } from '@components/shared/forms';
 import { useDispatch, useSelector } from 'react-redux';
 
 interface NewsArticle {

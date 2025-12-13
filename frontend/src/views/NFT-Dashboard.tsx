@@ -2,9 +2,18 @@ import { useState, useEffect, useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { ChevronDown } from 'lucide-react';
-import { DataTable } from '@components/common/DataTable';
+import { ChevronDown, AlertCircle } from 'lucide-react';
+import { DataTable } from '@components/shared/data-display';
 import { Button } from '@components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@components/ui/alert-dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,7 +85,8 @@ function StickyHeadTable() {
     []
   );
 
-  const [order, setOrder] = useState('market_cap_usd_desc');
+  const [order, setOrder] = useState<string>('market_cap_usd_desc');
+  const [showErrorDialog, setShowErrorDialog] = useState<boolean>(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -112,6 +122,13 @@ function StickyHeadTable() {
     dispatch({ type: 'FETCH_NFT_LIST', payload: { order } });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [order]);
+
+  // 監聽錯誤狀態
+  useEffect(() => {
+    if (error && error.includes('500')) {
+      setShowErrorDialog(true);
+    }
+  }, [error]);
 
   return (
     <div className='mt-10 container mx-auto'>
@@ -165,6 +182,47 @@ function StickyHeadTable() {
           />
         </div>
       </div>
+
+      {/* 500 錯誤 AlertDialog */}
+      <AlertDialog open={showErrorDialog} onOpenChange={setShowErrorDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className='flex items-center gap-2'>
+              <AlertCircle className='h-6 w-6 text-rose-600' />
+              <AlertDialogTitle className='text-rose-600'>
+                伺服器錯誤 (500)
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className='pt-4'>
+              抱歉,伺服器發生錯誤。請稍後再試或聯繫技術支援。
+              {error && (
+                <div className='mt-2 p-3 bg-gray-100 rounded-md text-sm text-gray-700'>
+                  錯誤詳情: {error}
+                </div>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => {
+                setShowErrorDialog(false);
+                window.location.reload();
+              }}
+              className='bg-rose-600 hover:bg-rose-700'
+            >
+              重新載入頁面
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => {
+                setShowErrorDialog(false);
+                navigate('/dashboard');
+              }}
+            >
+              返回首頁
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
-import axios from 'axios';
+import { call as apiCall, API_METHOD } from '../api/apiService';
 import { SIMPLE_PRICE } from '../api/api';
 import { SimplePriceParams } from '../reducer/simplePrice';
 
@@ -18,31 +18,34 @@ function* fetchSimplePriceSaga(action: FetchSimplePriceAction): Generator {
       includeMarketCap,
     } = action.payload;
 
-    const queryParams = new URLSearchParams({
+    const queryParams = {
       ids: ids.join(','),
       vs_currencies: vsCurrencies,
       include_24hr_change: include24hrChange.toString(),
       include_24hr_vol: include24hrVol.toString(),
       include_market_cap: includeMarketCap.toString(),
-    });
-
-    const options = {
-      headers: {
-        accept: 'application/json',
-      },
     };
 
-    const response: any = yield call(
-      axios.get,
-      `${SIMPLE_PRICE}?${queryParams}`,
-      options
-    );
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.GET,
+      path: SIMPLE_PRICE,
+      params: {
+        params: queryParams,
+        headers: {
+          accept: 'application/json',
+        },
+      },
+    });
 
     yield put({
       type: 'FETCH_SIMPLE_PRICE_SUCCESS',
       payload: response.data,
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
     yield put({
       type: 'FETCH_SIMPLE_PRICE_FAILURE',
       error: error.message || '獲取價格數據失敗',

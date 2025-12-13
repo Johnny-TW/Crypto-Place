@@ -1,8 +1,6 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
-import axios from 'axios';
-import { API_METHOD } from '../api/apiService';
+import { call as apiCall, API_METHOD } from '../api/apiService';
 import { BaseAction } from '../../types/redux';
-import { getApiBaseUrl } from '../../utils/apiConfig';
 
 interface FetchExchangeDetailsAction extends BaseAction {
   type: 'FETCH_EXCHANGE_DETAILS';
@@ -20,20 +18,27 @@ function* fetchExchangeDetailsSaga(
   action: FetchExchangeDetailsAction
 ): Generator {
   try {
-    const options = {
+    // Use apiCall with cancellation support
+    const response: any = yield call(apiCall, {
       method: API_METHOD.GET,
-      url: `${getApiBaseUrl()}/api/exchanges/${action.payload}`,
-      headers: {
-        accept: 'application/json',
+      path: `/exchanges/${action.payload}`,
+      params: {
+        headers: {
+          accept: 'application/json',
+        },
       },
-    };
+    });
 
-    const response = yield call(axios.request, options);
     yield put({
       type: 'FETCH_EXCHANGE_DETAILS_SUCCESS',
       payload: response.data,
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
+
     yield put({
       type: 'FETCH_EXCHANGE_DETAILS_FAILURE',
       payload: error.message,
@@ -42,6 +47,7 @@ function* fetchExchangeDetailsSaga(
 }
 
 function* exchangeDetailsSaga() {
+  // takeLatest will automatically cancel previous pending requests
   yield takeLatest('FETCH_EXCHANGE_DETAILS', fetchExchangeDetailsSaga);
 }
 

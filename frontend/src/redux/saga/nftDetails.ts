@@ -1,5 +1,5 @@
 import { takeLatest, call, put, delay } from 'redux-saga/effects';
-import axios from 'axios';
+import { call as apiCall, API_METHOD } from '../api/apiService';
 import { NFT_DETAILS, CRYPTO_NEWS } from '../api/api';
 import { BaseAction } from '../../types/redux';
 
@@ -22,15 +22,25 @@ export const fetchNftNews = (): FetchNftNewsAction => ({
 });
 
 function* fetchNftDetailsWithRetry(
-  options: any,
+  path: string,
+  params: any,
   maxRetries: number = 3,
   baseDelay: number = 1000
 ): Generator {
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
     try {
-      const response = yield call(axios.request, options);
+      const response: any = yield call(apiCall, {
+        method: API_METHOD.GET,
+        path,
+        params,
+      });
       return response;
     } catch (error: any) {
+      // Ignore cancelled requests
+      if (error.message === 'Cancel') {
+        throw error;
+      }
+
       const isRateLimitError = error.response?.status === 429;
 
       if (isRateLimitError && attempt < maxRetries) {
@@ -61,17 +71,22 @@ function* fetchNftDetailsSaga(action: FetchNftDetailsAction): Generator {
   try {
     const { nftId } = action.payload;
 
-    const options = {
-      method: 'GET',
-      url: `${NFT_DETAILS}/${nftId}`,
-      headers: {
-        accept: 'application/json',
+    const response: any = yield call(
+      fetchNftDetailsWithRetry,
+      `${NFT_DETAILS}/${nftId}`,
+      {
+        headers: { accept: 'application/json' },
       },
-    };
-
-    const response = yield call(fetchNftDetailsWithRetry, options, 3, 1000);
+      3,
+      1000
+    );
     yield put({ type: 'FETCH_NFT_DETAILS_SUCCESS', payload: response.data });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
+
     const errorMessage =
       error.response?.status === 429
         ? 'API rate limit exceeded. Please try again later.'
@@ -82,23 +97,29 @@ function* fetchNftDetailsSaga(action: FetchNftDetailsAction): Generator {
 
 function* fetchNftNewsSaga(): Generator {
   try {
-    const params = new URLSearchParams({
+    const queryParams = {
       lang: 'EN',
       limit: '4',
       exclude_categories: 'ETH',
-    });
-
-    const options = {
-      method: 'GET',
-      url: `${CRYPTO_NEWS}?${params}`,
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
     };
 
-    const response = yield call(axios.request, options);
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.GET,
+      path: CRYPTO_NEWS,
+      params: {
+        params: queryParams,
+        headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+      },
+    });
     yield put({ type: 'FETCH_NFT_NEWS_SUCCESS', payload: response.data.Data });
-  } catch {
+  } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
+
     const errorMessage = 'Failed to fetch NFT news';
     yield put({ type: 'FETCH_NFT_NEWS_FAILURE', error: errorMessage });
   }

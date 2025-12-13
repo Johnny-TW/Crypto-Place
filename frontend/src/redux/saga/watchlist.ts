@@ -1,5 +1,5 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
-import axios from 'axios';
+import { call as apiCall, API_METHOD } from '../api/apiService';
 import Cookies from 'js-cookie';
 import { WATCHLIST, WATCHLIST_COUNT } from '../api/api';
 import { BaseAction } from '../../types/redux';
@@ -84,13 +84,21 @@ function* fetchWatchlistSaga(): Generator {
   try {
     yield put({ type: 'SET_WATCHLIST_LOADING', payload: true });
 
-    const response: any = yield call(axios.get, WATCHLIST, getAuthConfig());
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.GET,
+      path: WATCHLIST,
+      params: getAuthConfig(),
+    });
 
     yield put({
       type: 'FETCH_WATCHLIST_SUCCESS',
       payload: response.data,
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
     yield put({
       type: 'FETCH_WATCHLIST_FAILURE',
       payload: error.message || 'Failed to fetch watchlist',
@@ -104,12 +112,12 @@ function* addToWatchlistSaga(action: AddToWatchlistAction): Generator {
   try {
     yield put({ type: 'SET_WATCHLIST_LOADING', payload: true });
 
-    const response: any = yield call(
-      axios.post,
-      WATCHLIST,
-      action.payload,
-      getAuthConfig()
-    );
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.POST,
+      path: WATCHLIST,
+      data: action.payload,
+      params: getAuthConfig(),
+    });
 
     yield put({
       type: 'ADD_TO_WATCHLIST_SUCCESS',
@@ -118,6 +126,11 @@ function* addToWatchlistSaga(action: AddToWatchlistAction): Generator {
 
     // 移除重複請求，直接更新本地狀態即可
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
+
     // 檢查是否為 409 Conflict 錯誤（已經在最愛列表中）
     if (error.response && error.response.status === 409) {
       // 如果是衝突錯誤，我們視為成功並更新本地狀態
@@ -151,7 +164,11 @@ function* removeFromWatchlistSaga(
   try {
     yield put({ type: 'SET_WATCHLIST_LOADING', payload: true });
 
-    yield call(axios.delete, `${WATCHLIST}/${action.payload}`, getAuthConfig());
+    yield call(apiCall, {
+      method: API_METHOD.DELETE,
+      path: `${WATCHLIST}/${action.payload}`,
+      params: getAuthConfig(),
+    });
 
     yield put({
       type: 'REMOVE_FROM_WATCHLIST_SUCCESS',
@@ -160,6 +177,10 @@ function* removeFromWatchlistSaga(
 
     // 移除重複請求，直接更新本地狀態即可
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
     yield put({
       type: 'REMOVE_FROM_WATCHLIST_FAILURE',
       payload: error.message || 'Failed to remove from watchlist',
@@ -173,11 +194,11 @@ function* checkWatchlistStatusSaga(
   action: CheckWatchlistStatusAction
 ): Generator {
   try {
-    const response: any = yield call(
-      axios.get,
-      `${WATCHLIST}/check/${action.payload}`,
-      getAuthConfig()
-    );
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.GET,
+      path: `${WATCHLIST}/check/${action.payload}`,
+      params: getAuthConfig(),
+    });
 
     yield put({
       type: 'CHECK_WATCHLIST_STATUS_SUCCESS',
@@ -187,6 +208,11 @@ function* checkWatchlistStatusSaga(
       },
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
+
     // 如果是認證錯誤，返回 false
     if (error.response?.status === 401) {
       yield put({
@@ -214,18 +240,23 @@ function* checkBatchWatchlistStatusSaga(
       return;
     }
 
-    const response: any = yield call(
-      axios.post,
-      `${WATCHLIST}/check-batch`,
-      { coinIds: action.payload },
-      getAuthConfig()
-    );
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.POST,
+      path: `${WATCHLIST}/check-batch`,
+      data: { coinIds: action.payload },
+      params: getAuthConfig(),
+    });
 
     yield put({
       type: 'CHECK_BATCH_WATCHLIST_STATUS_SUCCESS',
       payload: response.data,
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
+
     // 如果是認證錯誤，返回空對象
     if (error.response?.status === 401) {
       const emptyStatusMap = action.payload.reduce(
@@ -250,17 +281,21 @@ function* checkBatchWatchlistStatusSaga(
 
 function* getWatchlistCountSaga(): Generator {
   try {
-    const response: any = yield call(
-      axios.get,
-      WATCHLIST_COUNT,
-      getAuthConfig()
-    );
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.GET,
+      path: WATCHLIST_COUNT,
+      params: getAuthConfig(),
+    });
 
     yield put({
       type: 'GET_WATCHLIST_COUNT_SUCCESS',
       payload: response.data.count,
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
     yield put({
       type: 'GET_WATCHLIST_COUNT_FAILURE',
       payload: error.message || 'Failed to get watchlist count',

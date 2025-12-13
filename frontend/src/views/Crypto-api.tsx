@@ -1,4 +1,4 @@
-import LogoCloudsCryptoApi from '@components/common/LogoCloudsCryptoApi';
+import { LogoCloudsCryptoApi } from '@components/shared/branding';
 
 function CryptoApi(): JSX.Element {
   return (

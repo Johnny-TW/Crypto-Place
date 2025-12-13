@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import {
   BsFacebook,
   BsReddit,
@@ -10,6 +9,8 @@ import {
   BsSlack,
 } from 'react-icons/bs';
 import { SiSteemit } from 'react-icons/si';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface SocialLink {
   name: string;
@@ -28,6 +29,7 @@ interface ExchangeSocialLinksProps {
   slack_url?: string;
   other_url_1?: string;
   other_url_2?: string;
+  compact?: boolean;
 }
 
 function ExchangeSocialLinks({
@@ -39,6 +41,7 @@ function ExchangeSocialLinks({
   slack_url,
   other_url_1,
   other_url_2,
+  compact = false,
 }: ExchangeSocialLinksProps) {
   const socialLinks: SocialLink[] = [
     {
@@ -46,196 +49,133 @@ function ExchangeSocialLinks({
       url: url || '',
       icon: BsGlobe,
       color: '#4A5568',
-      bgColor: '#EDF2F7',
+      bgColor: 'bg-gray-100',
     },
     {
       name: 'Twitter',
       url: twitter_handle ? `https://twitter.com/${twitter_handle}` : '',
       icon: BsTwitter,
       color: '#1DA1F2',
-      bgColor: '#E8F5FE',
+      bgColor: 'bg-blue-50',
     },
     {
       name: 'Facebook',
       url: facebook_url || '',
       icon: BsFacebook,
       color: '#1877F2',
-      bgColor: '#E7F3FF',
+      bgColor: 'bg-blue-50',
     },
     {
       name: 'Reddit',
       url: reddit_url || '',
       icon: BsReddit,
       color: '#FF4500',
-      bgColor: '#FFF0EB',
+      bgColor: 'bg-orange-50',
     },
     {
       name: 'Telegram',
       url: telegram_url || '',
       icon: BsTelegram,
       color: '#0088CC',
-      bgColor: '#E3F2FD',
+      bgColor: 'bg-sky-50',
     },
     {
       name: 'Slack',
       url: slack_url || '',
       icon: BsSlack,
       color: '#4A154B',
-      bgColor: '#F3E5F5',
+      bgColor: 'bg-purple-50',
     },
     {
       name: 'Medium',
       url: other_url_1 || '',
       icon: BsMedium,
       color: '#000000',
-      bgColor: '#F5F5F5',
+      bgColor: 'bg-gray-50',
     },
     {
       name: 'Steemit',
       url: other_url_2 || '',
       icon: SiSteemit,
       color: '#4BA2F2',
-      bgColor: '#E3F2FD',
+      bgColor: 'bg-blue-50',
     },
   ].filter(link => link.url && link.url !== '' && link.url !== '#');
 
   if (socialLinks.length === 0) {
-    return null;
+    return (
+      <div className='text-sm text-gray-500 italic'>
+        No social links available
+      </div>
+    );
+  }
+
+  const content = (
+    <div
+      className={`grid gap-3 ${compact ? 'grid-cols-4' : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'}`}
+    >
+      {socialLinks.map(link => (
+        <a
+          key={link.name}
+          href={link.url}
+          target='_blank'
+          rel='noopener noreferrer'
+          className='group block'
+        >
+          <div
+            className={`
+            flex flex-col items-center justify-center p-2 rounded-xl border border-gray-100 
+            transition-all duration-200 hover:border-gray-300 hover:shadow-sm hover:-translate-y-0.5
+            ${compact ? 'aspect-square' : 'h-full py-4'}
+            bg-white
+          `}
+          >
+            <div
+              className={`
+              flex items-center justify-center rounded-full transition-colors
+              ${compact ? 'w-8 h-8 mb-1' : 'w-10 h-10 mb-2'}
+              ${link.bgColor}
+            `}
+            >
+              <link.icon
+                size={compact ? 16 : 20}
+                style={{ color: link.color }}
+              />
+            </div>
+            {!compact && (
+              <span className='text-xs font-medium text-gray-700 text-center'>
+                {link.name}
+              </span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+  );
+
+  if (compact) {
+    return content;
   }
 
   return (
-    <Card
-      elevation={0}
-      sx={{
-        border: '1px solid',
-        borderColor: 'divider',
-        borderRadius: 2,
-        overflow: 'hidden',
-      }}
-    >
-      <CardContent sx={{ p: 3 }}>
-        <Typography
-          variant='h6'
-          sx={{
-            fontSize: '1.125rem',
-            fontWeight: 700,
-            color: 'text.primary',
-            mb: 3,
-          }}
-        >
+    <Card className='shadow-sm border-gray-200'>
+      <CardHeader>
+        <CardTitle className='text-lg font-bold text-gray-900'>
           Official Links & Community
-        </Typography>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {content}
 
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: 'repeat(2, 1fr)',
-              sm: 'repeat(3, 1fr)',
-              md: 'repeat(4, 1fr)',
-            },
-            gap: 2,
-          }}
-        >
-          {socialLinks.map(link => (
-            <a
-              key={link.name}
-              href={link.url}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='group'
-              style={{ textDecoration: 'none' }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  p: 2.5,
-                  borderRadius: 2,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  backgroundColor: 'background.paper',
-                  transition: 'all 0.2s ease-in-out',
-                  cursor: 'pointer',
-                  height: '100%',
-                  '&:hover': {
-                    borderColor: link.color,
-                    backgroundColor: link.bgColor,
-                    transform: 'translateY(-2px)',
-                    boxShadow: `0 4px 12px ${link.color}20`,
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 48,
-                    height: 48,
-                    borderRadius: '50%',
-                    backgroundColor: link.bgColor,
-                    mb: 1.5,
-                    transition: 'all 0.2s ease-in-out',
-                    '.group:hover &': {
-                      backgroundColor: link.color,
-                      color: 'white',
-                    },
-                  }}
-                >
-                  <link.icon
-                    size={24}
-                    style={{ color: link.color }}
-                    className='group-hover:text-white transition-colors'
-                  />
-                </Box>
-                <Typography
-                  variant='body2'
-                  sx={{
-                    fontWeight: 600,
-                    color: 'text.primary',
-                    textAlign: 'center',
-                    fontSize: '0.875rem',
-                  }}
-                >
-                  {link.name}
-                </Typography>
-              </Box>
-            </a>
-          ))}
-        </Box>
-
-        {/* Quick Stats */}
-        <Box
-          sx={{
-            mt: 3,
-            pt: 3,
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1,
-            flexWrap: 'wrap',
-          }}
-        >
-          <Typography
-            variant='body2'
-            sx={{ color: 'text.secondary', mr: 1, fontWeight: 500 }}
+        <div className='mt-6 pt-4 border-t border-gray-100 flex items-center gap-2'>
+          <span className='text-sm font-medium text-gray-500'>Connected:</span>
+          <Badge
+            variant='secondary'
+            className='bg-blue-50 text-blue-700 hover:bg-blue-100'
           >
-            Connect with us:
-          </Typography>
-          <Chip
-            label={`${socialLinks.length} Platform${socialLinks.length > 1 ? 's' : ''}`}
-            size='small'
-            sx={{
-              backgroundColor: 'primary.50',
-              color: 'primary.700',
-              fontWeight: 600,
-            }}
-          />
-        </Box>
+            {socialLinks.length} Platforms
+          </Badge>
+        </div>
       </CardContent>
     </Card>
   );

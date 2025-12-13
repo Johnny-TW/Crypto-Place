@@ -1,5 +1,5 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
-import axios from 'axios';
+import { call as apiCall, API_METHOD } from '../api/apiService';
 import Cookies from 'js-cookie';
 import { EMPLOYEE_INFO, EMPLOYEES_LIST } from '../api/api';
 import { BaseAction } from '../../types/redux';
@@ -35,17 +35,24 @@ export const updateEmployeeInfo = (
 function* fetchEmployeeInfoSaga(): Generator {
   try {
     const token = Cookies.get('token');
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.GET,
+      path: EMPLOYEE_INFO,
+      params: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    };
-    const response = yield call(axios.get, EMPLOYEE_INFO, config);
+    });
     yield put({
       type: 'FETCH_EMPLOYEE_INFO_SUCCESS',
       payload: response.data,
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
     yield put({
       type: 'FETCH_EMPLOYEE_INFO_FAILURE',
       payload: error.message,
@@ -56,17 +63,24 @@ function* fetchEmployeeInfoSaga(): Generator {
 function* fetchEmployeesListSaga(): Generator {
   try {
     const token = Cookies.get('token');
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.GET,
+      path: EMPLOYEES_LIST,
+      params: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    };
-    const response = yield call(axios.get, EMPLOYEES_LIST, config);
+    });
     yield put({
       type: 'FETCH_EMPLOYEES_LIST_SUCCESS',
       payload: response.data,
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
     yield put({
       type: 'FETCH_EMPLOYEES_LIST_FAILURE',
       payload: error.message,
@@ -77,22 +91,25 @@ function* fetchEmployeesListSaga(): Generator {
 function* updateEmployeeInfoSaga(action: UpdateEmployeeInfoAction): Generator {
   try {
     const token = Cookies.get('token');
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.PUT,
+      path: EMPLOYEE_INFO,
+      data: action.payload,
+      params: {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
-    };
-    const response = yield call(
-      axios.put,
-      EMPLOYEE_INFO,
-      action.payload,
-      config
-    );
+    });
     yield put({
       type: 'UPDATE_EMPLOYEE_INFO_SUCCESS',
       payload: response.data,
     });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
     yield put({
       type: 'UPDATE_EMPLOYEE_INFO_FAILURE',
       payload: error.message,

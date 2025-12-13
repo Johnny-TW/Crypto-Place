@@ -120,7 +120,13 @@ const ButtonAppBar: React.FC = () => {
 
   return (
     <MUI.Box sx={{ flexGrow: 1 }}>
-      <MUI.AppBar className='Navbar' style={{ margin: 0 }} position='fixed'>
+      <MUI.AppBar
+        className='Navbar bg-gray-50/50 text-gray-900 backdrop-blur-sm'
+        style={{ margin: 0 }}
+        position='fixed'
+        color='transparent'
+        elevation={0}
+      >
         <MUI.Toolbar>
           <MUI.IconButton
             className='Sidebar_list_icon'

@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Ticker {
   base: string;
@@ -49,7 +49,7 @@ interface SpreadRanges {
 }
 
 function ExchangeCharts({ exchangeDetails }: ExchangeChartsProps) {
-  // 準備交易量分布數據（取前10大交易對）
+  // Prepare volume distribution data (top 10 pairs)
   const volumeData = useMemo((): VolumeDataItem[] => {
     if (!exchangeDetails?.tickers) return [];
 
@@ -69,7 +69,7 @@ function ExchangeCharts({ exchangeDetails }: ExchangeChartsProps) {
       .sort((a, b) => b.volume - a.volume);
   }, [exchangeDetails]);
 
-  // 準備Spread分布數據
+  // Prepare spread distribution data
   const spreadData = useMemo((): SpreadDataItem[] => {
     if (!exchangeDetails?.tickers) return [];
 
@@ -101,249 +101,102 @@ function ExchangeCharts({ exchangeDetails }: ExchangeChartsProps) {
 
   if (!exchangeDetails?.tickers || exchangeDetails.tickers.length === 0) {
     return (
-      <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider' }}>
-        <CardContent>
-          <Box className='flex items-center justify-center py-12'>
-            <div className='text-center'>
-              <Typography variant='h6' color='text.secondary' gutterBottom>
-                No trading data available
-              </Typography>
-              <Typography variant='body2' color='text.secondary'>
-                Unable to load exchange charts at this time
-              </Typography>
-            </div>
-          </Box>
+      <Card className='border-dashed'>
+        <CardContent className='flex flex-col items-center justify-center py-12 text-center'>
+          <h3 className='text-lg font-medium text-gray-500 mb-1'>
+            No Trading Data
+          </h3>
+          <p className='text-sm text-gray-400'>
+            Charts cannot be loaded at this time
+          </p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Box sx={{ mb: 4 }}>
-      {/* Statistics Cards */}
-      <Box className='grid grid-cols-1 md:grid-cols-3 gap-4 mb-6'>
-        <Card
-          elevation={0}
-          sx={{
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <CardContent
-            sx={{
-              backgroundColor: 'white',
-              '&:last-child': { pb: 3 },
-            }}
-          >
-            <Box className='flex items-center justify-between'>
-              <div>
-                <Typography
-                  variant='body2'
-                  sx={{
-                    color: 'text.secondary',
-                    fontWeight: 500,
-                    mb: 1,
-                  }}
-                >
-                  Spot Markets
-                </Typography>
-                <Typography
-                  variant='h4'
-                  sx={{
-                    color: 'text.primary',
-                    fontWeight: 700,
-                  }}
-                >
-                  {exchangeDetails.pairs?.toLocaleString()}
-                </Typography>
-              </div>
-            </Box>
-          </CardContent>
-        </Card>
-
-        <Card
-          elevation={0}
-          sx={{
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <CardContent
-            sx={{
-              backgroundColor: 'white',
-              '&:last-child': { pb: 3 },
-            }}
-          >
-            <Box className='flex items-center justify-between'>
-              <div>
-                <Typography
-                  variant='body2'
-                  sx={{
-                    color: 'text.secondary',
-                    fontWeight: 500,
-                    mb: 1,
-                  }}
-                >
-                  24h Volume
-                </Typography>
-                <Typography
-                  variant='h4'
-                  sx={{
-                    color: 'text.primary',
-                    fontWeight: 700,
-                  }}
-                >
-                  {exchangeDetails.trade_volume_24h_btc?.toLocaleString()} BTC
-                </Typography>
-              </div>
-            </Box>
-          </CardContent>
-        </Card>
-
-        <Card
-          elevation={0}
-          sx={{
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <CardContent
-            sx={{
-              backgroundColor: 'white',
-              '&:last-child': { pb: 3 },
-            }}
-          >
-            <Box className='flex items-center justify-between'>
-              <div>
-                <Typography
-                  variant='body2'
-                  sx={{
-                    color: 'text.secondary',
-                    fontWeight: 500,
-                    mb: 1,
-                  }}
-                >
-                  Trust Score
-                </Typography>
-                <Typography
-                  variant='h4'
-                  sx={{
-                    color: 'text.primary',
-                    fontWeight: 700,
-                  }}
-                >
-                  <i className='fa-solid fa-star' />
-                  {exchangeDetails.trust_score}/10
-                </Typography>
-              </div>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
-
-      {/* Charts Area */}
-      <Box className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-        {/* Volume Distribution Bar Chart */}
-        <Card
-          elevation={0}
-          sx={{
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 2,
-          }}
-        >
-          <CardContent
-            sx={{
-              backgroundColor: 'white',
-              '&:last-child': { pb: 3 },
-            }}
-          >
-            <Typography
-              variant='h6'
-              sx={{
-                color: 'text.primary',
-                fontWeight: 600,
-                mb: 2,
-              }}
+    <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4'>
+      {/* Volume Distribution Bar Chart */}
+      <Card className='shadow-sm'>
+        <CardHeader>
+          <CardTitle className='text-base font-bold text-gray-900'>
+            Top 10 Trading Pairs (by Volume)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width='100%' height={300}>
+            <BarChart
+              data={volumeData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              Top 10 Trading Pairs by Volume
-            </Typography>
-            <ResponsiveContainer width='100%' height={300}>
-              <BarChart
-                data={volumeData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray='3 3' />
-                <XAxis
-                  dataKey='pair'
-                  angle={-45}
-                  textAnchor='end'
-                  height={100}
-                  fontSize={12}
-                />
-                <YAxis
-                  tickFormatter={(value: number) =>
-                    `$${(value / 1000000).toFixed(0)}M`
-                  }
-                  fontSize={12}
-                />
-                <Tooltip
-                  formatter={(value: number) => [
-                    `$${value.toLocaleString()}`,
-                    'Volume (USD)',
-                  ]}
-                  labelStyle={{ color: '#374151' }}
-                />
-                <Bar dataKey='volume' fill='#3b82f6' radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+              <CartesianGrid strokeDasharray='3 3' vertical={false} />
+              <XAxis
+                dataKey='pair'
+                angle={-45}
+                textAnchor='end'
+                height={80}
+                fontSize={12}
+                tick={{ fill: '#6b7280' }}
+              />
+              <YAxis
+                tickFormatter={(value: number) =>
+                  `$${(value / 1000000).toFixed(0)}M`
+                }
+                fontSize={12}
+                tick={{ fill: '#6b7280' }}
+              />
+              <Tooltip
+                formatter={(value: number) => [
+                  `$${value.toLocaleString()}`,
+                  'Volume (USD)',
+                ]}
+                contentStyle={{
+                  borderRadius: '8px',
+                  border: 'none',
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                }}
+              />
+              <Bar dataKey='volume' fill='#3b82f6' radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
-        {/* Spread Distribution Chart */}
-        <Card
-          elevation={0}
-          sx={{
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <CardContent
-            sx={{
-              backgroundColor: 'white',
-              '&:last-child': { pb: 3 },
-            }}
-          >
-            <Typography
-              variant='h6'
-              sx={{
-                color: 'text.primary',
-                fontWeight: 600,
-                mb: 2,
-              }}
+      {/* Spread Distribution Chart */}
+      <Card className='shadow-sm'>
+        <CardHeader>
+          <CardTitle className='text-base font-bold text-gray-900'>
+            Bid-Ask Spread Distribution
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width='100%' height={300}>
+            <BarChart
+              data={spreadData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              Bid-Ask Spread Distribution
-            </Typography>
-            <ResponsiveContainer width='100%' height={300}>
-              <BarChart
-                data={spreadData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray='3 3' />
-                <XAxis dataKey='range' />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey='count' fill='#10b981' radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </Box>
-    </Box>
+              <CartesianGrid strokeDasharray='3 3' vertical={false} />
+              <XAxis dataKey='range' fontSize={12} tick={{ fill: '#6b7280' }} />
+              <YAxis fontSize={12} tick={{ fill: '#6b7280' }} />
+              <Tooltip
+                cursor={{ fill: '#f3f4f6' }}
+                contentStyle={{
+                  borderRadius: '8px',
+                  border: 'none',
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                }}
+              />
+              <Bar
+                dataKey='count'
+                fill='#10b981'
+                radius={[4, 4, 0, 0]}
+                name='Count'
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 

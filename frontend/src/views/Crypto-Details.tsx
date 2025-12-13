@@ -3,17 +3,17 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { ColumnDef } from '@tanstack/react-table';
 
-import DescriptionSection from '@components/common/DescriptionSection';
-import ChartSection from '@components/common/ChartSection';
-import Dashboard from '@components/common/Dashboard';
-import PriceOverviewSection from '@components/common/PriceOverviewSection';
-import CryptoNews from '@components/common/CryptoNews';
+import { DescriptionSection, CryptoNews } from '@components/shared/content';
+import { ChartSection } from '@components/shared/charts';
+import { Dashboard } from '@components/features/dashboard';
+import {
+  PriceOverviewSection,
+  PriceMilestones,
+  PriceRangeBar,
+} from '@components/shared/price';
+import { QuickStats, SupplyStats } from '@components/shared/data-display';
 import AutoPlay from '@components/display/AutoPlay';
 import PerformanceTable from '@components/nft/performance/PerformanceTable';
-import PriceMilestones from '@components/common/PriceMilestones';
-import SupplyStats from '@components/common/SupplyStats';
-import PriceRangeBar from '@components/common/PriceRangeBar';
-import QuickStats from '@components/common/QuickStats';
 
 interface RouteParams extends Record<string, string | undefined> {
   coinId: string;

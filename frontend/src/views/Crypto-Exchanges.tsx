@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ColumnDef } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
-import { DataTable } from '@components/common/DataTable';
+import { DataTable } from '@components/shared/data-display';
 
 interface ExchangeData {
   id: string;

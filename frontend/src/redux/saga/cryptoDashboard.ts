@@ -1,6 +1,5 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
-import axios from 'axios';
-import { COIN_LIST } from '../api/api';
+import { call as apiCall, API_METHOD } from '../api/apiService';
 import { BaseAction } from '../../types/redux';
 
 interface FetchCoinListAction extends BaseAction {
@@ -12,24 +11,33 @@ interface FetchCoinListAction extends BaseAction {
 
 function* fetchCoinListSaga(action: FetchCoinListAction): Generator {
   try {
-    const options = {
-      headers: {
-        accept: 'application/json',
+    // Use apiCall with cancellation support
+    const response: any = yield call(apiCall, {
+      method: API_METHOD.GET,
+      path: '/coins/markets',
+      params: {
+        params: {
+          vs_currency: action.payload.currency,
+        },
+        headers: {
+          accept: 'application/json',
+        },
       },
-    };
+    });
 
-    const response: any = yield call(
-      axios.get,
-      `${COIN_LIST}?vs_currency=${action.payload.currency}`,
-      options
-    );
     yield put({ type: 'FETCH_COIN_LIST_SUCCESS', payload: response.data });
   } catch (error: any) {
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
+
     yield put({ type: 'FETCH_COIN_LIST_FAILURE', error: error.message });
   }
 }
 
 function* mySaga() {
+  // takeLatest will automatically cancel previous pending requests
   yield takeLatest('FETCH_COIN_LIST', fetchCoinListSaga);
 }
 

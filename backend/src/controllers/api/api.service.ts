@@ -417,7 +417,7 @@ export class ApiService {
         ),
       );
 
-      // 儲存到快取 (30秒)
+      // 儲存到快取30秒
       await this.cacheManager.set(cacheKey, response.data, 30000);
       this.logger.log(`✓ Successfully fetched and cached simple prices for ${ids.length} coins`);
       return response.data;
@@ -452,11 +452,11 @@ export class ApiService {
         this.httpService.get(`${this.coingeckoApiUrl}/global`, {
           headers: this.getCoingeckoHeaders(),
         }).pipe(
-          timeout(25000), // 使用 RxJS timeout operator
+          timeout(25000),
         ),
       );
 
-      // 儲存到快取 (60秒)
+      // 儲存到快取60秒
       await this.cacheManager.set(cacheKey, response.data, 60000);
       this.logger.log('✓ Successfully fetched and cached global market data');
       return response.data;

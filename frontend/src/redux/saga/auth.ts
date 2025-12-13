@@ -44,7 +44,7 @@ function* loginSaga(action: LoginAction) {
 
     const response: APIResponse<AuthResponse> = yield call(
       APIKit.post,
-      '/api/auth/login',
+      '/auth/login',
       action.payload
     );
 
@@ -86,7 +86,7 @@ function* employeeLoginSaga(action: EmployeeLoginAction) {
 
     const response: APIResponse<AuthResponse> = yield call(
       APIKit.post,
-      '/api/auth/employee-login',
+      '/auth/employee-login',
       action.payload
     );
 
@@ -129,7 +129,7 @@ function* registerSaga(action: RegisterAction) {
 
     const response: APIResponse<AuthResponse> = yield call(
       APIKit.post,
-      '/api/auth/register',
+      '/auth/register',
       action.payload
     );
     const { access_token: accessToken, user } = response.data;
@@ -226,7 +226,7 @@ function* checkAuthStatusSaga() {
 
       const response: APIResponse<any> = yield call(
         APIKit.get,
-        '/api/auth/profile',
+        '/auth/profile',
         config
       );
 

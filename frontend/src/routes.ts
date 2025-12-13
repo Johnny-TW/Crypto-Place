@@ -9,6 +9,7 @@ import CryptoExchanges from './views/Crypto-Exchanges';
 import CryptoExchangesDetails from './views/Crypto-Exchanges-Details';
 import CryptoAPI from './views/Crypto-api';
 import NotFound from './views/NotFound';
+import ServerError from './views/ServerError';
 import Login from './views/Login';
 import Register from './views/Register';
 import type { Routes } from './types/routes';
@@ -90,6 +91,11 @@ const routes: Routes = [
     path: '/NotFound',
     layout: Default,
     component: NotFound,
+  },
+  {
+    path: '/500',
+    layout: Default,
+    component: ServerError,
   },
 ];
 

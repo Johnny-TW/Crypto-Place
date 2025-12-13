@@ -1,5 +1,5 @@
 import { takeLatest, call, put, delay } from 'redux-saga/effects';
-import axios from 'axios';
+import { call as apiCall, API_METHOD } from '../api/apiService';
 import { NFT_LIST } from '../api/api';
 import { BaseAction } from '../../types/redux';
 
@@ -16,15 +16,25 @@ export const fetchNftList = (
 });
 
 function* fetchNftListWithRetry(
-  options: any,
+  path: string,
+  params: any,
   maxRetries: number = 3,
   baseDelay: number = 1000
 ): Generator {
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
     try {
-      const response = yield call(axios.request, options);
+      const response: any = yield call(apiCall, {
+        method: API_METHOD.GET,
+        path,
+        params,
+      });
       return response;
     } catch (error: any) {
+      // Ignore cancelled requests
+      if (error.message === 'Cancel') {
+        throw error;
+      }
+
       const isRateLimitError = error.response?.status === 429;
 
       if (isRateLimitError && attempt < maxRetries) {
@@ -53,24 +63,34 @@ function* fetchNftListSaga(action: FetchNftListAction): Generator {
   try {
     const { order } = action.payload;
 
-    const options = {
-      method: 'GET',
-      url: NFT_LIST,
-      params: {
-        order,
+    const response: any = yield call(
+      fetchNftListWithRetry,
+      NFT_LIST,
+      {
+        params: { order },
+        headers: { accept: 'application/json' },
       },
-      headers: {
-        accept: 'application/json',
-      },
-    };
-
-    const response = yield call(fetchNftListWithRetry, options, 3, 1000);
+      3,
+      1000
+    );
     yield put({ type: 'FETCH_NFT_LIST_SUCCESS', payload: response.data });
   } catch (error: any) {
-    const errorMessage =
-      error.response?.status === 429
-        ? 'API rate limit exceeded. Please try again later.'
-        : error.message;
+    // Ignore cancelled requests
+    if (error.message === 'Cancel') {
+      return;
+    }
+
+    // 處理不同的錯誤狀態碼
+    const status = error.response?.status;
+
+    let errorMessage = error.message;
+
+    if (status === 500) {
+      errorMessage = `伺服器錯誤 (500): ${error.message}`;
+    } else if (status === 429) {
+      errorMessage = 'API rate limit exceeded. Please try again later.';
+    }
+
     yield put({ type: 'FETCH_NFT_LIST_FAILURE', error: errorMessage });
   }
 }

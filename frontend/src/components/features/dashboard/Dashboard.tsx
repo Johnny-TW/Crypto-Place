@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Typography } from '@mui/material';
-import { DataTable } from './DataTable';
+import { DataTable } from '@components/shared/data-display';
 
 interface DashboardProps {
   columns: ColumnDef<any>[];

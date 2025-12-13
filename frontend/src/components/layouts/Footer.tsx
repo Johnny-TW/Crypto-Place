@@ -10,7 +10,7 @@ import cryptoLogoImage from '../../images/svg/ENBG_favicon.svg';
 
 function Footer() {
   return (
-    <footer className='bg-white-900 text-white'>
+    <footer className='bg-gray-50/50 text-gray-900 border-t border-gray-200'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-2 py-2'>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
           <div className='col-span-1'>
@@ -20,11 +20,11 @@ function Footer() {
                 alt='Company Logo'
                 className='h-8 w-auto mr-3'
               />
-              <span className='self-center text-xl font-semibold whitespace-nowrap text-gray-400'>
+              <span className='self-center text-xl font-semibold whitespace-nowrap text-gray-700'>
                 EE40 - Crypto Place
               </span>
             </div>
-            <p className='text-gray-400 mb-4 text-sm'>
+            <p className='text-gray-600 mb-4 text-sm'>
               Making the world a better place through constructing elegant
               hierarchies.
             </p>
@@ -35,7 +35,7 @@ function Footer() {
               <li>
                 <a
                   href='/dashboard'
-                  className='text-gray-400 hover:text-gray-900 transition-colors text-sm'
+                  className='text-gray-600 hover:text-gray-900 transition-colors text-sm'
                 >
                   Crypto Market
                 </a>
@@ -143,7 +143,7 @@ function Footer() {
               </a>
             </div>
             <div className='flex space-x-6 justify-center'>
-              <p className='text-sm text-gray-400'>
+              <p className='text-sm text-gray-500'>
                 &copy; {new Date().getFullYear()} EE40 - Crypto Place. All
                 rights reserved.
               </p>

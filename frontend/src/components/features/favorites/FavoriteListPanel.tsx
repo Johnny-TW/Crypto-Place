@@ -3,7 +3,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Typography, Skeleton, Alert, Box } from '@mui/material';
 import { FavoriteRounded } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import { DataTable } from './DataTable';
+import { DataTable } from '@components/shared/data-display';
 
 interface WatchlistItem {
   coinId: string;

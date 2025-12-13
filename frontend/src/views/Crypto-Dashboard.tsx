@@ -9,9 +9,11 @@ import { ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ColumnDef } from '@tanstack/react-table';
-import FavoriteButton from '@components/common/FavoriteButton';
-import FavoriteListPanel from '@components/common/FavoriteListPanel';
-import { DataTable } from '@components/common/DataTable';
+import {
+  FavoriteButton,
+  FavoriteListPanel,
+} from '@components/features/favorites';
+import { DataTable } from '@components/shared/data-display';
 import TrendingCoins from '@components/crypto/TrendingCoins';
 import GlobalMarketData from '@components/crypto/GlobalMarketData';
 import SimplePrice from '@components/crypto/SimplePrice';
@@ -332,7 +334,7 @@ function StickyHeadTable(): JSX.Element {
     if (newValue === 'overview') {
       loadBatchWatchlistStatus();
     }
-    // 當切換到 My Favorites 時，重新撈取 watchlist 數據和計數
+    // 當切換到 My Favorites 時，重新撈取 watchlist data
     else if (newValue === 'favorites') {
       fetchWatchlist();
       getCount();
@@ -389,7 +391,11 @@ function StickyHeadTable(): JSX.Element {
     {
       value: 'favorites',
       label: 'My Favorites',
-      icon: <FavoriteRounded className='w-5 h-5' />,
+      icon: (isActive: boolean) => (
+        <FavoriteRounded
+          className={`w-5 h-5 ${isActive ? 'text-rose-500' : ''}`}
+        />
+      ),
       badge: watchlistCount,
     },
   ];
@@ -421,7 +427,9 @@ function StickyHeadTable(): JSX.Element {
                 className='flex items-center gap-2'
               >
                 <div className='relative flex items-center'>
-                  {tab.icon}
+                  {typeof tab.icon === 'function'
+                    ? tab.icon(currentTab === tab.value)
+                    : tab.icon}
                   {tab.badge && tab.badge > 0 && (
                     <Badge
                       variant='destructive'

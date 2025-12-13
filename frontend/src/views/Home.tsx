@@ -1,5 +1,5 @@
 import HomePageTitle from '@components/layouts/HomePageTitle';
-import MediaCard from '@components/common/MediaCard';
+import { MediaCard } from '@components/shared/content';
 import Dashboard from './Crypto-Dashboard';
 
 function Home() {
