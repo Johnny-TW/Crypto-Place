@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards, Req, Res, Query } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -15,12 +15,19 @@ import {
   EmployeeLoginDto,
 } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { MsalService } from './services/msal.service';
+import { GoogleOAuthService } from './services/google-oauth.service';
 import { User } from '../../decorators/user.decorator';
+import { Request, Response } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly msalService: MsalService,
+    private readonly googleOAuthService: GoogleOAuthService,
+  ) {}
 
   @Post('register')
   @ApiOperation({
@@ -115,5 +122,174 @@ export class AuthController {
     }
     // 一般用戶從資料庫獲取
     return this.authService.getUserProfile(user.id);
+  }
+
+  @Get('azure/login')
+  @ApiOperation({
+    summary: 'Azure AD 登入',
+    description: '透過 Microsoft Azure AD (Entra ID) 進行單一登入 (SSO)',
+  })
+  @ApiResponse({
+    status: 302,
+    description: '重導向到 Microsoft 登入頁面',
+  })
+  async azureLogin(@Req() req: Request, @Res() res: Response) {
+    // 使用 MSAL 產生授權 URL
+    const { authUrl, state, codeVerifier } = await this.msalService.getAuthUrl();
+
+    // 將 state 和 codeVerifier 存入 session
+    (req.session as any).azureAuthState = state;
+    (req.session as any).azureCodeVerifier = codeVerifier;
+
+    console.log('🔐 Azure AD Login - Redirecting to Azure AD');
+    console.log('🔐 State stored:', state);
+
+    return res.redirect(authUrl);
+  }
+
+  @Get('azure/callback')
+  @ApiOperation({
+    summary: 'Azure AD 回調端點',
+    description: 'Azure AD 登入成功後的回調處理',
+  })
+  @ApiResponse({
+    status: 302,
+    description: 'Azure AD 登入成功，重導向到前端',
+  })
+  async azureCallback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Query('error') error: string,
+    @Query('error_description') errorDescription: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+    // 檢查 Azure AD 是否回傳錯誤
+    if (error) {
+      console.error('❌ Azure AD Error:', error, errorDescription);
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(errorDescription || error)}`);
+    }
+
+    // 從 session 取出驗證資料
+    const storedState = (req.session as any).azureAuthState;
+    const codeVerifier = (req.session as any).azureCodeVerifier;
+
+    console.log('🔐 Callback - Received state:', state);
+    console.log('🔐 Callback - Stored state:', storedState);
+
+    // 驗證 state
+    if (!storedState || state !== storedState) {
+      console.error('❌ State mismatch!');
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent('State 驗證失敗')}`);
+    }
+
+    if (!codeVerifier) {
+      console.error('❌ No code verifier in session');
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent('Session 已過期')}`);
+    }
+
+    try {
+      // 用授權碼換取 token
+      const userInfo = await this.msalService.acquireTokenByCode(code, codeVerifier);
+
+      // 清除 session 中的臨時資料
+      delete (req.session as any).azureAuthState;
+      delete (req.session as any).azureCodeVerifier;
+
+      // 呼叫 AuthService 處理登入
+      const result = await this.authService.azureAdLogin({
+        azureId: userInfo.azureId,
+        email: userInfo.email,
+        name: userInfo.name,
+      });
+
+      console.log('✅ Azure AD Login Success!');
+      return res.redirect(`${frontendUrl}/auth/azure/callback?token=${result.access_token}`);
+    } catch (err: any) {
+      console.error('❌ Token Exchange Error:', err.message);
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(err.message)}`);
+    }
+  }
+
+  // ==================== Google OAuth ====================
+
+  @Get('google/login')
+  @ApiOperation({
+    summary: 'Google OAuth 登入',
+    description: '透過 Google 帳戶進行登入',
+  })
+  @ApiResponse({
+    status: 302,
+    description: '重導向到 Google 登入頁面',
+  })
+  async googleLogin(@Req() req: Request, @Res() res: Response) {
+    const { authUrl, state } = this.googleOAuthService.getAuthUrl();
+
+    // 將 state 存入 session
+    (req.session as any).googleAuthState = state;
+
+    console.log('🔐 Google Login - Redirecting to Google');
+    console.log('🔐 State stored:', state);
+
+    return res.redirect(authUrl);
+  }
+
+  @Get('google/callback')
+  @ApiOperation({
+    summary: 'Google OAuth 回調端點',
+    description: 'Google 登入成功後的回調處理',
+  })
+  @ApiResponse({
+    status: 302,
+    description: 'Google 登入成功，重導向到前端',
+  })
+  async googleCallback(
+    @Query('code') code: string,
+    @Query('state') state: string,
+    @Query('error') error: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+
+    // 檢查 Google 是否回傳錯誤
+    if (error) {
+      console.error('❌ Google OAuth Error:', error);
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(error)}`);
+    }
+
+    // 驗證 state
+    const storedState = (req.session as any).googleAuthState;
+    console.log('🔐 Google Callback - Received state:', state);
+    console.log('🔐 Google Callback - Stored state:', storedState);
+
+    if (!storedState || state !== storedState) {
+      console.error('❌ State mismatch!');
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent('State 驗證失敗')}`);
+    }
+
+    try {
+      // 取得使用者資訊
+      const userInfo = await this.googleOAuthService.getUserInfo(code);
+
+      // 清除 session 中的臨時資料
+      delete (req.session as any).googleAuthState;
+
+      // 呼叫 AuthService 處理 Google 登入
+      const result = await this.authService.googleLogin({
+        googleId: userInfo.googleId,
+        email: userInfo.email,
+        name: userInfo.name,
+        picture: userInfo.picture,
+      });
+
+      console.log('✅ Google Login Success!');
+      return res.redirect(`${frontendUrl}/auth/google/callback?token=${result.access_token}`);
+    } catch (err: any) {
+      console.error('❌ Google Login Error:', err.message);
+      return res.redirect(`${frontendUrl}/login?error=${encodeURIComponent(err.message)}`);
+    }
   }
 }

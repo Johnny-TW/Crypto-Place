@@ -421,4 +421,140 @@ export class AuthService {
   async findAll() {
     return `This action returns all auth`;
   }
+
+  async azureAdLogin(azureProfile: {
+    azureId: string;
+    email: string;
+    name: string;
+  }) {
+    try {
+      // 查找或建立使用者
+      let user = await this.prisma.user.findUnique({
+        where: { email: azureProfile.email },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+        },
+      });
+
+      if (!user) {
+        // 首次使用 Azure AD 登入，自動建立帳號
+        user = await this.prisma.user.create({
+          data: {
+            email: azureProfile.email,
+            name: azureProfile.name,
+            password: 'azure_ad_no_password', // Azure AD 用戶不需要密碼
+            role: Role.USER,
+            isActive: true,
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            isActive: true,
+            createdAt: true,
+          },
+        });
+      } else if (!user.isActive) {
+        throw new UnauthorizedException('帳戶已被停用');
+      }
+
+      // 產生 JWT token
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+        loginType: 'azure-ad',
+        azureId: azureProfile.azureId,
+      };
+
+      const access_token = this.jwtService.sign(payload);
+
+      return {
+        access_token,
+        user,
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      console.error('Azure AD login error:', error);
+      throw new UnauthorizedException('Azure AD 登入失敗');
+    }
+  }
+
+  /**
+   * Google OAuth 登入
+   */
+  async googleLogin(googleProfile: {
+    googleId: string;
+    email: string;
+    name: string;
+    picture?: string;
+  }) {
+    try {
+      // 查找或建立使用者
+      let user = await this.prisma.user.findUnique({
+        where: { email: googleProfile.email },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+        },
+      });
+
+      if (!user) {
+        // 首次使用 Google 登入，自動建立帳號
+        user = await this.prisma.user.create({
+          data: {
+            email: googleProfile.email,
+            name: googleProfile.name,
+            password: 'google_oauth_no_password', // Google 用戶不需要密碼
+            role: Role.USER,
+            isActive: true,
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            isActive: true,
+            createdAt: true,
+          },
+        });
+      } else if (!user.isActive) {
+        throw new UnauthorizedException('帳戶已被停用');
+      }
+
+      // 產生 JWT token
+      const payload = {
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+        loginType: 'google',
+        googleId: googleProfile.googleId,
+      };
+
+      const access_token = this.jwtService.sign(payload);
+
+      return {
+        access_token,
+        user,
+      };
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      console.error('Google login error:', error);
+      throw new UnauthorizedException('Google 登入失敗');
+    }
+  }
 }

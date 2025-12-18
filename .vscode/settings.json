@@ -1,5 +1,9 @@
 {
   "kiroAgent.configureMCP": "Disabled",
+  // Prisma settings - 使用 Prisma 6.x 相容模式
+  "prisma.schemaVersion": "v1",
+  // 禁用 Prisma 7 datasource URL 警告（我們使用 Prisma 6.x）
+  "prisma.lint.disabledRules": ["datasourceUrlDeprecated"],
   // Editor settings
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",

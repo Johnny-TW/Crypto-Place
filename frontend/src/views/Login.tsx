@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Label from '@/components/ui/label';
+import { AzureAdLoginButton } from '@/components/features/auth';
 
 // 定義選項卡類型
 type ActiveTab = 'user' | 'employee';
@@ -200,6 +201,24 @@ function Login(): JSX.Element {
                 </form>
               </TabsContent>
             </Tabs>
+
+            {/* Azure AD 登入區塊 */}
+            <div className='mt-6'>
+              <div className='relative'>
+                <div className='absolute inset-0 flex items-center'>
+                  <span className='w-full border-t' />
+                </div>
+                <div className='relative flex justify-center text-xs uppercase'>
+                  <span className='bg-white px-2 text-muted-foreground'>
+                    或使用
+                  </span>
+                </div>
+              </div>
+
+              <div className='mt-4'>
+                <AzureAdLoginButton fullWidth />
+              </div>
+            </div>
 
             <div className='mt-6 text-center'>
               <p className='text-sm text-muted-foreground'>

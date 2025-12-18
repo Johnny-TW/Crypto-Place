@@ -7,6 +7,8 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
+import { MsalService } from './services/msal.service';
+import { GoogleOAuthService } from './services/google-oauth.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { DspHrApiService } from '../../services/api/dsp.hr.api.service';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -14,7 +16,7 @@ import * as fsStore from 'cache-manager-fs-hash';
 
 @Module({
   imports: [
-    PassportModule,
+    PassportModule.register({ session: true }),
     PrismaModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -41,8 +43,10 @@ import * as fsStore from 'cache-manager-fs-hash';
     JwtStrategy,
     JwtAuthGuard,
     RolesGuard,
+    MsalService,
+    GoogleOAuthService,
     DspHrApiService,
   ],
-  exports: [AuthService, JwtAuthGuard, RolesGuard],
+  exports: [AuthService, JwtAuthGuard, RolesGuard, MsalService, GoogleOAuthService],
 })
 export class AuthModule {}

@@ -12,6 +12,7 @@ import NotFound from './views/NotFound';
 import ServerError from './views/ServerError';
 import Login from './views/Login';
 import Register from './views/Register';
+import AzureAdCallback from './views/AzureAdCallback';
 import type { Routes } from './types/routes';
 
 const routes: Routes = [
@@ -32,6 +33,11 @@ const routes: Routes = [
     layout: AuthLayout,
     component: Register,
     redirectIfAuthenticated: true,
+  },
+  {
+    path: '/auth/azure/callback',
+    layout: AuthLayout,
+    component: AzureAdCallback,
   },
   {
     path: '/dashboard',
