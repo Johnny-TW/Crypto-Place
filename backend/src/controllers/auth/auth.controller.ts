@@ -144,7 +144,15 @@ export class AuthController {
     console.log('🔐 Azure AD Login - Redirecting to Azure AD');
     console.log('🔐 State stored:', state);
 
-    return res.redirect(authUrl);
+    // 明確保存 session 後再重導向，確保 session 資料被寫入
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Session save error:', err);
+        return res.status(500).json({ message: 'Session 儲存失敗' });
+      }
+      console.log('✅ Session saved successfully');
+      return res.redirect(authUrl);
+    });
   }
 
   @Get('azure/callback')

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, Link } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import {
   Table,
   TableBody,
@@ -29,7 +30,6 @@ import ExchangeCharts from '@components/exchange/ExchangeCharts';
 import ExchangeSocialLinks from '@components/exchange/ExchangeSocialLinks';
 import ExchangeAnnouncements from '@components/exchange/ExchangeAnnouncements';
 
-// Define types for exchange and ticker data
 interface TickerData {
   coin_id: string;
   name: string;
@@ -75,16 +75,32 @@ interface RootState {
   };
 }
 
-// Helper function to sanitize HTML content
-const sanitizeHtml = (html: string) => {
+const sanitizeHtml = (html: string): string => {
   if (!html) return '';
-  // Basic sanitization - remove script tags and on* events
-  return html
-    .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gm, '')
-    .replace(/ on\w+="[^"]*"/g, '');
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: [
+      'p',
+      'br',
+      'strong',
+      'em',
+      'a',
+      'ul',
+      'ol',
+      'li',
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'blockquote',
+      'span',
+      'div',
+    ],
+    ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
+  });
 };
 
-// Helper function to format date
 const formatDate = (dateString: string) => {
   if (!dateString) return 'N/A';
   try {
@@ -104,7 +120,6 @@ const formatDate = (dateString: string) => {
   }
 };
 
-// Helper function to get trust score color and icon
 const getTrustScoreInfo = (score: number | null) => {
   if (score === null || score === undefined)
     return { color: 'text-gray-500', icon: Shield, label: 'Unknown' };
@@ -122,7 +137,6 @@ function CryptoExchangesDetails() {
     (state: RootState) => state.cryptoExchangesDetails
   );
 
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
 
@@ -132,44 +146,6 @@ function CryptoExchangesDetails() {
     }
   }, [exchangeId, dispatch]);
 
-  // Debug: Log exchange details
-  useEffect(() => {
-    if (exchangeDetails) {
-      // eslint-disable-next-line no-console
-      console.log('📊 Exchange Details:', exchangeDetails);
-      // eslint-disable-next-line no-console
-      console.log(
-        '💰 24h BTC Volume (normalized):',
-        exchangeDetails.trade_volume_24h_btc_normalized
-      );
-      // eslint-disable-next-line no-console
-      console.log('💰 24h BTC Volume:', exchangeDetails.trade_volume_24h_btc);
-      // eslint-disable-next-line no-console
-      console.log(
-        '💰 Volume type:',
-        typeof exchangeDetails.trade_volume_24h_btc_normalized
-      );
-      // eslint-disable-next-line no-console
-      console.log(
-        '💰 Volume as Number:',
-        Number(exchangeDetails.trade_volume_24h_btc_normalized)
-      );
-
-      // Log first ticker for debugging
-      if (exchangeDetails.tickers && exchangeDetails.tickers.length > 0) {
-        const firstTicker = exchangeDetails.tickers[0];
-        // eslint-disable-next-line no-console
-        console.log('🔍 First Ticker Sample:', {
-          base: firstTicker.base,
-          target: firstTicker.target,
-          volume_btc: firstTicker.converted_volume?.btc,
-          volume_usd: firstTicker.converted_volume?.usd,
-        });
-      }
-    }
-  }, [exchangeDetails]);
-
-  // Memoize tickers for pagination
   const currentTickers = useMemo(() => {
     if (!exchangeDetails?.tickers) return [];
     const startIndex = currentPage * pageSize;
@@ -202,7 +178,7 @@ function CryptoExchangesDetails() {
 
   return (
     <div className='min-h-screen w-full'>
-      <div className='container mx-auto px-4 sm:px-6 py-8 max-w-7xl'>
+      <div className='container mx-auto px-4 sm:px-6 py-8 max-w-8xl'>
         <div className='grid grid-cols-1 lg:grid-cols-4 gap-8'>
           {/* Left Sidebar - Identity & Info */}
           <div className='lg:col-span-1 space-y-6'>

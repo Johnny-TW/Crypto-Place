@@ -15,16 +15,17 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // Session middleware (必須在 passport-azure-ad 使用 session 模式時啟用)
+  const isProduction = process.env.NODE_ENV === 'production';
   app.use(
     session({
       secret: configService.get<string>('JWT_SECRET') || 'session-secret',
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: false, // 開發環境設為 false，生產環境應設為 true
+        secure: isProduction, // 生產環境強制 HTTPS，開發環境允許 HTTP
         httpOnly: true,
         maxAge: 1000 * 60 * 60, // 1 小時
-        sameSite: 'lax',
+        sameSite: isProduction ? 'strict' : 'lax', // 生產環境使用更嚴格的 sameSite
       },
     }),
   );

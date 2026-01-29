@@ -7,12 +7,13 @@ from dotenv import load_dotenv
 from datetime import datetime
 import time
 
-# 條件導入 Langfuse
+# 條件導入 Langfuse (v3.x 新版導入方式)
 try:
-    from langfuse.decorators import observe, langfuse_context
+    from langfuse import observe, get_client
     LANGFUSE_AVAILABLE = True
 except ImportError:
     LANGFUSE_AVAILABLE = False
+    observe = None
     print("ℹ️ Langfuse 未安裝，監控功能將被停用")
 
 # 載入環境變數
@@ -28,11 +29,102 @@ COINGECKO_API_BASE = "https://api.coingecko.com/api/v3"
 # Langfuse 配置
 LANGFUSE_PUBLIC_KEY = os.getenv("LANGFUSE_PUBLIC_KEY")
 LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY")
-LANGFUSE_HOST = os.getenv("LANGFUSE_HOST", "https://cloud.langfuse.com")   
+LANGFUSE_HOST = os.getenv("LANGFUSE_HOST", "https://cloud.langfuse.com")
 
 # 初始化 Gemini
 genai.configure(api_key=GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel(GEMINI_MODEL)
+
+# ============ 多模型 Fallback 支援 ============
+class GeminiModelManager:
+    """
+    Gemini 模型管理器 - 支援多模型 Fallback
+    當一個模型配額用盡時，自動切換到下一個備用模型
+    """
+
+    # 支援的模型列表（依優先順序）
+    # 注意：使用 Google AI Studio API (google.generativeai) 時的有效模型名稱
+    # 更新於 2024-12：加入 gemini-2.5 系列
+    FALLBACK_MODELS = [
+        "gemini-2.5-flash",           # 最新版本 (2024最新)
+        "gemini-2.0-flash",           # 穩定版
+        "gemini-2.0-flash-lite",      # 更輕量版本
+        "gemini-1.5-flash",           # 1.5 穩定版
+        "gemini-1.5-pro",             # Pro 版本
+    ]
+
+    def __init__(self, primary_model: str = None):
+        self.primary_model = primary_model or GEMINI_MODEL
+        self.current_model_name = self.primary_model
+        self.models = {}
+        self._init_models()
+
+    def _init_models(self):
+        """初始化所有可用的模型"""
+        # 確保主模型在列表最前面
+        model_order = [self.primary_model] + [m for m in self.FALLBACK_MODELS if m != self.primary_model]
+
+        for model_name in model_order:
+            try:
+                self.models[model_name] = genai.GenerativeModel(model_name)
+                print(f"  ✓ {model_name} 已載入")
+            except Exception as e:
+                print(f"  ✗ {model_name} 載入失敗: {e}")
+
+        print(f"📦 已載入 {len(self.models)} 個模型")
+
+    def generate_content(self, prompt: str, max_retries: int = 3) -> Any:
+        """
+        生成內容，支援自動 Fallback
+
+        Args:
+            prompt: 提示詞
+            max_retries: 每個模型的最大重試次數
+
+        Returns:
+            Gemini API 回應
+        """
+        errors = []
+
+        for model_name, model in self.models.items():
+            for attempt in range(max_retries):
+                try:
+                    response = model.generate_content(prompt)
+
+                    # 成功！更新當前使用的模型名稱
+                    if self.current_model_name != model_name:
+                        print(f"🔄 已切換到模型: {model_name}")
+                        self.current_model_name = model_name
+
+                    return response
+
+                except Exception as e:
+                    error_str = str(e)
+                    errors.append(f"{model_name} (attempt {attempt + 1}): {error_str}")
+
+                    # 檢查是否為配額錯誤
+                    if "429" in error_str or "quota" in error_str.lower() or "rate" in error_str.lower():
+                        print(f"⚠️ {model_name} 配額已滿，嘗試下一個模型...")
+                        break  # 跳到下一個模型
+
+                    # 其他錯誤，等待後重試
+                    if attempt < max_retries - 1:
+                        wait_time = (attempt + 1) * 2  # 指數退避
+                        print(f"⏳ {model_name} 錯誤，{wait_time}秒後重試...")
+                        time.sleep(wait_time)
+
+        # 所有模型都失敗了
+        raise Exception(f"所有模型都無法使用:\n" + "\n".join(errors))
+
+    @property
+    def current_model(self) -> str:
+        """取得當前使用的模型名稱"""
+        return self.current_model_name
+
+# 建立模型管理器（取代原本的單一模型）
+print(f"🤖 初始化 Gemini 模型管理器...")
+gemini_manager = GeminiModelManager(GEMINI_MODEL)
+# 保持向後相容
+gemini_model = gemini_manager
 
 # 檢查 Langfuse 是否可用
 langfuse_enabled = False
@@ -260,30 +352,48 @@ async def main(message: cl.Message):
     user_query_lower = user_query.lower()
     user_token = cl.user_session.get("jwt_token")  # 從 session 獲取 JWT
     user_id = cl.user_session.get("user_id", "anonymous")  # 獲取用戶 ID
-    
+
+    # 建立 Langfuse trace (整個對話的追蹤)
+    langfuse_trace = None
+    if langfuse_enabled and LANGFUSE_AVAILABLE:
+        try:
+            langfuse_client = get_client()
+            langfuse_trace = langfuse_client.trace(
+                name="chat_conversation",
+                user_id=user_id,
+                input=user_query,  # 用戶原始訊息作為 input
+                session_id=cl.user_session.get("id", None),
+                metadata={
+                    "source": "chainlit",
+                    "model": gemini_manager.current_model
+                }
+            )
+        except Exception as lf_err:
+            print(f"⚠️ Langfuse trace 建立失敗: {lf_err}")
+
     # 顯示正在處理的訊息
     processing_msg = cl.Message(content="🔍 正在查詢資料...")
     await processing_msg.send()
-    
+
     try:
         crypto_data = None
         response = None
-        
+
         # 檢測是否詢問價格、市場資訊等
         is_price_query = any(keyword in user_query_lower for keyword in [
             "價格", "price", "多少", "市值", "市場", "漲", "跌", "波動"
         ])
-        
+
         # 檢測是否詢問熱門趨勢
         is_trending_query = any(keyword in user_query_lower for keyword in [
             "熱門", "trending", "趨勢", "流行"
         ])
-        
+
         # 檢測是否詢問 NFT
         is_nft_query = any(keyword in user_query_lower for keyword in [
             "nft", "非同質化代幣", "藝術品"
         ])
-        
+
         # 常見加密貨幣 ID 映射
         crypto_map = {
             "bitcoin": ["bitcoin", "btc", "比特幣"],
@@ -297,76 +407,99 @@ async def main(message: cl.Message):
             "avalanche-2": ["avalanche", "avax"],
             "chainlink": ["chainlink", "link"]
         }
-        
+
         # 識別用戶想查詢的加密貨幣
         detected_coin = None
         for coin_id, keywords in crypto_map.items():
             if any(keyword in user_query_lower for keyword in keywords):
                 detected_coin = coin_id
                 break
-        
+
         # 處理熱門趨勢查詢
         if is_trending_query:
             processing_msg.content = "📊 正在獲取熱門加密貨幣..."
             await processing_msg.update()
-            
+
             trending = await get_trending_coins()
             if trending:
                 response = await generate_ai_response_with_data(
                     user_query,
                     {"trending_coins": trending},
-                    user_id
+                    user_id,
+                    langfuse_trace
                 )
-        
+
         # 處理特定加密貨幣查詢
         elif detected_coin and is_price_query:
             processing_msg.content = f"💰 正在獲取 {detected_coin} 即時資料..."
             await processing_msg.update()
-            
+
             crypto_data = await get_crypto_price(detected_coin)
             if crypto_data:
                 response = await generate_ai_response_with_data(
                     user_query,
                     {"crypto_data": crypto_data},
-                    user_id
+                    user_id,
+                    langfuse_trace
                 )
-        
+
         # 處理收藏清單查詢
         elif any(keyword in user_query_lower for keyword in ["watchlist", "收藏", "清單", "追蹤"]):
             response = await handle_watchlist_query(user_token)
-        
+
         # 處理搜尋查詢
         elif any(keyword in user_query_lower for keyword in ["search", "搜尋", "找", "查"]) and not is_price_query:
             # 提取搜尋關鍵字
             search_term = user_query_lower
             for word in ["search", "搜尋", "找", "查"]:
                 search_term = search_term.replace(word, "").strip()
-            
+
             processing_msg.content = f"🔍 正在搜尋 {search_term}..."
             await processing_msg.update()
-            
+
             results = await search_coingecko(search_term)
             if results:
                 response = await generate_ai_response_with_data(
                     user_query,
                     {"search_results": results, "query": search_term},
-                    user_id
+                    user_id,
+                    langfuse_trace
                 )
-        
+
         # 如果沒有特定處理,使用 AI 通用回答
         if not response:
             processing_msg.content = "🤔 正在思考..."
             await processing_msg.update()
-            response = await generate_ai_response(user_query, user_id=user_id)
-        
+            response = await generate_ai_response(user_query, user_id=user_id, parent_trace=langfuse_trace)
+
         # 更新訊息內容
         processing_msg.content = response
         await processing_msg.update()
-        
+
+        # 更新 Langfuse trace 的 output 並 flush
+        if langfuse_trace:
+            try:
+                langfuse_trace.update(output=response)
+                # 確保數據被發送到 Langfuse 伺服器
+                langfuse_client = get_client()
+                langfuse_client.flush()
+            except Exception as lf_err:
+                print(f"⚠️ Langfuse trace 更新失敗: {lf_err}")
+
     except Exception as e:
         error_message = f"❌ 抱歉，發生錯誤: {str(e)}"
         processing_msg.content = error_message
         await processing_msg.update()
+
+        # 記錄錯誤到 Langfuse
+        if langfuse_trace:
+            try:
+                langfuse_trace.update(
+                    output=error_message,
+                    metadata={"error": str(e), "status": "error"}
+                )
+            except:
+                pass
 
 # 查詢處理函數
 
@@ -428,33 +561,23 @@ async def handle_search_query(query: str) -> str:
     
     return response
 
-# 根據 Langfuse 是否可用來決定是否使用 decorator
-if langfuse_enabled and LANGFUSE_AVAILABLE:
-    @observe(name="generate_ai_response")
-    async def generate_ai_response(query: str, user_id: str = None) -> str:
-        """使用 Google Gemini 生成 AI 回答 (帶 Langfuse 監控)"""
-        return await _generate_ai_response_impl(query, user_id)
-    
-    @observe(name="generate_ai_response_with_data")
-    async def generate_ai_response_with_data(query: str, data: Dict[str, Any], user_id: str = None) -> str:
-        """使用 Google Gemini 生成 AI 回答,並帶入即時資料 (帶 Langfuse 監控)"""
-        return await _generate_ai_response_with_data_impl(query, data, user_id)
-else:
-    async def generate_ai_response(query: str, user_id: str = None) -> str:
-        """使用 Google Gemini 生成 AI 回答"""
-        return await _generate_ai_response_impl(query, user_id)
-    
-    async def generate_ai_response_with_data(query: str, data: Dict[str, Any], user_id: str = None) -> str:
-        """使用 Google Gemini 生成 AI 回答,並帶入即時資料"""
-        return await _generate_ai_response_with_data_impl(query, data, user_id)
+# Langfuse v3 整合 - 使用 parent_trace 串聯追蹤
+async def generate_ai_response(query: str, user_id: str = None, parent_trace=None) -> str:
+    """使用 Google Gemini 生成 AI 回答"""
+    return await _generate_ai_response_impl(query, user_id, parent_trace)
 
-async def _generate_ai_response_with_data_impl(query: str, data: Dict[str, Any], user_id: str = None) -> str:
+async def generate_ai_response_with_data(query: str, data: Dict[str, Any], user_id: str = None, parent_trace=None) -> str:
+    """使用 Google Gemini 生成 AI 回答,並帶入即時資料"""
+    return await _generate_ai_response_with_data_impl(query, data, user_id, parent_trace)
+
+async def _generate_ai_response_with_data_impl(query: str, data: Dict[str, Any], user_id: str = None, parent_trace=None) -> str:
     """AI 回答生成的實際實作 (帶即時資料)"""
     start_time = time.time()
-    
+    langfuse_generation = None
+
     try:
         import json
-        
+
         # 建立系統提示詞
         system_prompt = """你是一位專業的加密貨幣投資顧問，名叫 Crypto Assistant。
 你的特點：
@@ -471,70 +594,79 @@ async def _generate_ai_response_with_data_impl(query: str, data: Dict[str, Any],
 - 提供數據來源為 CoinGecko
 - 適時提醒投資風險
 """
-        
+
         # 格式化資料為易讀文字
         data_text = "\n\n--- 即時市場資料 (來自 CoinGecko) ---\n"
         data_text += json.dumps(data, ensure_ascii=False, indent=2)
-        
+
         # 組合完整的提示詞
         full_prompt = f"{system_prompt}\n\n用戶問題: {query}{data_text}\n\n請根據以上即時資料,用專業且友善的方式回答用戶問題。"
-        
-        # 如果 Langfuse 啟用，使用 context 記錄
-        if langfuse_enabled and LANGFUSE_AVAILABLE:
-            langfuse_context.update_current_trace(
-                name="crypto_ai_chat_with_data",
-                user_id=user_id or "anonymous",
-                metadata={
-                    "model": GEMINI_MODEL,
-                    "has_market_data": True,
-                    "timestamp": datetime.now().isoformat()
-                }
-            )
-            
-            langfuse_context.update_current_observation(
-                input={"query": query, "data_keys": list(data.keys())},
-                metadata={"model": GEMINI_MODEL, "data_source": "coingecko"}
-            )
-        
-        # 調用 Gemini API (同步方式)
+
+        # Langfuse v3 追蹤 - 使用 parent_trace 建立 generation (子項)
+        if langfuse_enabled and LANGFUSE_AVAILABLE and parent_trace:
+            try:
+                langfuse_generation = parent_trace.generation(
+                    name="gemini_llm_call",
+                    model=gemini_manager.current_model,
+                    input=full_prompt,
+                    metadata={
+                        "query": query,
+                        "has_market_data": True,
+                        "data_keys": list(data.keys())
+                    }
+                )
+            except Exception as lf_err:
+                print(f"⚠️ Langfuse generation 建立失敗: {lf_err}")
+
+        # 調用 Gemini API
         response = gemini_model.generate_content(full_prompt)
         response_text = response.text
-        
+
         # 計算執行時間
         duration = time.time() - start_time
-        
-        # 如果 Langfuse 啟用，記錄輸出
-        if langfuse_enabled and LANGFUSE_AVAILABLE:
-            langfuse_context.update_current_observation(
-                output=response_text,
-                metadata={
-                    "status": "success",
-                    "response_length": len(response_text),
-                    "duration_seconds": round(duration, 2)
-                }
-            )
-        
+
+        # 更新 Langfuse generation
+        if langfuse_generation:
+            try:
+                langfuse_generation.end(
+                    output=response_text,
+                    metadata={
+                        "status": "success",
+                        "response_length": len(response_text),
+                        "duration_seconds": round(duration, 2),
+                        "model_used": gemini_manager.current_model
+                    }
+                )
+            except Exception as lf_err:
+                print(f"⚠️ Langfuse generation 更新失敗: {lf_err}")
+
         return response_text
-    
+
     except Exception as e:
         error_message = f"❌ AI 回答生成失敗: {str(e)}"
-        
-        # 如果 Langfuse 啟用，記錄錯誤
-        if langfuse_enabled and LANGFUSE_AVAILABLE:
-            langfuse_context.update_current_observation(
-                metadata={
-                    "status": "error",
-                    "error": str(e),
-                    "duration_seconds": round(time.time() - start_time, 2)
-                }
-            )
-        
+
+        # 記錄錯誤到 Langfuse
+        if langfuse_generation:
+            try:
+                langfuse_generation.end(
+                    output=error_message,
+                    metadata={
+                        "status": "error",
+                        "error": str(e),
+                        "duration_seconds": round(time.time() - start_time, 2)
+                    },
+                    level="ERROR"
+                )
+            except:
+                pass
+
         return error_message
 
-async def _generate_ai_response_impl(query: str, user_id: str = None) -> str:
+async def _generate_ai_response_impl(query: str, user_id: str = None, parent_trace=None) -> str:
     """AI 回答生成的實際實作"""
     start_time = time.time()
-    
+    langfuse_generation = None
+
     try:
         # 建立系統提示詞
         system_prompt = """你是一位專業的加密貨幣投資顧問，名叫 Crypto Assistant。
@@ -545,59 +677,64 @@ async def _generate_ai_response_impl(query: str, user_id: str = None) -> str:
 - 給予實用的投資建議
 - 必要時會提醒風險
 """
-        
+
         # 組合完整的提示詞
         full_prompt = f"{system_prompt}\n\n用戶問題: {query}"
-        
-        # 如果 Langfuse 啟用，使用 context 記錄
-        if langfuse_enabled and LANGFUSE_AVAILABLE:
-            langfuse_context.update_current_trace(
-                name="crypto_ai_chat",
-                user_id=user_id or "anonymous",
-                metadata={
-                    "model": GEMINI_MODEL,
-                    "timestamp": datetime.now().isoformat()
-                }
-            )
-            
-            langfuse_context.update_current_observation(
-                input={"query": query, "system_prompt": system_prompt},
-                metadata={"model": GEMINI_MODEL}
-            )
-        
-        # 調用 Gemini API (同步方式)
+
+        # Langfuse v3 追蹤 - 使用 parent_trace 建立 generation (子項)
+        if langfuse_enabled and LANGFUSE_AVAILABLE and parent_trace:
+            try:
+                langfuse_generation = parent_trace.generation(
+                    name="gemini_llm_call",
+                    model=gemini_manager.current_model,
+                    input=full_prompt,
+                    metadata={"query": query}
+                )
+            except Exception as lf_err:
+                print(f"⚠️ Langfuse generation 建立失敗: {lf_err}")
+
+        # 調用 Gemini API
         response = gemini_model.generate_content(full_prompt)
         response_text = response.text
-        
+
         # 計算執行時間
         duration = time.time() - start_time
-        
-        # 如果 Langfuse 啟用，記錄輸出
-        if langfuse_enabled and LANGFUSE_AVAILABLE:
-            langfuse_context.update_current_observation(
-                output=response_text,
-                metadata={
-                    "status": "success",
-                    "response_length": len(response_text),
-                    "duration_seconds": round(duration, 2)
-                }
-            )
-        
+
+        # 更新 Langfuse generation
+        if langfuse_generation:
+            try:
+                langfuse_generation.end(
+                    output=response_text,
+                    metadata={
+                        "status": "success",
+                        "response_length": len(response_text),
+                        "duration_seconds": round(duration, 2),
+                        "model_used": gemini_manager.current_model
+                    }
+                )
+            except Exception as lf_err:
+                print(f"⚠️ Langfuse generation 更新失敗: {lf_err}")
+
         return response_text
-    
+
     except Exception as e:
         error_message = f"❌ AI 回答生成失敗: {str(e)}"
-        
-        # 如果 Langfuse 啟用，記錄錯誤
-        if langfuse_enabled and LANGFUSE_AVAILABLE:
-            langfuse_context.update_current_observation(
-                metadata={
-                    "status": "error",
-                    "error": str(e),
-                    "duration_seconds": round(time.time() - start_time, 2)
-                }
-            )
-        
+
+        # 記錄錯誤到 Langfuse
+        if langfuse_generation:
+            try:
+                langfuse_generation.end(
+                    output=error_message,
+                    metadata={
+                        "status": "error",
+                        "error": str(e),
+                        "duration_seconds": round(time.time() - start_time, 2)
+                    },
+                    level="ERROR"
+                )
+            except:
+                pass
+
         return error_message
 
 # 錯誤處理

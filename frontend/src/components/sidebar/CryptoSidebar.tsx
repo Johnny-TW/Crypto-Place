@@ -12,6 +12,7 @@ import {
   BadgeDollarSign,
   Building2,
   Link,
+  Bot,
 } from 'lucide-react';
 import ENBGFavicon from '@/images/svg/ENBG_favicon.svg';
 
@@ -107,6 +108,17 @@ export default function CryptoSidebar({
         {
           title: 'Crypto API',
           url: '/api',
+        },
+      ],
+    },
+    {
+      title: 'AI Assistant',
+      url: 'http://localhost:8000',
+      icon: Bot,
+      items: [
+        {
+          title: 'Chainlit Chat',
+          url: 'http://localhost:8000',
         },
       ],
     },

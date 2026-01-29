@@ -61,6 +61,7 @@ export class MsalService {
       codeChallenge: challenge,
       codeChallengeMethod: 'S256',
       prompt: 'select_account',
+      responseMode: 'query', // 使用 query 模式避免 form_post 中間頁面卡住
     };
 
     const authUrl = await this.msalClient.getAuthCodeUrl(authCodeUrlParameters);

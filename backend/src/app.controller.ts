@@ -15,7 +15,10 @@ export class AppController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Welcome to EE40 - Crypto Place API' },
+        message: {
+          type: 'string',
+          example: 'Welcome to EE40 - Crypto Place API',
+        },
         endpoints: {
           type: 'object',
           description: '可用的 API 端點',
