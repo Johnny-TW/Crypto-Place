@@ -10,8 +10,9 @@ import { UserPayload } from './user-payload.interface';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  // 驗證使用者是否有權限訪問特定路由
   constructor(private readonly jwtService: JwtService) {}
-
+  // canActivate 方法會在每次請求時被呼叫
   async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
       // 從請求中取得 header
@@ -27,7 +28,8 @@ export class AuthGuard implements CanActivate {
       const payload: UserPayload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
-      //--------------------------------------------------------------------------
+
+      // 將解碼後的 payload 附加到請求物件上，方便後續使用
       request.user = payload;
 
       return true;

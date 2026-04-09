@@ -21,6 +21,7 @@ export class PrismaService
     });
   }
 
+  // 在模組初始化時連接到資料庫
   async onModuleInit() {
     try {
       console.log('Attempting to connect to database...');
