@@ -94,7 +94,7 @@ export default defineConfig({
         manualChunks: {
           react: ['react', 'react-dom'],
           router: ['react-router-dom'],
-          redux: ['react-redux', 'redux', 'redux-saga', '@reduxjs/toolkit'],
+          redux: ['react-redux', 'redux', 'redux-saga'],
           ui: [
             '@mui/material',
             '@mui/icons-material',
