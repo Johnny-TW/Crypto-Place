@@ -273,8 +273,7 @@ const ChartSection: React.FC<ChartSectionProps> = memo(
       const configWithInterval = {
         ...config,
         tickInterval: undefined as
-          | ((_value: string, _index: number) => boolean)
-          | undefined,
+          ((_value: string, _index: number) => boolean) | undefined,
       };
 
       if (timeRange === '7d') {
