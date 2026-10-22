@@ -1,5 +1,5 @@
 # Backend NestJS Dockerfile
-FROM node:18-alpine AS base
+FROM node:22-alpine AS base
 
 # Install pnpm and common dependencies
 RUN corepack enable pnpm && \
